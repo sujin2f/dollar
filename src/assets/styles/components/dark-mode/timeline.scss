@@ -1,0 +1,18 @@
+.timeline__item--title {
+    background-color: $background-color;
+}
+
+.timeline__item--expiration {
+    background-color: $background-color;
+}
+
+.timeline__item--button {
+    border: solid $line-size $primary-color;
+    background-color: $background-color;
+    color: $text-color;
+}
+
+.timeline__item--button--hurry {
+    background-color: $secondary-color;
+    color: $primary-color;
+}

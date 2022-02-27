@@ -1,0 +1,15 @@
+{
+    "short_name": "SubZero",
+    "name": "Keep Your Groceries Fresh and Cool",
+    "icons": [
+        {
+            "src": "favicon.ico",
+            "sizes": "32x32 16x16",
+            "type": "image/png"
+        }
+    ],
+    "start_url": "/",
+    "display": "standalone",
+    "theme_color": "#970000",
+    "background_color": "#cacad1"
+}

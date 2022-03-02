@@ -1,42 +1,70 @@
 import { useContext, useEffect } from 'react'
-import socketIOClient from 'socket.io-client'
+import { gql } from '@apollo/client'
 
 import {
     ContextType,
     Context,
-    setUser,
-    unsetUser,
-    socketUserReady,
+    getUserInit,
+    getUserSuccess,
+    getUserFailed,
 } from 'src/client/store'
-import { Nullable, User } from 'src/types'
-import { SocketEvent } from 'src/constants/socket'
+import { graphqlClient } from 'src/utils'
+import { User, ApiState, WithApiState, Fn } from 'src/types'
+import { userQuery } from 'src/constants'
 
-export const useUser = (): Nullable<User> => {
-    const [
-        {
-            user,
-            socketReady: { user: socketReady },
-        },
-        dispatch,
-    ] = useContext(Context) as ContextType
+type GetUserQueryParam = {
+    getUser: User
+}
+type SetDarkMode = Fn<[boolean], void>
+
+export const useUser = (): WithApiState<User> => {
+    const [{ user }, dispatch] = useContext(Context) as ContextType
 
     useEffect(() => {
-        if (socketReady) {
+        if (user !== ApiState.NotAssigned) {
             return
         }
 
-        const socket = socketIOClient('/')
-        socket.emit(SocketEvent.GET_USER)
-        socket.on(SocketEvent.GET_USER, (response: Nullable<User>) => {
-            if (response) {
-                dispatch(setUser(response))
-                return
-            }
-            dispatch(unsetUser())
-        })
-
-        dispatch(socketUserReady())
-    }, [dispatch, socketReady])
+        dispatch(getUserInit())
+        graphqlClient
+            .query<GetUserQueryParam>({
+                query: gql`
+                    ${userQuery}
+                `,
+            })
+            .then((response) => {
+                dispatch(getUserSuccess(response.data.getUser))
+            })
+            .catch(() => {
+                dispatch(getUserFailed())
+            })
+    }, [dispatch, user])
 
     return user
+}
+
+export const useDarkMode = (): SetDarkMode => {
+    const [{ user }, dispatch] = useContext(Context) as ContextType
+
+    const setDarkMode = (darkMode: boolean) => {
+        graphqlClient
+            .mutate({
+                mutation: gql`
+                    mutation {
+                        setDarkMode(
+                            darkMode: ${darkMode}
+                        )
+                    }
+                `,
+            })
+            .then(() => {
+                dispatch(getUserSuccess({ ...(user as User), darkMode }))
+            })
+            .catch((e) => {
+                // Error Handling
+                console.error(e)
+            })
+    }
+
+    return setDarkMode
 }

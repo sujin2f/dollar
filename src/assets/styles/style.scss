@@ -1,13 +1,35 @@
+/**
+ * Font
+ */
 @import url('https://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700&display=swap');
 
-// Light Mode
-@import 'variables/light-mode';
+/**
+ * Foundation
+ */
+@import 'variables/global';
+@import '~foundation-sites/scss/foundation';
+@include foundation-global-styles;
+@include foundation-flex-grid;
+@include foundation-forms;
+@include foundation-button;
+@include foundation-switch;
+@include foundation-table;
+
+/**
+ * Light mode and components
+ */
 @import 'components/base';
 @import 'components/wrapper';
-@import 'components/form';
 @import 'components/header';
-@import 'components/remove-popup';
-@import 'components/timeline';
+@import 'components/table';
 
-// Dark Mode
-@import 'dark-mode';
+/**
+ * Dark mode
+ */
+@import 'variables/dark-mode';
+@import 'components/dark-mode/wrapper';
+
+.wrapper--dark-mode {
+    @import 'components/dark-mode/header';
+    @import 'components/dark-mode/form';
+}

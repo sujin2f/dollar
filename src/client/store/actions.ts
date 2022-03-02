@@ -1,18 +1,23 @@
-import { Action, Item, User } from 'src/types'
+import { Action, Category, Item, User } from 'src/types'
+import {
+    GET_USER_INIT,
+    GET_USER_SUCCESS,
+    GET_USER_FAILED,
+    GET_ITEMS_INIT,
+    GET_ITEMS_SUCCESS,
+    GET_ITEMS_FAILED,
+    GET_CATEGORIES_INIT,
+    GET_CATEGORIES_SUCCESS,
+    GET_CATEGORIES_FAILED,
+    SET_MENU_OPEN,
+} from './type'
 
-export const GET_ITEMS_SUCCESS = 'sujin/v1/GET_ITEMS_SUCCESS'
-export const OPEN_DELETE_POPUP = 'sujin/v1/OPEN_DELETE_POPUP'
-export const CLOSE_DELETE_POPUP = 'sujin/v1/CLOSE_DELETE_POPUP'
-export const SET_USER = 'sujin/v1/SET_USER'
-export const UNSET_USER = 'sujin/v1/UNSET_USER'
-export const SOCKET_USER_READY = 'sujin/v1/SOCKET_USER_READY'
-export const SOCKET_ITEMS_READY = 'sujin/v1/SOCKET_ITEMS_READY'
+export const getItemsInit = (): Partial<Action> => {
+    return {
+        type: GET_ITEMS_INIT,
+    }
+}
 
-/**
- * Get items success
- * @param {Item[]} items
- * @returns {Partial<Action>}
- */
 export const getItemsSuccess = (items: Item[]): Partial<Action> => {
     return {
         type: GET_ITEMS_SUCCESS,
@@ -20,56 +25,55 @@ export const getItemsSuccess = (items: Item[]): Partial<Action> => {
     }
 }
 
-/**
- * Open Popup
- * @returns {Partial<Action>}
- */
-export const openRemovePopup = (_id: string): Partial<Action> => {
+export const getItemsFailed = (): Partial<Action> => {
     return {
-        type: OPEN_DELETE_POPUP,
-        _id,
+        type: GET_ITEMS_FAILED,
     }
 }
 
-/**
- * Close Popup
- * @returns {Partial<Action>}
- */
-export const closeRemovePopup = (): Partial<Action> => {
+export const getUserInit = (): Partial<Action> => {
     return {
-        type: CLOSE_DELETE_POPUP,
+        type: GET_USER_INIT,
     }
 }
 
-/**
- * Login
- * @returns {Partial<Action>}
- */
-export const setUser = (user: User): Partial<Action> => {
+export const getUserSuccess = (user: User): Partial<Action> => {
     return {
-        type: SET_USER,
+        type: GET_USER_SUCCESS,
         user,
     }
 }
 
-/**
- * Logout
- * @returns {Partial<Action>}
- */
-export const unsetUser = (): Partial<Action> => {
+export const getUserFailed = (): Partial<Action> => {
     return {
-        type: UNSET_USER,
+        type: GET_USER_FAILED,
     }
 }
 
-export const socketUserReady = (): Partial<Action> => {
+export const getCategoriesInit = (): Partial<Action> => {
     return {
-        type: SOCKET_USER_READY,
+        type: GET_CATEGORIES_INIT,
     }
 }
 
-export const socketItemsReady = (): Partial<Action> => {
+export const getCategoriesSuccess = (
+    categories: Category[],
+): Partial<Action> => {
     return {
-        type: SOCKET_ITEMS_READY,
+        type: GET_CATEGORIES_SUCCESS,
+        categories,
+    }
+}
+
+export const getCategoriesFailed = (): Partial<Action> => {
+    return {
+        type: GET_CATEGORIES_FAILED,
+    }
+}
+
+export const setMenuOpen = (menuOpen: boolean): Partial<Action> => {
+    return {
+        type: SET_MENU_OPEN,
+        menuOpen,
     }
 }

@@ -1,7 +1,3 @@
-/**
- * Login features endpoint
- */
-
 import ejs from 'ejs'
 import express, { Response } from 'express'
 import path from 'path'

@@ -1,0 +1,27 @@
+$foundation-palette: (
+    primary: #970000,
+    secondary: #fee632,
+    success: #3adb76,
+    warning: #ffae00,
+    alert: #cc4b37,
+);
+
+$primary-color: map-get($foundation-palette, 'primary');
+$body-background: #eaeaef;
+
+$text-color: black;
+$border-color: #dddddd;
+$margin: 0.6rem;
+
+/**
+ * Foundation Button
+ */
+$button-background: $primary-color;
+
+/**
+ * Foundation Table
+ */
+$table-background: transparent;
+$table-head-background: $primary-color;
+$table-head-font-color: white;
+$table-border: 1px solid $border-color;

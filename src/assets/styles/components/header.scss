@@ -1,6 +1,6 @@
 .banner {
     background-color: $primary-color;
-    color: $background-color;
+    color: $body-background;
     text-align: center;
     padding: 1rem;
     margin-bottom: 2rem;
@@ -15,21 +15,26 @@
     margin-bottom: 1rem;
 }
 
+.header {
+    position: fixed;
+    background-color: $primary-color;
+    z-index: 100;
+    width: 100vw;
+    padding: $margin;
+}
+
 .login {
     display: inline-block;
-    background-color: $background-color;
+    background-color: $body-background;
     text-decoration: none;
     color: $primary-color;
     padding: 0.3rem 1rem;
 }
 
 .hamburger {
-    position: fixed;
     display: flex;
     width: 1.4rem;
     height: 1.4rem;
-    top: 1rem;
-    left: 1rem;
     align-items: center;
     justify-content: space-between;
     background-color: transparent;
@@ -37,49 +42,49 @@
     padding: 0;
     flex-direction: column;
     cursor: pointer;
-    z-index: 20;
 
     div {
-        background-color: $primary-color;
+        background-color: $white;
         width: 100%;
-        height: $line-size;
+        height: 3px;
     }
 }
 
-.aside__menu {
+.menu {
     position: fixed;
-    background-color: $background-color;
+    background-color: $body-background;
     left: 0;
     top: 0;
     width: 100vw;
     height: 100vh;
     padding: 3.5rem 1rem 0;
+    z-index: 90;
 }
 
-.aside__greeting__container {
+.greeting__container {
     display: flex;
     align-items: center;
 }
 
-.aside__profile {
+.profile-image {
     width: 2rem;
     height: 2rem;
     border-radius: 2rem;
     margin-right: 0.5rem;
 }
-.aside__greeting {
+.greeting {
     margin: 0;
     font-size: 0.8rem;
 }
 
-.aside__menu__item {
+.menu__item {
     background: transparent;
     border: none;
     font-size: 1rem;
     text-decoration: none;
     color: $primary-color;
     display: block;
-    border-top: 1px solid $light-border;
+    border-top: 1px solid $border-color;
     padding: 0.3rem 0 0;
     margin: 0.5rem 0 0;
     width: 100%;

@@ -1,24 +1,18 @@
 .banner {
-    color: $background-color;
+    color: $body-background;
 }
 
 .login {
-    background-color: $background-color;
+    background-color: $body-background;
     color: $primary-color;
 }
 
-.hamburger {
-    div {
-        background-color: $primary-color;
-    }
+.menu {
+    background-color: $body-background;
 }
 
-.aside__menu {
-    background-color: $background-color;
-}
-
-.aside__menu__item {
+.menu__item {
     color: $primary-color;
-    border-top: 1px solid $light-border;
+    border-top: 1px solid $border-color;
     color: $text-color;
 }

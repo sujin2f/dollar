@@ -1,0 +1,26 @@
+.table {
+    thead {
+        border-right: none;
+        border-left: none;
+        text-transform: capitalize;
+    }
+
+    tbody {
+        border-right: none;
+        border-left: none;
+    }
+
+    tr {
+        border-right: none;
+        border-left: none;
+    }
+
+    input,
+    .switch {
+        margin-bottom: 0;
+    }
+}
+
+.table__currency {
+    text-align: right;
+}

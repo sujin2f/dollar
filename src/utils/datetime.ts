@@ -1,12 +1,18 @@
+export const formatDate = (date: Date): string => {
+    return `${date.getFullYear()}.${addZero(date.getMonth() + 1)}.${addZero(
+        date.getDate(),
+    )}`
+}
+
 /**
  * Adding zero to a single string
  * 1 => 01
- * @param {string} number
+ * @param {string} amount
  * @param {number} digits How many digits it should be
  * @return {string}
  */
-export const addZero = (number: string | number, digits = 2): string => {
-    const num = typeof number === 'string' ? number : number.toString()
+export const addZero = (amount: string | number, digits = 2): string => {
+    const num = typeof amount === 'string' ? amount : amount.toString()
 
     if (num.length >= digits) {
         return num
@@ -25,18 +31,18 @@ export const addZero = (number: string | number, digits = 2): string => {
  */
 export const yyyyMmDdToDate = (yyyyMmDd: string): Date => {
     const splitted = yyyyMmDd.split('-')
+    const date = new Date()
     if (splitted.length !== 3) {
-        const date = new Date()
         date.setHours(0)
         date.setMinutes(0)
         date.setSeconds(0)
         date.setMilliseconds(0)
         return date
     }
-    const date = new Date()
-    date.setFullYear(parseInt(splitted[0]))
-    date.setMonth(parseInt(splitted[1]) - 1)
-    date.setDate(parseInt(splitted[2]))
+
+    date.setFullYear(parseInt(splitted[0], 10))
+    date.setMonth(parseInt(splitted[1], 10) - 1)
+    date.setDate(parseInt(splitted[2], 10))
 
     date.setHours(0)
     date.setMinutes(0)

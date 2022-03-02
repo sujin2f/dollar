@@ -1,26 +1,26 @@
+import { Action, State, ApiState, initialState } from 'src/types'
 import {
-    OPEN_DELETE_POPUP,
-    CLOSE_DELETE_POPUP,
-    SOCKET_USER_READY,
-    SET_USER,
-    UNSET_USER,
-    SOCKET_ITEMS_READY,
+    GET_USER_INIT,
+    GET_USER_SUCCESS,
+    GET_USER_FAILED,
+    GET_ITEMS_INIT,
     GET_ITEMS_SUCCESS,
-} from 'src/client/store/actions'
-import { Action, State } from 'src/types'
-
-export const initialState: State = {
-    user: undefined,
-    items: [],
-    removePopup: false,
-    socketReady: {
-        user: false,
-        items: false,
-    },
-}
+    GET_ITEMS_FAILED,
+    GET_CATEGORIES_INIT,
+    GET_CATEGORIES_SUCCESS,
+    GET_CATEGORIES_FAILED,
+    SET_MENU_OPEN,
+} from './type'
 
 export const reducer = (state: State = initialState, action: Action): State => {
     switch (action.type) {
+        case GET_ITEMS_INIT: {
+            return {
+                ...state,
+                items: ApiState.Loading,
+            }
+        }
+
         case GET_ITEMS_SUCCESS: {
             return {
                 ...state,
@@ -28,50 +28,61 @@ export const reducer = (state: State = initialState, action: Action): State => {
             }
         }
 
-        case OPEN_DELETE_POPUP: {
+        case GET_ITEMS_FAILED: {
             return {
                 ...state,
-                removePopup: action._id,
+                items: ApiState.Removed,
             }
         }
 
-        case CLOSE_DELETE_POPUP: {
+        case GET_USER_INIT: {
             return {
                 ...state,
-                removePopup: false,
+                user: ApiState.Loading,
             }
         }
 
-        case SET_USER: {
+        case GET_USER_SUCCESS: {
             return {
                 ...state,
                 user: action.user,
             }
         }
 
-        case UNSET_USER: {
+        case GET_USER_FAILED: {
             return {
                 ...state,
-                user: undefined,
+                user: ApiState.Removed,
             }
         }
 
-        case SOCKET_USER_READY: {
+        case GET_CATEGORIES_INIT: {
             return {
                 ...state,
-                socketReady: {
-                    ...state.socketReady,
-                    user: true,
-                },
+                categories: ApiState.Loading,
             }
         }
 
-        case SOCKET_ITEMS_READY: {
+        case GET_CATEGORIES_SUCCESS: {
             return {
                 ...state,
-                socketReady: {
-                    ...state.socketReady,
-                    items: true,
+                categories: action.categories,
+            }
+        }
+
+        case GET_CATEGORIES_FAILED: {
+            return {
+                ...state,
+                categories: ApiState.Removed,
+            }
+        }
+
+        case SET_MENU_OPEN: {
+            return {
+                ...state,
+                option: {
+                    ...state.option,
+                    menuOpen: action.menuOpen,
                 },
             }
         }

@@ -8,7 +8,8 @@ import {
     Redirect,
 } from 'react-router-dom'
 import { Store } from 'src/client/store'
-import { Public } from './scenes'
+import { PublicWrapper, PublicHome } from 'src/client/scenes/public'
+import { AppWrapper, AppHome, AddItems } from 'src/client/scenes/app'
 
 ReactDOM.render(
     <React.StrictMode>
@@ -16,8 +17,20 @@ ReactDOM.render(
             <Store>
                 <Switch>
                     <Redirect from="/#" to="/" />
-                    <Route exact={false} path="/">
-                        <Public />
+                    <Route exact={true} path="/">
+                        <PublicWrapper>
+                            <PublicHome />
+                        </PublicWrapper>
+                    </Route>
+                    <Route exact={true} path="/app">
+                        <AppWrapper>
+                            <AppHome />
+                        </AppWrapper>
+                    </Route>
+                    <Route exact={true} path="/app/add/text">
+                        <AppWrapper>
+                            <AddItems />
+                        </AppWrapper>
                     </Route>
                 </Switch>
             </Store>

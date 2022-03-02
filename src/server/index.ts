@@ -1,13 +1,12 @@
 import moduleAlias from 'module-alias'
-import express, { Application, NextFunction, Request, Response } from 'express'
+import express, { Application } from 'express'
 import path from 'path'
 import session from 'express-session'
 import ConnectMongoDBSession from 'connect-mongodb-session'
 import http from 'http'
-import { Server } from 'socket.io'
 import { config as detEnvConfig } from 'dotenv'
 
-import { baseDir } from '../utils/environment'
+import { baseDir } from 'src/utils'
 // Alias
 if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'stage') {
     moduleAlias.addAlias('src', baseDir)
@@ -15,13 +14,12 @@ if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'stage') {
 }
 
 /* eslint-disable import/first */
-import { mongoConnect } from '../utils'
-import { authRouter } from './routes/auth'
-import { ErrorMessages } from '../constants'
-import { staticRouter } from './routes/static'
-import { socketListener } from './socket'
+import { ErrorMessages } from 'src/constants'
+import { mongoConnect } from 'src/utils/mongo'
 
-/* tslint:disable no-console */
+import { authRouter, staticRouter, apiRouter } from 'src/server/routes'
+/* eslint-enable import/first */
+
 declare module 'express-session' {
     interface Session {
         user?: string
@@ -61,6 +59,7 @@ const store = new MongoDBStore({
     collection: 'sessions',
 })
 
+/* tslint:disable no-console */
 store.on('error', (e: Error) => {
     console.log(e)
 })
@@ -80,23 +79,10 @@ const sessionMiddleware = session({
 app.use(sessionMiddleware)
 
 /**
- * Socket.io
- */
-const io = new Server(server)
-io.use((socket, next) => {
-    return sessionMiddleware(
-        socket.request as Request,
-        {} as Response,
-        next as NextFunction,
-    )
-})
-
-io.on('connection', socketListener)
-
-/**
  * Router
  */
 app.use('/auth', authRouter)
+app.use('/api', apiRouter)
 app.use('/', staticRouter)
 
 // start the Express server

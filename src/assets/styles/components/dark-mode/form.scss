@@ -1,27 +1,3 @@
-.form--add-item__trigger {
-    border-color: $primary-color;
-    background-color: $add-item-button-color;
-
-    div {
-        background-color: $primary-color;
-    }
-}
-
-.form--add-item .form {
-    border-color: $primary-color;
-    background-color: $background-color;
-}
-
-.form__field {
-    background-color: $form-field-background;
-    color: $form-field-text-color;
-}
-
-.button {
-    background-color: $form-field-background;
-}
-
-.button--primary {
-    background-color: $primary-color;
-    color: $primary-button-text-color;
+label {
+    color: white;
 }

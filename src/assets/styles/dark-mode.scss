@@ -1,9 +1,0 @@
-@import 'variables/dark-mode';
-@import 'components/dark-mode/wrapper';
-
-.wrapper--dark-mode {
-    @import 'components/dark-mode/form';
-    @import 'components/dark-mode/header';
-    @import 'components/dark-mode/remove-popup';
-    @import 'components/dark-mode/timeline';
-}

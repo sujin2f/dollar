@@ -7,4 +7,6 @@ export enum ErrorMessages {
     CANNOT_FIND_TOKEN = '🤬 Failed to get Google API token.',
     GOOGLE_ACCOUNT_FAILED = '🤬 Google account information (email or name) is missing.',
     AUTHENTICATION_FAILED = '🤬 Please login.',
+    FIND_CATEGORIES_FAILED = '🤬 Cannot find categories.',
+    CREATE_CATEGORY_FAILED = '🤬 Cannot create a category.',
 }

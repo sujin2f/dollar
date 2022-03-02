@@ -1,7 +1,3 @@
-/**
- * Environment settings helpers
- */
-
 import path from 'path'
 import fs from 'fs'
 

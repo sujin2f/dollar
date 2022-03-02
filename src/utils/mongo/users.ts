@@ -1,8 +1,8 @@
 import mongoose, { Schema } from 'mongoose'
 import { ErrorMessages } from 'src/constants'
-import { User } from 'src/types'
+import { Nullable, User } from 'src/types'
 
-const usersSchema = new Schema({
+const userSchema = new Schema({
     email: {
         type: String,
         required: true,
@@ -11,20 +11,14 @@ const usersSchema = new Schema({
         type: String,
         required: true,
     },
-    photo: {
-        type: String,
-        required: false,
-    },
-    darkMode: {
-        type: Boolean,
-        required: false,
-    },
+    photo: String,
+    darkMode: Boolean,
 })
 
-const UsersModel = mongoose.model<User>('user', usersSchema)
+export const UserModel = mongoose.model<User>('user', userSchema)
 
 export const getUserByEmail = async (email: string): Promise<User> => {
-    return await UsersModel.findOne({ email })
+    return await UserModel.findOne({ email })
         .then((user) => {
             if (!user) {
                 throw new Error(ErrorMessages.AUTHENTICATION_FAILED)
@@ -36,8 +30,11 @@ export const getUserByEmail = async (email: string): Promise<User> => {
         })
 }
 
-export const getUserById = async (_id: string): Promise<User> => {
-    return await UsersModel.findOne({ _id })
+export const getUserById = async (_id?: string): Promise<Nullable<User>> => {
+    if (!_id) {
+        return
+    }
+    return await UserModel.findOne({ _id })
         .then((user) => {
             if (!user) {
                 throw new Error(ErrorMessages.AUTHENTICATION_FAILED)
@@ -55,7 +52,7 @@ export const getOrAddUser = async (
     photo?: string,
 ): Promise<User> => {
     const result = await getUserByEmail(email).catch(async () => {
-        const user = new UsersModel({
+        const user = new UserModel({
             email,
             name,
             photo,
@@ -68,10 +65,10 @@ export const getOrAddUser = async (
 }
 
 export const setDarkMode = async (
-    _id: string,
     darkMode: boolean,
+    _id?: string,
 ): Promise<boolean> => {
-    const result = await UsersModel.updateOne({ _id }, { darkMode }).catch(
+    const result = await UserModel.updateOne({ _id }, { darkMode }).catch(
         () => {
             throw new Error(ErrorMessages.AUTHENTICATION_FAILED)
         },

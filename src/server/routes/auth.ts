@@ -1,12 +1,8 @@
-/**
- * Login features endpoint
- */
-
 import express from 'express'
 import { Session } from 'express-session'
 import { User } from 'src/types'
+import { getOrAddUser } from 'src/utils/mongo'
 import { getGoogleAccountFromCode, GoogleLoginUrl } from 'src/utils/google-api'
-import { getOrAddUser } from 'src/utils/mongo/users'
 
 declare module 'express-session' {
     interface Session {
@@ -25,12 +21,12 @@ authRouter.get('/login', async (req, res) => {
     try {
         if (process.env.NODE_ENV !== 'production') {
             ;(req.session as Session).user = process.env.DEV_USER_ID
-            res.redirect('/')
+            res.redirect('/app')
             return
         }
 
         if ((req.session as Session).user) {
-            res.redirect('/')
+            res.redirect('/app')
         }
         res.redirect(GoogleLoginUrl())
         return
@@ -52,7 +48,7 @@ authRouter.get('/logout', (req, res) => {
  */
 authRouter.get('/', async (req, res) => {
     if ((req.session as Session).user) {
-        res.redirect('/')
+        res.redirect('/app')
     }
 
     const code = req.query.code as string
@@ -67,7 +63,7 @@ authRouter.get('/', async (req, res) => {
             getOrAddUser(account.name, account.email, account.photo)
                 .then((user: User) => {
                     ;(req.session as Session).user = user._id
-                    res.redirect('/')
+                    res.redirect('/app')
                 })
                 .catch(() => {
                     res.redirect('/auth/error')

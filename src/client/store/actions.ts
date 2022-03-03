@@ -1,4 +1,4 @@
-import { Action, Category, Item, User } from 'src/types'
+import { Action, Category, CreateItemsParam, Item, User } from 'src/types'
 import {
     GET_USER_INIT,
     GET_USER_SUCCESS,
@@ -9,6 +9,10 @@ import {
     GET_CATEGORIES_INIT,
     GET_CATEGORIES_SUCCESS,
     GET_CATEGORIES_FAILED,
+    GET_PRE_ITEMS_INIT,
+    GET_PRE_ITEMS_SUCCESS,
+    GET_PRE_ITEMS_FAILED,
+    RESET_PRE_ITEMS,
     SET_MENU_OPEN,
 } from './type'
 
@@ -75,5 +79,37 @@ export const setMenuOpen = (menuOpen: boolean): Partial<Action> => {
     return {
         type: SET_MENU_OPEN,
         menuOpen,
+    }
+}
+
+export const getPreItemsInit = (
+    dateFormat: string,
+    rawText: string,
+): Partial<Action> => {
+    return {
+        type: GET_PRE_ITEMS_INIT,
+        dateFormat,
+        rawText,
+    }
+}
+
+export const getPreItemsSuccess = (
+    preItemsDataset: CreateItemsParam[],
+): Partial<Action> => {
+    return {
+        type: GET_PRE_ITEMS_SUCCESS,
+        preItemsDataset,
+    }
+}
+
+export const getPreItemsFailed = (): Partial<Action> => {
+    return {
+        type: GET_PRE_ITEMS_FAILED,
+    }
+}
+
+export const resetPreItems = (): Partial<Action> => {
+    return {
+        type: RESET_PRE_ITEMS,
     }
 }

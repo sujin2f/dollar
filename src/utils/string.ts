@@ -17,5 +17,9 @@ export const getType = (str: string): Column => {
 }
 
 export const currencyToNumber = (currency: string): number => {
-    return parseFloat(currency.replace(/[^0-9.-]+/g, ''))
+    const float = parseFloat(currency.replace(/[^0-9.-]+/g, ''))
+    if (!float || isNaN(float)) {
+        return 0
+    }
+    return float
 }

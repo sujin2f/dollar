@@ -1,7 +1,6 @@
 import mongoose, { Schema } from 'mongoose'
 import { ErrorMessages } from 'src/constants'
 import { Category } from 'src/types'
-import { cache } from 'src/utils'
 
 const categorySchema = new Schema({
     user: {
@@ -24,17 +23,12 @@ export const getCategories = async (userId?: string): Promise<Category[]> => {
     if (!userId) {
         throw new Error(ErrorMessages.AUTHENTICATION_FAILED)
     }
-    const cacheKey = `getCategories-${userId}`
-    const cached = cache.get<Category[]>(cacheKey)
-    if (cached) {
-        return cached
-    }
+
     return await CategoryModel.find({ user: userId })
         .then((categories) => {
             if (!categories) {
                 throw new Error(ErrorMessages.FIND_CATEGORIES_FAILED)
             }
-            cache.set<Category[]>(cacheKey, categories)
             return categories
         })
         .catch(() => {
@@ -42,29 +36,23 @@ export const getCategories = async (userId?: string): Promise<Category[]> => {
         })
 }
 
-export const createOrGetCategory = async (
+export const findOrCreateCategory = async (
     title: string,
     userId?: string,
 ): Promise<Category> => {
     if (!userId) {
         throw new Error(ErrorMessages.AUTHENTICATION_FAILED)
     }
-    const categories = await getCategories(userId)
-    const filtered = categories.filter((item) => item.title === title)
-    if (filtered.length) {
-        return filtered[0]
-    }
 
-    const cacheKey = `getCategories-${userId}`
-    cache.del(cacheKey)
-
-    const category = {
-        user: userId,
-        title,
-    }
-    const categoryModel = new CategoryModel(category)
-
-    return await categoryModel.save().catch(() => {
-        throw new Error(ErrorMessages.CREATE_CATEGORY_FAILED)
-    })
+    return await CategoryModel.findOneAndUpdate(
+        {
+            user: userId,
+            title,
+        },
+        {},
+        {
+            returnOriginal: false,
+            upsert: true,
+        },
+    )
 }

@@ -8,4 +8,9 @@ export const GET_CATEGORIES_INIT = 'sujin/v1/GET_CATEGORIES_INIT'
 export const GET_CATEGORIES_SUCCESS = 'sujin/v1/GET_CATEGORIES_SUCCESS'
 export const GET_CATEGORIES_FAILED = 'sujin/v1/GET_CATEGORIES_FAILED'
 
+export const GET_PRE_ITEMS_INIT = 'sujin/v1/GET_PRE_ITEMS_INIT'
+export const GET_PRE_ITEMS_SUCCESS = 'sujin/v1/GET_PRE_ITEMS_SUCCESS'
+export const GET_PRE_ITEMS_FAILED = 'sujin/v1/GET_PRE_ITEMS_FAILED'
+export const RESET_PRE_ITEMS = 'sujin/v1/RESET_PRE_ITEMS'
+
 export const SET_MENU_OPEN = 'sujin/v1/SET_MENU_OPEN'

@@ -1,19 +1,10 @@
-import React, {
-    Dispatch,
-    Fragment,
-    RefObject,
-    SetStateAction,
-    useRef,
-} from 'react'
+import React, { Fragment, useRef } from 'react'
+import { useGetPreItems } from 'src/client/hooks'
 
-type Props = {
-    dateFormatField: RefObject<HTMLSelectElement>
-    updateRawText: Dispatch<SetStateAction<string>>
-}
-
-export const AddItemsForm = (props: Props): JSX.Element => {
-    const { dateFormatField, updateRawText } = props
+export const AddItemsForm = (): JSX.Element => {
+    const [, setPreItems] = useGetPreItems()
     const rawTextField = useRef<HTMLTextAreaElement>(null)
+    const dateFormatField = useRef<HTMLSelectElement>(null)
 
     return (
         <Fragment>
@@ -29,8 +20,9 @@ export const AddItemsForm = (props: Props): JSX.Element => {
                 className="button primary"
                 onClick={(e) => {
                     e.preventDefault()
+                    const dateFormat = dateFormatField.current?.value || ''
                     const text = rawTextField.current?.value || ''
-                    updateRawText(text)
+                    setPreItems(dateFormat, text)
                 }}
             >
                 Submit

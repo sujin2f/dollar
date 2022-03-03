@@ -9,6 +9,7 @@ import {
     getCategories,
     getUserById,
     setDarkMode,
+    getPreItems,
 } from 'src/utils/mongo'
 
 declare module 'express-session' {
@@ -33,6 +34,11 @@ type setDarkModeParam = {
     darkMode: boolean
 }
 
+type preItemsParam = {
+    rawText: string
+    dateFormat: string
+}
+
 apiRouter.use(
     '/',
     graphqlHTTP({
@@ -52,6 +58,13 @@ apiRouter.use(
             },
             setDarkMode: (param: setDarkModeParam, req: Request) => {
                 return setDarkMode(param.darkMode, req.session.user)
+            },
+            getPreItems: (param: preItemsParam, req: Request) => {
+                return getPreItems(
+                    param.rawText,
+                    param.dateFormat,
+                    req.session.user,
+                )
             },
         },
         graphiql: true,

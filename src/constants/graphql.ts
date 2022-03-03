@@ -10,6 +10,7 @@ export const graphqlSchema = `
         getUser: User
         getCategories: [Category]
         getItems: [Item]
+        getPreItems(rawText: String!, dateFormat: String!): [CreateItemsParam]
     }
     type Mutation {
         createItems(json: String!): Boolean
@@ -33,6 +34,15 @@ export const graphqlSchema = `
         debit: Float
         credit: Float
         category: Category
+    }
+    type CreateItemsParam {
+        checked: Boolean
+        date: Date
+        title: String
+        originTitle: String
+        category: String
+        debit: String
+        credit: String
     }
 `
 

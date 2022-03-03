@@ -1,80 +1,23 @@
-import React, {
-    Fragment,
-    Dispatch,
-    SetStateAction,
-    ChangeEvent,
-    useState,
-} from 'react'
+import React, { Fragment, ChangeEvent, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { createItems } from 'src/client/hooks/useItems'
-import { Column, CreateItemsParam, Nullable } from 'src/types'
-import { formatDate } from 'src/utils'
+import { createItems, useCategory, useGetPreItems } from 'src/client/hooks'
+import { Category, Column, CreateItemsParam, isApiState } from 'src/types'
+import { deepCopy, formatDate } from 'src/utils'
 
-interface Props {
-    dateFormat: string
-    rawText: string
-    updateRawText: Dispatch<SetStateAction<string>>
-}
-
-const rawTextToDataSet = (
-    rawText: string,
-    dateFormat: string,
-): CreateItemsParam[] => {
-    const tabSeparated = rawText.split('\n').map((row) => row.split('\t'))
-    const columns: Column[] = []
-    const result = []
-
-    // Set columns
-    if (tabSeparated[0][0]) {
-        tabSeparated[0].forEach((text) => {
-            if (Object.keys(Column).includes(text)) {
-                columns.push(Column[text as keyof typeof Column])
-            } else {
-                columns.push(Column.Unknown)
-            }
-        })
-    }
-
-    for (const row of tabSeparated.splice(1)) {
-        const rowData: Partial<Record<Column, string>> = {}
-        row.forEach((column, key) => (rowData[columns[key]] = column))
-        result.push(rowData)
-    }
-
-    return result
-        .map((row) => {
-            let date: Nullable<Date> = null
-            switch (dateFormat) {
-                case 'DD/MM/YYYY':
-                    const dateString = row[Column.Date]?.split('/') || []
-                    if (dateString.length !== 3) {
-                        break
-                    }
-                    date = new Date(
-                        `${dateString[2]}-${dateString[1]}-${dateString[0]}`,
-                    )
-                    break
-                default:
-                    date = new Date(Date.parse(row[Column.Date] || ''))
-            }
-            return {
-                checked: true,
-                date,
-                title: row[Column.Title],
-                originTitle: row[Column.Title],
-                category: '',
-                debit: row[Column.Debit],
-                credit: row[Column.Credit],
-            } as CreateItemsParam
-        })
-        .filter((row) => !row.date || row.date.toString() !== 'Invalid Date')
-}
-
-export const AddItemsTable = (props: Props): JSX.Element => {
-    const { dateFormat, rawText, updateRawText } = props
-    const initData = rawTextToDataSet(rawText, dateFormat)
-    const [tableData, changeTableData] = useState<CreateItemsParam[]>(initData)
+export const AddItemsTable = (): JSX.Element => {
+    const maybeCategories = useCategory()
+    const [preItems, , resetPreItems] = useGetPreItems()
+    const [tableData, changeTableData] = useState<CreateItemsParam[]>(
+        preItems.preItemsDataset,
+    )
     const [toggle, changeToggle] = useState<boolean>(true)
+
+    if (isApiState(maybeCategories)) {
+        // TODO Loading
+        return <Fragment />
+    }
+
+    const categories = maybeCategories as Category[]
 
     const onToggleBoxClick = (): void => {
         changeToggle(!toggle)
@@ -99,7 +42,7 @@ export const AddItemsTable = (props: Props): JSX.Element => {
         e: ChangeEvent<HTMLInputElement>,
         index: number,
     ): void => {
-        const newTableData = [...tableData]
+        const newTableData = deepCopy(tableData) as CreateItemsParam[]
         newTableData[index].title = e.target.value
         changeTableData(newTableData)
     }
@@ -108,7 +51,7 @@ export const AddItemsTable = (props: Props): JSX.Element => {
         e: ChangeEvent<HTMLInputElement>,
         index: number,
     ): void => {
-        const newTableData = [...tableData]
+        const newTableData = deepCopy(tableData) as CreateItemsParam[]
         newTableData[index].category = e.target.value
         changeTableData(newTableData)
     }
@@ -173,7 +116,9 @@ export const AddItemsTable = (props: Props): JSX.Element => {
                                         </label>
                                     </div>
                                 </td>
-                                <td>{row.date && formatDate(row.date)}</td>
+                                <td>
+                                    {row.date && formatDate(new Date(row.date))}
+                                </td>
                                 <td>
                                     <input
                                         type="text"
@@ -190,6 +135,7 @@ export const AddItemsTable = (props: Props): JSX.Element => {
                                         onChange={(e) =>
                                             onCategoryChanged(e, index)
                                         }
+                                        list="category-list"
                                     />
                                 </td>
                                 <td className="table__currency">{row.debit}</td>
@@ -202,6 +148,14 @@ export const AddItemsTable = (props: Props): JSX.Element => {
                 </tbody>
             </table>
 
+            <datalist id="category-list">
+                {categories.map((category) => (
+                    <option key={`category-list-item-${category._id}`}>
+                        {category.title}
+                    </option>
+                ))}
+            </datalist>
+
             <div className="button-group">
                 <Link
                     to="#"
@@ -212,7 +166,7 @@ export const AddItemsTable = (props: Props): JSX.Element => {
                 </Link>
                 <Link
                     to="#"
-                    onClick={() => updateRawText('')}
+                    onClick={() => resetPreItems()}
                     className="button hollow"
                 >
                     Cancel

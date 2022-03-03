@@ -15,7 +15,6 @@ export type Category = {
 export type PreSelect = {
     _id: string
     title: string
-    haystack: string
     category?: Category
 }
 

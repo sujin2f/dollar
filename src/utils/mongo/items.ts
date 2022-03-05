@@ -58,14 +58,12 @@ export const createItems = async (
     }
 
     const parsed = JSON.parse(json.replaceAll("'", '"'))
-
     for (const row of parsed) {
         const category = row.category
             ? await findOrCreateCategory(row.category, userId).catch(() => {
                   throw new Error(ErrorMessages.FIND_CATEGORIES_FAILED)
               })
             : null
-
         if (category) {
             await findOrCreatePreSelect(row.originTitle, category._id, userId)
         }
@@ -74,8 +72,8 @@ export const createItems = async (
             date: new Date(row.date),
             user: userId,
             category: category?._id,
-            debit: currencyToNumber(row.debit),
-            credit: currencyToNumber(row.credit),
+            debit: currencyToNumber(row.debit || ''),
+            credit: currencyToNumber(row.credit || ''),
         }
         const itemModel = new ItemModel(item)
         await itemModel.save().catch(() => {
@@ -104,11 +102,13 @@ export const getPreItems = async (
             originalTitle: datarow.title,
             debit: currencyToNumber(datarow.debit),
             credit: currencyToNumber(datarow.credit),
-        }).then((item) => {
-            if (item) {
-                dataset[index].checked = false
-            }
         })
+            .then((item) => {
+                if (item) {
+                    dataset[index].checked = false
+                }
+            })
+            .catch((e) => console.error(e))
 
         // Check the preSelect to get the category
         const preSelect = await getPreSelect(datarow.title, userId).catch(

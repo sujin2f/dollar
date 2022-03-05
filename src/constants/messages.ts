@@ -9,4 +9,6 @@ export enum ErrorMessages {
     AUTHENTICATION_FAILED = '🤬 Please login.',
     FIND_CATEGORIES_FAILED = '🤬 Cannot find categories.',
     CREATE_CATEGORY_FAILED = '🤬 Cannot create a category.',
+    CREATE_PRE_SELECT_FAILED = '🤬 Cannot create a pre-select.',
+    UPDATE_PRE_SELECT_FAILED = '🤬 Cannot update a pre-select.',
 }

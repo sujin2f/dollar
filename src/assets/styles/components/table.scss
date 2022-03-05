@@ -1,8 +1,9 @@
 .table {
+    text-transform: capitalize;
+
     thead {
         border-right: none;
         border-left: none;
-        text-transform: capitalize;
     }
 
     tbody {
@@ -18,6 +19,10 @@
     input,
     .switch {
         margin-bottom: 0;
+    }
+
+    i[class^='fi-'] {
+        font-size: 1.3em;
     }
 }
 

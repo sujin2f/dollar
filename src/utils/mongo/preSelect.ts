@@ -16,6 +16,7 @@ const preSelectSchema = new Schema({
         required: false,
     },
 })
+preSelectSchema.index({ title: 'text' })
 
 const PreSelectModel = mongoose.model<PreSelect>('preSelect', preSelectSchema)
 
@@ -23,7 +24,7 @@ export const findOrCreatePreSelect = async (
     keyword: string,
     categoryId: string,
     userId?: string,
-): Promise<PreSelect> => {
+): Promise<boolean> => {
     if (!userId) {
         throw new Error(ErrorMessages.AUTHENTICATION_FAILED)
     }
@@ -33,22 +34,52 @@ export const findOrCreatePreSelect = async (
         .toLowerCase()
         .split(' ')
         .filter((v) => v)
-    const unique = [...new Set(title)].sort()
+    const unique = [...new Set(title)]
 
-    return await PreSelectModel.findOneAndUpdate(
-        {
-            user: userId,
-            title: {
-                $regex: `^${unique.join('.*')}`,
-                $options: 'i',
-            },
-        },
-        { $setOnInsert: { category: categoryId, title: unique.join(' ') } },
-        {
-            returnOriginal: false,
-            upsert: true,
-        },
-    ).populate({ path: 'category', model: CategoryModel })
+    return await PreSelectModel.findOne({
+        user: userId,
+        category: categoryId,
+        $text: { $search: unique.join(' ') },
+    })
+        .populate({ path: 'category', model: CategoryModel })
+        .then(async (preSelect) => {
+            if (!preSelect) {
+                const preSelectModel = new PreSelectModel({
+                    user: userId,
+                    category: categoryId,
+                    title: unique.join(' '),
+                })
+                await preSelectModel.save().catch((e: Error) => {
+                    throw new Error(
+                        `${ErrorMessages.CREATE_PRE_SELECT_FAILED}: ${e.message}`,
+                    )
+                })
+
+                return true
+            }
+
+            const newTitle = `${preSelect.title} ${unique.join(' ')}`
+                .split(' ')
+                .filter((v) => v)
+            const newUnique = [...new Set(newTitle)]
+            await PreSelectModel.updateOne(
+                {
+                    _id: preSelect._id,
+                },
+                {
+                    title: newUnique.join(' '),
+                },
+            ).catch((e: Error) => {
+                throw new Error(
+                    `${ErrorMessages.UPDATE_PRE_SELECT_FAILED}: ${e.message}`,
+                )
+            })
+
+            return true
+        })
+        .catch((e: Error) => {
+            throw new Error(`findOrCreatePreSelect: ${e.message}`)
+        })
 }
 
 export const getPreSelect = async (
@@ -64,15 +95,16 @@ export const getPreSelect = async (
         .toLowerCase()
         .split(' ')
         .filter((v) => v)
-    const unique = [...new Set(title)].sort().join('.*')
+    const unique = [...new Set(title)]
 
-    return await PreSelectModel.findOne({
-        user: userId,
-        title: {
-            $regex: `^${unique}`,
-            $options: 'i',
+    return await PreSelectModel.findOne(
+        {
+            user: userId,
+            $text: { $search: unique.join(' ') },
         },
-    })
+        { score: { $meta: 'textScore' } },
+    )
+        .sort({ score: { $meta: 'textScore' } })
         .populate({ path: 'category', model: CategoryModel })
         .then((response) => {
             if (!response) {

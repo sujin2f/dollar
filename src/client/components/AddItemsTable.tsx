@@ -33,7 +33,7 @@ export const AddItemsTable = (): JSX.Element => {
     }
 
     const onCheckboxClick = (index: number): void => {
-        const newTableData = [...tableData]
+        const newTableData = deepCopy(tableData) as CreateItemsParam[]
         newTableData[index].checked = !newTableData[index].checked
         changeTableData(newTableData)
     }

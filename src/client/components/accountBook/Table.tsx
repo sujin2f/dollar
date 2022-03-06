@@ -2,6 +2,7 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import {
     useAccountBookMatch,
+    useCategory,
     useDeleteItemModal,
     useItems,
 } from 'src/client/hooks'
@@ -12,6 +13,7 @@ import { Loading } from '..'
 export const Table = (): JSX.Element => {
     const { year, month, type } = useAccountBookMatch()
     const [, setDeleteItemModal] = useDeleteItemModal()
+    const { isCategoryHidden } = useCategory()
 
     const maybeItems = useItems(year, month, type)
     if (isApiState(maybeItems)) {
@@ -23,8 +25,10 @@ export const Table = (): JSX.Element => {
     let totalCredit = 0
 
     items.forEach((item) => {
-        totalDebit += item.debit
-        totalCredit += item.credit
+        if (!isCategoryHidden(item.category?._id)) {
+            totalDebit += item.debit
+            totalCredit += item.credit
+        }
     })
 
     return (
@@ -46,40 +50,44 @@ export const Table = (): JSX.Element => {
                         </tr>
                     </thead>
                     <tbody>
-                        {items.map((item) => (
-                            <tr key={item._id}>
-                                <td>{item.date}</td>
-                                <td>{item.title.toLowerCase()}</td>
-                                <td>{item.category?.title || ''}</td>
-                                <td className="table__cell--right">
-                                    {item.debit !== 0 &&
-                                        formatCurrency(item.debit)}
-                                </td>
-                                <td className="table__cell--right">
-                                    {item.credit !== 0 &&
-                                        formatCurrency(item.credit)}
-                                </td>
-                                <td className="table__cell--center">
-                                    <div className="button-group">
-                                        <Link
-                                            to={`/app/modify/${item._id}`}
-                                            className="button tiny secondary hollow"
-                                        >
-                                            <i className="fi-wrench" />
-                                        </Link>
-                                        <Link
-                                            to="#"
-                                            className="button tiny secondary hollow"
-                                            onClick={() =>
-                                                setDeleteItemModal(item._id)
-                                            }
-                                        >
-                                            <i className="fi-x" />
-                                        </Link>
-                                    </div>
-                                </td>
-                            </tr>
-                        ))}
+                        {items
+                            .filter(
+                                (item) => !isCategoryHidden(item.category?._id),
+                            )
+                            .map((item) => (
+                                <tr key={item._id}>
+                                    <td>{item.date}</td>
+                                    <td>{item.title.toLowerCase()}</td>
+                                    <td>{item.category?.title || ''}</td>
+                                    <td className="table__cell--right">
+                                        {item.debit !== 0 &&
+                                            formatCurrency(item.debit)}
+                                    </td>
+                                    <td className="table__cell--right">
+                                        {item.credit !== 0 &&
+                                            formatCurrency(item.credit)}
+                                    </td>
+                                    <td className="table__cell--center">
+                                        <div className="button-group">
+                                            <Link
+                                                to={`/app/modify/${item._id}`}
+                                                className="button tiny secondary hollow"
+                                            >
+                                                <i className="fi-wrench" />
+                                            </Link>
+                                            <Link
+                                                to="#"
+                                                className="button tiny secondary hollow"
+                                                onClick={() =>
+                                                    setDeleteItemModal(item._id)
+                                                }
+                                            >
+                                                <i className="fi-x" />
+                                            </Link>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))}
                     </tbody>
                     <tfoot>
                         <tr>

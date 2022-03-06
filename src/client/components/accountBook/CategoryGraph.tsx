@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useAccountBookMatch, useItems } from 'src/client/hooks'
+import { useAccountBookMatch, useCategory, useItems } from 'src/client/hooks'
 import { isApiState, Item } from 'src/types'
 import { formatCurrency } from 'src/utils'
 import { Loading } from '..'
@@ -7,6 +7,7 @@ import { Loading } from '..'
 export const CategoryGraph = (): JSX.Element => {
     const { year, month, type } = useAccountBookMatch()
     const [showTable, changeShowTable] = useState<boolean>(false)
+    const { isCategoryHidden } = useCategory()
 
     const maybeItems = useItems(year, month, type)
     if (isApiState(maybeItems)) {
@@ -14,13 +15,20 @@ export const CategoryGraph = (): JSX.Element => {
     }
 
     const items = maybeItems as Item[]
+
     let totalDebit = 0
     const categoryDebit: Record<string, number> = {}
 
     items.forEach((item) => {
-        totalDebit += item.debit
+        if (!isCategoryHidden(item.category?._id)) {
+            totalDebit += item.debit
+        }
 
-        if (item.debit && item.category?.title) {
+        if (
+            item.debit &&
+            item.category?.title &&
+            !isCategoryHidden(item.category?._id)
+        ) {
             categoryDebit[item.category.title] =
                 categoryDebit[item.category.title] || 0
             categoryDebit[item.category.title] += item.debit

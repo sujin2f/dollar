@@ -1,5 +1,10 @@
 import React, { PropsWithChildren } from 'react'
-import { AppHeader, Menu, Loading } from 'src/client/components'
+import {
+    AppHeader,
+    Menu,
+    Loading,
+    CategorySelector,
+} from 'src/client/components'
 
 import { useUser } from 'src/client/hooks'
 import { isApiState, User } from 'src/types'
@@ -17,6 +22,7 @@ export const Wrapper = (prop: PropsWithChildren<{}>): JSX.Element => {
     return (
         <div className={`wrapper ${classDarkMode}`}>
             <AppHeader />
+            <CategorySelector />
             <Menu />
             <main className="main">{prop.children}</main>
         </div>

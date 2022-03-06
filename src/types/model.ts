@@ -10,6 +10,7 @@ export type Item = {
 export type Category = {
     _id: string
     title: string
+    hide?: boolean
 }
 
 export type PreSelect = {

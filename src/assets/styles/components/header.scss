@@ -21,6 +21,7 @@
     z-index: 100;
     width: 100vw;
     padding: $margin;
+    top: 0;
 }
 
 .login {
@@ -92,4 +93,24 @@
     font-weight: normal;
     cursor: pointer;
     color: $text-color;
+}
+
+.category-selector__wrapper {
+    background-color: $white;
+}
+
+.category-selector {
+    flex-wrap: wrap;
+    display: flex;
+    margin-bottom: 0.5rem;
+}
+
+.category-selector__item {
+    display: flex;
+    align-items: center;
+    margin: 1rem 1rem 0 0;
+
+    .switch-paddle {
+        margin-right: 0.5rem;
+    }
 }

@@ -4,6 +4,8 @@ export { Modal } from './Modal'
 export { Menu } from './Menu'
 export { PublicHeader } from './PublicHeader'
 export { AppHeader } from './AppHeader'
+export { CategorySelector } from './CategorySelector'
+
 export { AddItemsForm } from './AddItemsForm'
 export { AddItemsTable } from './AddItemsTable'
 

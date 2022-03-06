@@ -1,24 +1,17 @@
 import React, { ChangeEvent, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useCreateItems, useCategory, useGetPreItems } from 'src/client/hooks'
-import { Category, Column, CreateItemsParam, isApiState } from 'src/types'
+import { Column, CreateItemsParam } from 'src/types'
 import { deepCopy } from 'src/utils'
-import { Loading } from '.'
 
 export const AddItemsTable = (): JSX.Element => {
-    const maybeCategories = useCategory()
+    const { categories } = useCategory()
     const createItems = useCreateItems()
     const [preItems, , resetPreItems] = useGetPreItems()
     const [tableData, changeTableData] = useState<CreateItemsParam[]>(
         preItems.preItemsDataset,
     )
     const [toggle, changeToggle] = useState<boolean>(true)
-
-    if (isApiState(maybeCategories)) {
-        return <Loading />
-    }
-
-    const categories = maybeCategories as Category[]
 
     const onToggleBoxClick = (): void => {
         changeToggle(!toggle)

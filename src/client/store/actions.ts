@@ -1,4 +1,11 @@
-import { Action, Category, CreateItemsParam, Item, User } from 'src/types'
+import {
+    Action,
+    Category,
+    CreateItemsParam,
+    Item,
+    Nullable,
+    User,
+} from 'src/types'
 import {
     GET_USER_INIT,
     GET_USER_SUCCESS,
@@ -6,6 +13,7 @@ import {
     GET_ITEMS_INIT,
     GET_ITEMS_SUCCESS,
     GET_ITEMS_FAILED,
+    GET_ITEMS_RESET,
     GET_CATEGORIES_INIT,
     GET_CATEGORIES_SUCCESS,
     GET_CATEGORIES_FAILED,
@@ -14,7 +22,15 @@ import {
     GET_PRE_ITEMS_FAILED,
     RESET_PRE_ITEMS,
     SET_MENU_OPEN,
+    SET_DELETE_ITEM_MODAL,
+    RESET_APOLLO_CACHE,
 } from './type'
+
+export const getItemsReset = (): Partial<Action> => {
+    return {
+        type: GET_ITEMS_RESET,
+    }
+}
 
 export const getItemsInit = (): Partial<Action> => {
     return {
@@ -79,6 +95,21 @@ export const setMenuOpen = (menuOpen: boolean): Partial<Action> => {
     return {
         type: SET_MENU_OPEN,
         menuOpen,
+    }
+}
+
+export const setDeleteItemModal = (
+    deleteItemModal: Nullable<string>,
+): Partial<Action> => {
+    return {
+        type: SET_DELETE_ITEM_MODAL,
+        deleteItemModal,
+    }
+}
+
+export const resetApolloCache = (): Partial<Action> => {
+    return {
+        type: RESET_APOLLO_CACHE,
     }
 }
 

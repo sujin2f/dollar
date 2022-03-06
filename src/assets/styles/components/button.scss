@@ -1,0 +1,32 @@
+.main {
+    .button-group {
+        flex-grow: unset;
+        margin-bottom: 0;
+
+        .button {
+            margin-right: 0px;
+            border-right: none;
+
+            &:first-child {
+                border-top-left-radius: $radius;
+                border-bottom-left-radius: $radius;
+            }
+
+            &:last-child {
+                border-top-right-radius: $radius;
+                border-bottom-right-radius: $radius;
+                border-right: 1px solid map-get($foundation-palette, 'primary');
+
+                &.secondary {
+                    border-right: 1px solid
+                        map-get($foundation-palette, 'secondary');
+                }
+            }
+
+            &.tiny {
+                font-size: 0.6rem;
+                padding: 0.6em 1em;
+            }
+        }
+    }
+}

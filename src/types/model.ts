@@ -1,10 +1,10 @@
 export type Item = {
     _id: string
-    date: Date
+    date: string
     title: string
     debit: number
     credit: number
-    category?: Category
+    categories: Category[]
 }
 
 export type Category = {
@@ -15,7 +15,7 @@ export type Category = {
 export type PreSelect = {
     _id: string
     title: string
-    category?: Category
+    categories: Category[]
 }
 
 export type User = {
@@ -24,4 +24,14 @@ export type User = {
     name: string
     photo?: string
     darkMode?: boolean
+}
+
+export type CreateItemsParam = {
+    checked: boolean
+    date: string
+    title: string
+    originTitle: string
+    categories: string[]
+    debit: string
+    credit: string
 }

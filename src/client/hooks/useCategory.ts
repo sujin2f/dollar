@@ -10,14 +10,19 @@ import {
 } from 'src/client/store'
 import { graphqlClient } from 'src/utils'
 import { ApiState, WithApiState, Category } from 'src/types'
-import { categoryQuery } from 'src/constants'
 
 type GetCategoriesQueryParam = {
     getCategories: Category[]
 }
 
 export const useCategory = (): WithApiState<Category[]> => {
-    const [{ categories }, dispatch] = useContext(Context) as ContextType
+    const [
+        {
+            categories,
+            option: { apolloCache },
+        },
+        dispatch,
+    ] = useContext(Context) as ContextType
 
     useEffect(() => {
         if (categories !== ApiState.NotAssigned) {
@@ -28,16 +33,22 @@ export const useCategory = (): WithApiState<Category[]> => {
         graphqlClient
             .query<GetCategoriesQueryParam>({
                 query: gql`
-                    ${categoryQuery}
+                    query {
+                        getCategories(version: ${apolloCache}) {
+                            _id
+                            title
+                        }
+                    }
                 `,
             })
             .then((response) => {
                 dispatch(getCategoriesSuccess(response.data.getCategories))
             })
-            .catch(() => {
+            .catch((e: Error) => {
+                console.error(e.message)
                 dispatch(getCategoriesFailed())
             })
-    }, [dispatch, categories])
+    }, [dispatch, categories, apolloCache])
 
     return categories
 }

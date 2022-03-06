@@ -1,10 +1,28 @@
 import React, { Fragment } from 'react'
-import { AccountBookTable } from 'src/client/components'
+import {
+    AccountBookHeader,
+    AccountBookTable,
+    AccountBookTypeSelector,
+    DeleteItemModal,
+    Modal,
+} from 'src/client/components'
+import { useAccountBookMatch, useDeleteItemModal } from 'src/client/hooks'
+import { TableType } from 'src/constants'
 
 export const Home = (): JSX.Element => {
+    const [deleteItemModal] = useDeleteItemModal()
+    const { type } = useAccountBookMatch()
+
     return (
         <Fragment>
-            <AccountBookTable />
+            {deleteItemModal && (
+                <Modal>
+                    <DeleteItemModal />
+                </Modal>
+            )}
+            <AccountBookTypeSelector />
+            <AccountBookHeader />
+            {type === TableType.Daily && <AccountBookTable />}
         </Fragment>
     )
 }

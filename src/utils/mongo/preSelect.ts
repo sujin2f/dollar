@@ -1,28 +1,10 @@
-import mongoose, { Schema } from 'mongoose'
 import { ErrorMessages } from 'src/constants'
-import { PreSelect } from 'src/types'
-import { CategoryModel } from '.'
-
-const preSelectSchema = new Schema({
-    title: String,
-    user: {
-        type: Schema.Types.ObjectId,
-        ref: 'user',
-        required: true,
-    },
-    category: {
-        type: Schema.Types.ObjectId,
-        ref: 'category',
-        required: false,
-    },
-})
-preSelectSchema.index({ title: 'text' })
-
-const PreSelectModel = mongoose.model<PreSelect>('preSelect', preSelectSchema)
+import { PreSelectModel, CategoryModel } from 'src/constants/mongo'
+import { Category, PreSelect } from 'src/types'
 
 export const findOrCreatePreSelect = async (
     keyword: string,
-    categoryId: string,
+    categories: Category[],
     userId?: string,
 ): Promise<boolean> => {
     if (!userId) {
@@ -38,15 +20,15 @@ export const findOrCreatePreSelect = async (
 
     return await PreSelectModel.findOne({
         user: userId,
-        category: categoryId,
+        categories,
         $text: { $search: unique.join(' ') },
     })
-        .populate({ path: 'category', model: CategoryModel })
+        .populate({ path: 'categories', model: CategoryModel })
         .then(async (preSelect) => {
             if (!preSelect) {
                 const preSelectModel = new PreSelectModel({
                     user: userId,
-                    category: categoryId,
+                    categories,
                     title: unique.join(' '),
                 })
                 await preSelectModel.save().catch((e: Error) => {
@@ -105,7 +87,7 @@ export const getPreSelect = async (
         { score: { $meta: 'textScore' } },
     )
         .sort({ score: { $meta: 'textScore' } })
-        .populate({ path: 'category', model: CategoryModel })
+        .populate({ path: 'categories', model: CategoryModel })
         .then((response) => {
             if (!response) {
                 throw new Error(ErrorMessages.FIND_CATEGORIES_FAILED)

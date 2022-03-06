@@ -1,4 +1,4 @@
-import { Category, CreateItemsParam, Item, User } from '.'
+import { Category, CreateItemsParam, Item, Nullable, User } from '.'
 
 export enum ApiState {
     NotAssigned,
@@ -18,6 +18,7 @@ export type Action = {
     dateFormat: string
     rawText: string
     preItemsDataset: CreateItemsParam[]
+    deleteItemModal: Nullable<string>
 }
 
 export type StatePreItems = {
@@ -33,6 +34,8 @@ export type State = {
     option: {
         menuOpen: boolean
         preItems: StatePreItems
+        deleteItemModal?: string
+        apolloCache: number
     }
 }
 
@@ -47,6 +50,7 @@ export const initialState: State = {
             rawText: '',
             preItemsDataset: [],
         },
+        apolloCache: new Date().getTime(),
     },
 }
 

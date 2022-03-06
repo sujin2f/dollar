@@ -7,3 +7,43 @@
 .main {
     padding: 4rem 0 $margin;
 }
+
+.loading {
+    position: fixed;
+    background-color: $dark-gray;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 110;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    @keyframes loading {
+        from {
+            content: '\f12d';
+        }
+        to {
+            content: '\f20b';
+        }
+    }
+
+    &:before {
+        font-family: 'foundation-icons';
+        font-style: normal;
+        font-weight: normal;
+        font-variant: normal;
+        text-transform: none;
+        line-height: 1;
+        -webkit-font-smoothing: antialiased;
+        display: inline-block;
+        text-decoration: inherit;
+        color: $white;
+        font-size: 30vh;
+        content: '\f12d';
+        animation-name: loading;
+        animation-duration: 2s;
+        animation-iteration-count: infinite;
+    }
+}

@@ -11,4 +11,5 @@ export enum ErrorMessages {
     CREATE_CATEGORY_FAILED = '🤬 Cannot create a category.',
     CREATE_PRE_SELECT_FAILED = '🤬 Cannot create a pre-select.',
     UPDATE_PRE_SELECT_FAILED = '🤬 Cannot update a pre-select.',
+    FIND_PRE_ITEM_FAILED = '🤬 Cannot find a pre-item.',
 }

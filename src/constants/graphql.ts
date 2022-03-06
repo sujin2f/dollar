@@ -5,16 +5,16 @@
  */
 
 export const graphqlSchema = `
-    scalar Date
     type Query {
         getUser: User
-        getCategories: [Category]
-        getItems: [Item]
+        getCategories(version: Float): [Category]
+        getItems(year: Int, month: Int, version: Float): [Item]
         getPreItems(rawText: String!, dateFormat: String!): [CreateItemsParam]
     }
     type Mutation {
         createItems(json: String!): Boolean
         setDarkMode(darkMode: Boolean!): Boolean
+        deleteItem(itemId: String!): Boolean
     }
     type Category {
         _id: String
@@ -29,18 +29,18 @@ export const graphqlSchema = `
     }
     type Item {
         _id: String
-        date: Date
+        date: String
         title: String
         debit: Float
         credit: Float
-        category: Category
+        categories: [Category]
     }
     type CreateItemsParam {
         checked: Boolean
-        date: Date
+        date: String
         title: String
         originTitle: String
-        category: String
+        categories: [String]
         debit: String
         credit: String
     }
@@ -57,27 +57,16 @@ export const userQuery = `
     }
 `
 
-export const categoryQuery = `
-    query {
-        getCategories {
-            _id
-            title
-        }
-    }
-`
-
 export const itemsQuery = `
-    query {
-        getItems {
+    {
+        _id
+        date
+        title
+        debit
+        credit
+        categories {
             _id
-            date
             title
-            debit
-            credit
-            category {
-                _id
-                title
-            }
         }
     }
 `

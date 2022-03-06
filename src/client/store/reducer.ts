@@ -6,14 +6,17 @@ import {
     GET_ITEMS_INIT,
     GET_ITEMS_SUCCESS,
     GET_ITEMS_FAILED,
+    GET_ITEMS_RESET,
     GET_CATEGORIES_INIT,
     GET_CATEGORIES_SUCCESS,
     GET_CATEGORIES_FAILED,
-    SET_MENU_OPEN,
     GET_PRE_ITEMS_INIT,
     GET_PRE_ITEMS_SUCCESS,
     GET_PRE_ITEMS_FAILED,
     RESET_PRE_ITEMS,
+    SET_MENU_OPEN,
+    SET_DELETE_ITEM_MODAL,
+    RESET_APOLLO_CACHE,
 } from './type'
 
 export const reducer = (state: State = initialState, action: Action): State => {
@@ -34,6 +37,12 @@ export const reducer = (state: State = initialState, action: Action): State => {
             return {
                 ...state,
                 items: ApiState.Removed,
+            }
+        }
+        case GET_ITEMS_RESET: {
+            return {
+                ...state,
+                items: ApiState.NotAssigned,
             }
         }
         case GET_USER_INIT: {
@@ -81,6 +90,16 @@ export const reducer = (state: State = initialState, action: Action): State => {
                 },
             }
         }
+        case SET_DELETE_ITEM_MODAL: {
+            return {
+                ...state,
+                option: {
+                    ...state.option,
+                    deleteItemModal: action.deleteItemModal || undefined,
+                },
+            }
+        }
+
         case GET_PRE_ITEMS_INIT: {
             return {
                 ...state,
@@ -128,6 +147,15 @@ export const reducer = (state: State = initialState, action: Action): State => {
                         rawText: '',
                         preItemsDataset: [],
                     },
+                },
+            }
+        }
+        case RESET_APOLLO_CACHE: {
+            return {
+                ...state,
+                option: {
+                    ...state.option,
+                    apolloCache: new Date().getTime(),
                 },
             }
         }

@@ -1,7 +1,9 @@
-export const formatDate = (date: Date): string => {
-    return `${date.getFullYear()}.${addZero(date.getMonth() + 1)}.${addZero(
-        date.getDate(),
-    )}`
+export const formatDate = (dateString: string): string => {
+    const date = new Date(dateString)
+
+    return `${date.getUTCFullYear()}-${addZero(
+        date.getUTCMonth() + 1,
+    )}-${addZero(date.getUTCDate())}`
 }
 
 /**

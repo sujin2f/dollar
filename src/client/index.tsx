@@ -22,7 +22,10 @@ ReactDOM.render(
                             <PublicHome />
                         </PublicWrapper>
                     </Route>
-                    <Route exact={true} path="/app">
+                    <Route
+                        exact={true}
+                        path="/app/:type(daily)?/:year(\d+)?/:month(\d+)?"
+                    >
                         <AppWrapper>
                             <AppHome />
                         </AppWrapper>

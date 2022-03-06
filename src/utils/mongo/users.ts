@@ -1,21 +1,6 @@
-import mongoose, { Schema } from 'mongoose'
 import { ErrorMessages } from 'src/constants'
+import { UserModel } from 'src/constants/mongo'
 import { Nullable, User } from 'src/types'
-
-const userSchema = new Schema({
-    email: {
-        type: String,
-        required: true,
-    },
-    name: {
-        type: String,
-        required: true,
-    },
-    photo: String,
-    darkMode: Boolean,
-})
-
-export const UserModel = mongoose.model<User>('user', userSchema)
 
 export const getUserByEmail = async (email: string): Promise<User> => {
     return await UserModel.findOne({ email })

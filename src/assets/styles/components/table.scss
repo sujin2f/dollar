@@ -26,6 +26,13 @@
     }
 }
 
-.table__currency {
+.table__cell--right {
     text-align: right;
+}
+
+.table__cell--center {
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }

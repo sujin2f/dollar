@@ -1,51 +1,41 @@
-import mongoose, { Schema } from 'mongoose'
 import { ErrorMessages } from 'src/constants'
 import { Column, CreateItemsParam, Item, Nullable } from 'src/types'
 import {
-    findOrCreateCategory,
-    CategoryModel,
+    findOrCreateCategories,
     getPreSelect,
     findOrCreatePreSelect,
 } from 'src/utils/mongo'
-import { currencyToNumber } from 'src/utils'
-
-const itemSchema = new Schema({
-    date: Date,
-    title: String,
-    originTitle: String,
-    debit: Number,
-    credit: Number,
-    user: {
-        type: Schema.Types.ObjectId,
-        ref: 'user',
-        required: true,
-    },
-    category: {
-        type: Schema.Types.ObjectId,
-        ref: 'category',
-        required: false,
-    },
-})
-
-const ItemModel = mongoose.model<Item>('item', itemSchema)
+import { currencyToNumber, addZero, formatDate } from 'src/utils'
+import { ItemModel, CategoryModel } from 'src/constants/mongo'
 
 // TODO get duration and cache
-export const getItems = async (userId?: string): Promise<Item[]> => {
+export const getItems = async (
+    year: number,
+    month: number,
+    userId?: string,
+): Promise<Item[]> => {
     if (!userId) {
         throw new Error(ErrorMessages.AUTHENTICATION_FAILED)
     }
 
-    return await ItemModel.find({ user: userId })
+    return await ItemModel.find({
+        user: userId,
+        date: {
+            $gte: `${year}-${addZero(month)}-01`,
+            $lte: `${year}-${addZero(month)}-31`,
+        },
+    })
         .sort({ date: -1 })
-        .populate({ path: 'category', model: CategoryModel })
+        .populate({ path: 'categories', model: CategoryModel })
         .then((items) => {
             if (!items) {
-                throw new Error(ErrorMessages.FIND_ITEM_FAILED)
+                return []
             }
             return items
         })
-        .catch(() => {
-            throw new Error(ErrorMessages.FIND_ITEM_FAILED)
+        .catch((e: Error) => {
+            console.error(e.message)
+            throw new Error(`${ErrorMessages.FIND_ITEM_FAILED}: ${e.message}`)
         })
 }
 
@@ -57,21 +47,21 @@ export const createItems = async (
         throw new Error(ErrorMessages.AUTHENTICATION_FAILED)
     }
 
-    const parsed = JSON.parse(json.replaceAll("'", '"'))
+    const parsed = JSON.parse(json.replaceAll("'", '"')) as CreateItemsParam[]
     for (const row of parsed) {
-        const category = row.category
-            ? await findOrCreateCategory(row.category, userId).catch(() => {
+        const categories = row.categories
+            ? await findOrCreateCategories(row.categories, userId).catch(() => {
                   throw new Error(ErrorMessages.FIND_CATEGORIES_FAILED)
               })
-            : null
-        if (category) {
-            await findOrCreatePreSelect(row.originTitle, category._id, userId)
+            : []
+        if (categories.length) {
+            await findOrCreatePreSelect(row.originTitle, categories, userId)
         }
         const item = {
             ...row,
-            date: new Date(row.date),
+            date: formatDate(row.date),
             user: userId,
-            category: category?._id,
+            categories,
             debit: currencyToNumber(row.debit || ''),
             credit: currencyToNumber(row.credit || ''),
         }
@@ -84,6 +74,18 @@ export const createItems = async (
     return true
 }
 
+export const deleteItem = async (
+    itemId: string,
+    userId?: string,
+): Promise<boolean> => {
+    if (!userId) {
+        throw new Error(ErrorMessages.AUTHENTICATION_FAILED)
+    }
+    return await ItemModel.deleteOne({ _id: itemId })
+        .then(() => true)
+        .catch(() => false)
+}
+
 export const getPreItems = async (
     rawText: string,
     dateFormat: string,
@@ -93,36 +95,43 @@ export const getPreItems = async (
         throw new Error(ErrorMessages.AUTHENTICATION_FAILED)
     }
 
-    const dataset = rawTextToDataSet(rawText, dateFormat)
-    for (const [index, datarow] of dataset.entries()) {
+    const createItemsParams = rawTextToCreateItemsParams(rawText, dateFormat)
+    for (const [index, item] of createItemsParams.entries()) {
         // Check the pre-input item matches to a new row
         await ItemModel.findOne({
             user: userId,
-            date: datarow.date,
-            originalTitle: datarow.title,
-            debit: currencyToNumber(datarow.debit),
-            credit: currencyToNumber(datarow.credit),
+            date: item.date,
+            originalTitle: item.title,
+            debit: currencyToNumber(item.debit || ''),
+            credit: currencyToNumber(item.credit || ''),
         })
-            .then((item) => {
-                if (item) {
-                    dataset[index].checked = false
+            .then((itemFound) => {
+                if (itemFound) {
+                    createItemsParams[index].checked = false
                 }
             })
-            .catch((e) => console.error(e))
+            .catch((e: Error) => {
+                console.error(
+                    `${ErrorMessages.FIND_PRE_ITEM_FAILED}: ${e.message}`,
+                )
+                return
+            })
 
         // Check the preSelect to get the category
-        const preSelect = await getPreSelect(datarow.title, userId).catch(
+        const preSelect = await getPreSelect(item.title, userId).catch(
             () => null,
         )
-        if (preSelect && preSelect.category) {
-            dataset[index].category = preSelect.category.title
+        if (preSelect && preSelect.categories) {
+            createItemsParams[index].categories = preSelect.categories.map(
+                (c) => c.title,
+            )
         }
     }
 
-    return dataset
+    return createItemsParams
 }
 
-const rawTextToDataSet = (
+const rawTextToCreateItemsParams = (
     rawText: string,
     dateFormat: string,
 ): CreateItemsParam[] => {
@@ -154,26 +163,26 @@ const rawTextToDataSet = (
 
     return result
         .map((row) => {
-            let date: Nullable<Date> = null
+            let date: Nullable<string> = null
             switch (dateFormat) {
                 case 'DD/MM/YYYY':
                     const dateString = row[Column.Date]?.split('/') || []
                     if (dateString.length !== 3) {
                         break
                     }
-                    date = new Date(
-                        `${dateString[2]}-${dateString[1]}-${dateString[0]}`,
-                    )
+                    date = `${dateString[2]}-${addZero(
+                        dateString[1],
+                    )}-${addZero(dateString[0])}`
                     break
                 default:
-                    date = new Date(Date.parse(row[Column.Date] || ''))
+                    date = formatDate(row[Column.Date] || '')
             }
             return {
                 checked: true,
                 date,
                 title: row[Column.Title],
                 originTitle: row[Column.Title],
-                category: '',
+                categories: [],
                 debit: row[Column.Debit],
                 credit: row[Column.Credit],
             } as CreateItemsParam

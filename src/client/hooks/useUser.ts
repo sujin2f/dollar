@@ -35,7 +35,8 @@ export const useUser = (): WithApiState<User> => {
             .then((response) => {
                 dispatch(getUserSuccess(response.data.getUser))
             })
-            .catch(() => {
+            .catch((e: Error) => {
+                console.error(e.message)
                 dispatch(getUserFailed())
             })
     }, [dispatch, user])
@@ -60,8 +61,8 @@ export const useDarkMode = (): SetDarkMode => {
             .then(() => {
                 dispatch(getUserSuccess({ ...(user as User), darkMode }))
             })
-            .catch((e) => {
-                // Error Handling
+            .catch((e: Error) => {
+                console.error(e.message)
                 console.error(e)
             })
     }

@@ -1,23 +1,6 @@
-import mongoose, { Schema } from 'mongoose'
 import { ErrorMessages } from 'src/constants'
+import { CategoryModel } from 'src/constants/mongo'
 import { Category } from 'src/types'
-
-const categorySchema = new Schema({
-    user: {
-        type: Schema.Types.ObjectId,
-        ref: 'user',
-        required: true,
-    },
-    title: {
-        type: String,
-        required: true,
-    },
-})
-
-export const CategoryModel = mongoose.model<Category>(
-    'category',
-    categorySchema,
-)
 
 export const getCategories = async (userId?: string): Promise<Category[]> => {
     if (!userId) {
@@ -36,23 +19,39 @@ export const getCategories = async (userId?: string): Promise<Category[]> => {
         })
 }
 
-export const findOrCreateCategory = async (
-    title: string,
+export const findOrCreateCategories = async (
+    titles: string[],
     userId?: string,
-): Promise<Category> => {
+): Promise<Category[]> => {
     if (!userId) {
         throw new Error(ErrorMessages.AUTHENTICATION_FAILED)
     }
 
-    return await CategoryModel.findOneAndUpdate(
-        {
+    const categories: Category[] = []
+
+    for (const title of titles) {
+        await CategoryModel.findOne({
             user: userId,
             title,
-        },
-        {},
-        {
-            returnOriginal: false,
-            upsert: true,
-        },
-    )
+        })
+            .then(async (result) => {
+                if (result) {
+                    categories.push(result)
+                    return result
+                }
+
+                const newCategory = new CategoryModel({
+                    title,
+                    userId,
+                })
+
+                await newCategory.save()
+                categories.push({
+                    _id: title,
+                    title,
+                })
+            })
+            .catch(() => undefined)
+    }
+    return categories
 }

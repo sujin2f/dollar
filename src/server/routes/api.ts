@@ -10,6 +10,7 @@ import {
     getUserById,
     setDarkMode,
     getPreItems,
+    deleteItem,
 } from 'src/utils/mongo'
 
 declare module 'express-session' {
@@ -26,17 +27,26 @@ const loggingMiddleware = (req: Request, _: Response, next: NextFunction) => {
 }
 apiRouter.use(loggingMiddleware)
 
-type createItemsParam = {
+type CreateItemsParam = {
     json: string
 }
 
-type setDarkModeParam = {
+type SetDarkModeParam = {
     darkMode: boolean
 }
 
-type preItemsParam = {
+type PreItemsParam = {
     rawText: string
     dateFormat: string
+}
+
+type GetItemsParam = {
+    year: number
+    month: number
+}
+
+type DeleteItemParam = {
+    itemId: string
 }
 
 apiRouter.use(
@@ -44,26 +54,63 @@ apiRouter.use(
     graphqlHTTP({
         schema,
         rootValue: {
-            getCategories: (_: void, req: Request) => {
-                return getCategories(req.session.user)
+            getCategories: async (_: void, req: Request) => {
+                return await getCategories(req.session.user).catch(
+                    (e: Error) => {
+                        console.error(e.message)
+                        throw e
+                    },
+                )
             },
-            getUser: (_: void, req: Request) => {
-                return getUserById(req.session.user)
+            getUser: async (_: void, req: Request) => {
+                return await getUserById(req.session.user).catch((e: Error) => {
+                    console.error(e.message)
+                    throw e
+                })
             },
-            createItems: (param: createItemsParam, req: Request) => {
-                return createItems(param.json, req.session.user)
+            createItems: async (param: CreateItemsParam, req: Request) => {
+                return await createItems(param.json, req.session.user).catch(
+                    (e: Error) => {
+                        console.error(e.message)
+                        throw e
+                    },
+                )
             },
-            getItems: (_: void, req: Request) => {
-                return getItems(req.session.user)
+            getItems: async (param: GetItemsParam, req: Request) => {
+                return await getItems(
+                    param.year,
+                    param.month,
+                    req.session.user,
+                ).catch((e: Error) => {
+                    console.error(e.message)
+                    throw e
+                })
             },
-            setDarkMode: (param: setDarkModeParam, req: Request) => {
-                return setDarkMode(param.darkMode, req.session.user)
+            setDarkMode: async (param: SetDarkModeParam, req: Request) => {
+                return await setDarkMode(
+                    param.darkMode,
+                    req.session.user,
+                ).catch((e: Error) => {
+                    console.error(e.message)
+                    throw e
+                })
             },
-            getPreItems: (param: preItemsParam, req: Request) => {
-                return getPreItems(
+            getPreItems: async (param: PreItemsParam, req: Request) => {
+                return await getPreItems(
                     param.rawText,
                     param.dateFormat,
                     req.session.user,
+                ).catch((e: Error) => {
+                    console.error(e.message)
+                    throw e
+                })
+            },
+            deleteItem: async (param: DeleteItemParam, req: Request) => {
+                return await deleteItem(param.itemId, req.session.user).catch(
+                    (e: Error) => {
+                        console.error(e.message)
+                        throw e
+                    },
                 )
             },
         },

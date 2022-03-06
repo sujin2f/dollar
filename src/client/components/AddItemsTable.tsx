@@ -1,8 +1,9 @@
-import React, { Fragment, ChangeEvent, useState } from 'react'
+import React, { ChangeEvent, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { createItems, useCategory, useGetPreItems } from 'src/client/hooks'
 import { Category, Column, CreateItemsParam, isApiState } from 'src/types'
-import { deepCopy, formatDate } from 'src/utils'
+import { deepCopy } from 'src/utils'
+import { Loading } from '.'
 
 export const AddItemsTable = (): JSX.Element => {
     const maybeCategories = useCategory()
@@ -13,8 +14,7 @@ export const AddItemsTable = (): JSX.Element => {
     const [toggle, changeToggle] = useState<boolean>(true)
 
     if (isApiState(maybeCategories)) {
-        // TODO Loading
-        return <Fragment />
+        return <Loading />
     }
 
     const categories = maybeCategories as Category[]
@@ -52,126 +52,130 @@ export const AddItemsTable = (): JSX.Element => {
         index: number,
     ): void => {
         const newTableData = deepCopy(tableData) as CreateItemsParam[]
-        newTableData[index].category = e.target.value
+        newTableData[index].categories = e.target.value
+            .split(',')
+            .map((v) => v.trim())
         changeTableData(newTableData)
     }
 
     return (
-        <Fragment>
-            <table className="table unstriped">
-                <thead>
-                    <tr>
-                        <th>
-                            <div className="switch">
-                                <input
-                                    className="switch-input"
-                                    id="toggle-all"
-                                    type="checkbox"
-                                    defaultChecked={toggle}
-                                    onChange={() => onToggleBoxClick()}
-                                />
-                                <label
-                                    className="switch-paddle"
-                                    htmlFor="toggle-all"
-                                >
-                                    <span className="show-for-sr">
-                                        <span className="hidden">
-                                            Toggle Everything
+        <div className="row">
+            <div className="columns small-12">
+                <table className="table unstriped">
+                    <thead>
+                        <tr>
+                            <th>
+                                <div className="switch">
+                                    <input
+                                        className="switch-input"
+                                        id="toggle-all"
+                                        type="checkbox"
+                                        defaultChecked={toggle}
+                                        onChange={() => onToggleBoxClick()}
+                                    />
+                                    <label
+                                        className="switch-paddle"
+                                        htmlFor="toggle-all"
+                                    >
+                                        <span className="show-for-sr">
+                                            <span className="hidden">
+                                                Toggle Everything
+                                            </span>
                                         </span>
-                                    </span>
-                                </label>
-                            </div>
-                        </th>
-                        <th>{Column.Date}</th>
-                        <th>{Column.Title}</th>
-                        <th>{Column.Category}</th>
-                        <th>{Column.Debit}</th>
-                        <th>{Column.Credit}</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {tableData.map((row, index) => {
-                        return (
-                            <tr key={`row-${index}`}>
-                                <td>
-                                    <div className="switch">
+                                    </label>
+                                </div>
+                            </th>
+                            <th>{Column.Date}</th>
+                            <th>{Column.Title}</th>
+                            <th>{Column.Category}</th>
+                            <th>{Column.Debit}</th>
+                            <th>{Column.Credit}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {tableData.map((row, index) => {
+                            return (
+                                <tr key={`row-${index}`}>
+                                    <td>
+                                        <div className="switch">
+                                            <input
+                                                className="switch-input"
+                                                id={`include-${index}`}
+                                                type="checkbox"
+                                                checked={row.checked}
+                                                onChange={() =>
+                                                    onCheckboxClick(index)
+                                                }
+                                            />
+                                            <label
+                                                className="switch-paddle"
+                                                htmlFor={`include-${index}`}
+                                            >
+                                                <span className="show-for-sr">
+                                                    <span className="hidden">
+                                                        Include this row
+                                                    </span>
+                                                </span>
+                                            </label>
+                                        </div>
+                                    </td>
+                                    <td>{row.date}</td>
+                                    <td>
                                         <input
-                                            className="switch-input"
-                                            id={`include-${index}`}
-                                            type="checkbox"
-                                            checked={row.checked}
-                                            onChange={() =>
-                                                onCheckboxClick(index)
+                                            type="text"
+                                            value={row.title}
+                                            onChange={(e) =>
+                                                onTitleChanged(e, index)
                                             }
                                         />
-                                        <label
-                                            className="switch-paddle"
-                                            htmlFor={`include-${index}`}
-                                        >
-                                            <span className="show-for-sr">
-                                                <span className="hidden">
-                                                    Include this row
-                                                </span>
-                                            </span>
-                                        </label>
-                                    </div>
-                                </td>
-                                <td>
-                                    {row.date && formatDate(new Date(row.date))}
-                                </td>
-                                <td>
-                                    <input
-                                        type="text"
-                                        value={row.title}
-                                        onChange={(e) =>
-                                            onTitleChanged(e, index)
-                                        }
-                                    />
-                                </td>
-                                <td>
-                                    <input
-                                        type="text"
-                                        value={row.category}
-                                        onChange={(e) =>
-                                            onCategoryChanged(e, index)
-                                        }
-                                        list="category-list"
-                                    />
-                                </td>
-                                <td className="table__currency">{row.debit}</td>
-                                <td className="table__currency">
-                                    {row.credit}
-                                </td>
-                            </tr>
-                        )
-                    })}
-                </tbody>
-            </table>
+                                    </td>
+                                    <td>
+                                        <input
+                                            type="text"
+                                            value={row.categories.join(',')}
+                                            onChange={(e) =>
+                                                onCategoryChanged(e, index)
+                                            }
+                                            list="category-list"
+                                        />
+                                    </td>
+                                    <td className="table__cell--right">
+                                        {row.debit}
+                                    </td>
+                                    <td className="table__cell--right">
+                                        {row.credit}
+                                    </td>
+                                </tr>
+                            )
+                        })}
+                    </tbody>
+                </table>
 
-            <datalist id="category-list">
-                {categories.map((category) => (
-                    <option key={`category-list-item-${category._id}`}>
-                        {category.title}
-                    </option>
-                ))}
-            </datalist>
+                <datalist id="category-list">
+                    {categories.map((category) => (
+                        <option key={`category-list-item-${category._id}`}>
+                            {category.title}
+                        </option>
+                    ))}
+                </datalist>
 
-            <div className="button-group">
-                <Link
-                    to="#"
-                    onClick={() => createItems(tableData)}
-                    className="button"
-                >
-                    Submit
-                </Link>
-                <Link
-                    to="#"
-                    onClick={() => resetPreItems()}
-                    className="button hollow"
-                >
-                    Cancel
-                </Link>
+                <div className="button-group">
+                    <Link
+                        to="#"
+                        onClick={() => createItems(tableData)}
+                        className="button"
+                    >
+                        Submit
+                    </Link>
+                    <Link
+                        to="#"
+                        onClick={() => resetPreItems()}
+                        className="button secondary"
+                    >
+                        Cancel
+                    </Link>
+                </div>
             </div>
-        </Fragment>
+        </div>
     )
 }

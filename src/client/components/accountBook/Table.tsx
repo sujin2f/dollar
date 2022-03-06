@@ -9,7 +9,7 @@ import { Column, isApiState, Item } from 'src/types'
 import { formatCurrency } from 'src/utils'
 import { Loading } from '..'
 
-export const AccountBookTable = (): JSX.Element => {
+export const Table = (): JSX.Element => {
     const { year, month, type } = useAccountBookMatch()
     const [, setDeleteItemModal] = useDeleteItemModal()
 
@@ -19,6 +19,13 @@ export const AccountBookTable = (): JSX.Element => {
     }
 
     const items = maybeItems as Item[]
+    let totalDebit = 0
+    let totalCredit = 0
+
+    items.forEach((item) => {
+        totalDebit += item.debit
+        totalCredit += item.credit
+    })
 
     return (
         <div className="row">
@@ -43,16 +50,7 @@ export const AccountBookTable = (): JSX.Element => {
                             <tr key={item._id}>
                                 <td>{item.date}</td>
                                 <td>{item.title.toLowerCase()}</td>
-                                <td>
-                                    {item.categories.map((category) => (
-                                        <span
-                                            className="label primary"
-                                            key={`item-${item._id}-category-${category._id}`}
-                                        >
-                                            {category.title}
-                                        </span>
-                                    ))}
-                                </td>
+                                <td>{item.category?.title || ''}</td>
                                 <td className="table__cell--right">
                                     {item.debit !== 0 &&
                                         formatCurrency(item.debit)}
@@ -64,7 +62,7 @@ export const AccountBookTable = (): JSX.Element => {
                                 <td className="table__cell--center">
                                     <div className="button-group">
                                         <Link
-                                            to="#"
+                                            to={`/app/modify/${item._id}`}
                                             className="button tiny secondary hollow"
                                         >
                                             <i className="fi-wrench" />
@@ -83,6 +81,22 @@ export const AccountBookTable = (): JSX.Element => {
                             </tr>
                         ))}
                     </tbody>
+                    <tfoot>
+                        <tr>
+                            <th>Total</th>
+                            <td></td>
+                            <td></td>
+                            <td className="table__cell--right">
+                                {formatCurrency(totalDebit)}
+                            </td>
+                            <td className="table__cell--right">
+                                {formatCurrency(totalCredit)}
+                            </td>
+                            <td className="table__cell--right">
+                                {formatCurrency(totalCredit - totalDebit)}
+                            </td>
+                        </tr>
+                    </tfoot>
                 </table>
             </div>
         </div>

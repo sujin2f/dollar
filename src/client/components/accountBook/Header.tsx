@@ -4,7 +4,7 @@ import { useAccountBookMatch } from 'src/client/hooks'
 import { Month, TableType } from 'src/constants'
 import { addZero } from 'src/utils'
 
-export const AccountBookHeader = (): JSX.Element => {
+export const Header = (): JSX.Element => {
     const { year, month, type } = useAccountBookMatch()
 
     const todayObject = new Date()
@@ -27,12 +27,6 @@ export const AccountBookHeader = (): JSX.Element => {
                 todayObject.getUTCMonth() + 1
             }`
             heading = `${Month[month]} ${year}`
-            break
-        case TableType.Weekly:
-            today = `/app/${TableType.Weekly}/${todayObject.getUTCFullYear()}`
-            break
-        case TableType.BiWeekly:
-            today = `/app/${TableType.BiWeekly}/${todayObject.getUTCFullYear()}`
             break
         case TableType.Monthly:
             today = `/app/${TableType.Monthly}/${todayObject.getUTCFullYear()}`

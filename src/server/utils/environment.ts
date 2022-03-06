@@ -7,7 +7,7 @@ import fs from 'fs'
  */
 const rootDir =
     process.env.NODE_ENV === 'development'
-        ? path.resolve(__dirname, '../../')
+        ? path.resolve(__dirname, '../../../')
         : path.resolve(__dirname, '../../../')
 export const publicDir = path.resolve(rootDir, 'public')
 

@@ -1,12 +1,33 @@
+import mongoose, { Schema } from 'mongoose'
 import { ErrorMessages } from 'src/constants'
 import { Column, CreateItemsParam, Item, Nullable } from 'src/types'
 import {
-    findOrCreateCategories,
+    findOrCreateCategory,
     getPreSelect,
     findOrCreatePreSelect,
-} from 'src/utils/mongo'
+} from 'src/server/utils/mongo'
 import { currencyToNumber, addZero, formatDate } from 'src/utils'
-import { ItemModel, CategoryModel } from 'src/constants/mongo'
+import { CategoryModel } from './categories'
+
+const itemSchema = new Schema({
+    date: String,
+    title: String,
+    originTitle: String,
+    debit: Number,
+    credit: Number,
+    user: {
+        type: Schema.Types.ObjectId,
+        ref: 'user',
+        required: true,
+    },
+    category: {
+        type: Schema.Types.ObjectId,
+        ref: 'category',
+        required: false,
+    },
+})
+
+export const ItemModel = mongoose.model<Item>('item', itemSchema)
 
 // TODO get duration and cache
 export const getItems = async (
@@ -26,7 +47,7 @@ export const getItems = async (
         },
     })
         .sort({ date: -1 })
-        .populate({ path: 'categories', model: CategoryModel })
+        .populate({ path: 'category', model: CategoryModel })
         .then((items) => {
             if (!items) {
                 return []
@@ -41,6 +62,7 @@ export const getItems = async (
 
 export const createItems = async (
     json: string,
+    setPreSelect: boolean,
     userId?: string,
 ): Promise<boolean> => {
     if (!userId) {
@@ -49,26 +71,44 @@ export const createItems = async (
 
     const parsed = JSON.parse(json.replaceAll("'", '"')) as CreateItemsParam[]
     for (const row of parsed) {
-        const categories = row.categories
-            ? await findOrCreateCategories(row.categories, userId).catch(() => {
+        const category = row.category
+            ? await findOrCreateCategory(row.category, userId).catch(() => {
                   throw new Error(ErrorMessages.FIND_CATEGORIES_FAILED)
               })
-            : []
-        if (categories.length) {
-            await findOrCreatePreSelect(row.originTitle, categories, userId)
+            : undefined
+        if (category && setPreSelect) {
+            await findOrCreatePreSelect(row.originTitle, category, userId)
         }
         const item = {
             ...row,
             date: formatDate(row.date),
             user: userId,
-            categories,
+            category: category ? category._id : undefined,
             debit: currencyToNumber(row.debit || ''),
             credit: currencyToNumber(row.credit || ''),
         }
-        const itemModel = new ItemModel(item)
-        await itemModel.save().catch(() => {
-            throw new Error(ErrorMessages.CREATE_ITEM_FAILED)
-        })
+
+        if (!row._id) {
+            const itemModel = new ItemModel(item)
+            await itemModel.save().catch(() => {
+                throw new Error(ErrorMessages.CREATE_ITEM_FAILED)
+            })
+            continue
+        }
+
+        await ItemModel.updateOne(
+            {
+                _id: row._id,
+            },
+            {
+                user: userId,
+                date: row.date,
+                title: row.title,
+                category: category ? category._id : undefined,
+                debit: currencyToNumber(row.debit || ''),
+                credit: currencyToNumber(row.credit || ''),
+            },
+        )
     }
 
     return true
@@ -121,10 +161,8 @@ export const getPreItems = async (
         const preSelect = await getPreSelect(item.title, userId).catch(
             () => null,
         )
-        if (preSelect && preSelect.categories) {
-            createItemsParams[index].categories = preSelect.categories.map(
-                (c) => c.title,
-            )
+        if (preSelect && preSelect.category) {
+            createItemsParams[index].category = preSelect.category.title
         }
     }
 
@@ -182,7 +220,7 @@ const rawTextToCreateItemsParams = (
                 date,
                 title: row[Column.Title],
                 originTitle: row[Column.Title],
-                categories: [],
+                category: '',
                 debit: row[Column.Debit],
                 credit: row[Column.Credit],
             } as CreateItemsParam

@@ -1,8 +1,11 @@
 import express from 'express'
 import { Session } from 'express-session'
 import { User } from 'src/types'
-import { getOrAddUser } from 'src/utils/mongo'
-import { getGoogleAccountFromCode, GoogleLoginUrl } from 'src/utils/google-api'
+import { getOrAddUser } from 'src/server/utils/mongo'
+import {
+    getGoogleAccountFromCode,
+    GoogleLoginUrl,
+} from 'src/server/utils/google-api'
 
 declare module 'express-session' {
     interface Session {
@@ -18,13 +21,13 @@ const authRouter = express.Router()
  * Otherwise, it redirects to the Google login
  */
 authRouter.get('/login', async (req, res) => {
-    try {
-        if (process.env.NODE_ENV !== 'production') {
-            ;(req.session as Session).user = process.env.DEV_USER_ID
-            res.redirect('/app')
-            return
-        }
+    if (process.env.NODE_ENV !== 'production') {
+        ;(req.session as Session).user = process.env.DEV_USER_ID
+        res.redirect('/app')
+        return
+    }
 
+    try {
         if ((req.session as Session).user) {
             res.redirect('/app')
         }

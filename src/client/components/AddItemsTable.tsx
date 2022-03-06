@@ -1,12 +1,13 @@
 import React, { ChangeEvent, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { createItems, useCategory, useGetPreItems } from 'src/client/hooks'
+import { useCreateItems, useCategory, useGetPreItems } from 'src/client/hooks'
 import { Category, Column, CreateItemsParam, isApiState } from 'src/types'
 import { deepCopy } from 'src/utils'
 import { Loading } from '.'
 
 export const AddItemsTable = (): JSX.Element => {
     const maybeCategories = useCategory()
+    const createItems = useCreateItems()
     const [preItems, , resetPreItems] = useGetPreItems()
     const [tableData, changeTableData] = useState<CreateItemsParam[]>(
         preItems.preItemsDataset,
@@ -52,9 +53,25 @@ export const AddItemsTable = (): JSX.Element => {
         index: number,
     ): void => {
         const newTableData = deepCopy(tableData) as CreateItemsParam[]
-        newTableData[index].categories = e.target.value
-            .split(',')
-            .map((v) => v.trim())
+        newTableData[index].category = e.target.value
+        changeTableData(newTableData)
+    }
+
+    const onDebitChanged = (
+        e: ChangeEvent<HTMLInputElement>,
+        index: number,
+    ): void => {
+        const newTableData = deepCopy(tableData) as CreateItemsParam[]
+        newTableData[index].debit = e.target.value
+        changeTableData(newTableData)
+    }
+
+    const onCreditChanged = (
+        e: ChangeEvent<HTMLInputElement>,
+        index: number,
+    ): void => {
+        const newTableData = deepCopy(tableData) as CreateItemsParam[]
+        newTableData[index].credit = e.target.value
         changeTableData(newTableData)
     }
 
@@ -132,18 +149,30 @@ export const AddItemsTable = (): JSX.Element => {
                                     <td>
                                         <input
                                             type="text"
-                                            value={row.categories.join(',')}
+                                            defaultValue={row.category}
                                             onChange={(e) =>
                                                 onCategoryChanged(e, index)
                                             }
                                             list="category-list"
                                         />
                                     </td>
-                                    <td className="table__cell--right">
-                                        {row.debit}
+                                    <td>
+                                        <input
+                                            type="text"
+                                            defaultValue={row.debit}
+                                            onChange={(e) =>
+                                                onDebitChanged(e, index)
+                                            }
+                                        />
                                     </td>
-                                    <td className="table__cell--right">
-                                        {row.credit}
+                                    <td>
+                                        <input
+                                            type="text"
+                                            defaultValue={row.credit}
+                                            onChange={(e) =>
+                                                onCreditChanged(e, index)
+                                            }
+                                        />
                                     </td>
                                 </tr>
                             )
@@ -162,7 +191,7 @@ export const AddItemsTable = (): JSX.Element => {
                 <div className="button-group">
                     <Link
                         to="#"
-                        onClick={() => createItems(tableData)}
+                        onClick={() => createItems(tableData, true)}
                         className="button"
                     >
                         Submit

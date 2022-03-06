@@ -1,10 +1,31 @@
+import mongoose, { Schema } from 'mongoose'
 import { ErrorMessages } from 'src/constants'
-import { PreSelectModel, CategoryModel } from 'src/constants/mongo'
 import { Category, PreSelect } from 'src/types'
+import { CategoryModel } from './categories'
+
+const preSelectSchema = new Schema({
+    title: String,
+    user: {
+        type: Schema.Types.ObjectId,
+        ref: 'user',
+        required: true,
+    },
+    category: {
+        type: Schema.Types.ObjectId,
+        ref: 'category',
+        required: false,
+    },
+})
+preSelectSchema.index({ title: 'text' })
+
+export const PreSelectModel = mongoose.model<PreSelect>(
+    'preSelect',
+    preSelectSchema,
+)
 
 export const findOrCreatePreSelect = async (
     keyword: string,
-    categories: Category[],
+    category: Category,
     userId?: string,
 ): Promise<boolean> => {
     if (!userId) {
@@ -20,15 +41,15 @@ export const findOrCreatePreSelect = async (
 
     return await PreSelectModel.findOne({
         user: userId,
-        categories,
+        category: category._id,
         $text: { $search: unique.join(' ') },
     })
-        .populate({ path: 'categories', model: CategoryModel })
+        .populate({ path: 'category', model: CategoryModel })
         .then(async (preSelect) => {
             if (!preSelect) {
                 const preSelectModel = new PreSelectModel({
                     user: userId,
-                    categories,
+                    category: category._id,
                     title: unique.join(' '),
                 })
                 await preSelectModel.save().catch((e: Error) => {
@@ -87,7 +108,7 @@ export const getPreSelect = async (
         { score: { $meta: 'textScore' } },
     )
         .sort({ score: { $meta: 'textScore' } })
-        .populate({ path: 'categories', model: CategoryModel })
+        .populate({ path: 'category', model: CategoryModel })
         .then((response) => {
             if (!response) {
                 throw new Error(ErrorMessages.FIND_CATEGORIES_FAILED)

@@ -1,6 +1,6 @@
 export { useUser, useDarkMode } from './useUser'
 export { useCategory } from './useCategory'
-export { useItems, createItems, useGetPreItems } from './useItems'
+export { useItems, useCreateItems, useGetPreItems } from './useItems'
 export {
     useMenuOpen,
     useCloseModal,

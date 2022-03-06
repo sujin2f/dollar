@@ -22,8 +22,8 @@ import {
     StatePreItems,
     ApiState,
 } from 'src/types'
-import { itemsQuery } from 'src/constants/graphql'
 import { useCloseModal, useResetApolloCache } from 'src/client/hooks'
+import { useHistory } from 'react-router-dom'
 
 type GetItemsQueryParam = {
     getItems: Item[]
@@ -35,11 +35,12 @@ type GetPreItemsQueryParam = {
 
 type SetPreItems = Fn<[string, string], void>
 type ResetPreItems = Fn<[void], void>
+type CreateItems = Fn<[CreateItemsParam[], boolean], void>
 
 export const useItems = (
-    year: number,
-    month: number,
-    type: string,
+    year?: number,
+    month?: number,
+    type?: string,
 ): WithApiState<Item[]> => {
     const [
         {
@@ -50,7 +51,9 @@ export const useItems = (
     ] = useContext(Context) as ContextType
 
     useEffect(() => {
-        dispatch(getItemsReset())
+        if (year && month && type) {
+            dispatch(getItemsReset())
+        }
     }, [dispatch, year, month, type])
 
     useEffect(() => {
@@ -63,8 +66,21 @@ export const useItems = (
             .query<GetItemsQueryParam>({
                 query: gql`
                     query {
-                        getItems(year: ${year}, month: ${month}, version: ${apolloCache})
-                        ${itemsQuery}
+                        getItems(
+                            year: ${year},
+                            month: ${month},
+                            version: ${apolloCache}
+                        ) {
+                            _id
+                            date
+                            title
+                            debit
+                            credit
+                            category {
+                                _id
+                                title
+                            }
+                        }
                     }
                 `,
             })
@@ -112,23 +128,46 @@ export const useDeleteItem = (): Fn<[void], void> => {
     return deleteItem
 }
 
-export const createItems = (tableData: CreateItemsParam[]): void => {
-    const items = tableData.filter((row) => row.checked)
-    const json = JSON.stringify(items).replaceAll("'", '').replaceAll('"', "'")
-    graphqlClient
-        .mutate({
-            mutation: gql`
+export const useCreateItems = (): CreateItems => {
+    const [, dispatch] = useContext(Context) as ContextType
+    const resetApolloCache = useResetApolloCache()
+    const history = useHistory()
+
+    const createItems = (
+        tableData: CreateItemsParam[],
+        setPreSelect: boolean,
+    ) => {
+        const items = tableData.filter((row) => row.checked)
+        const sorted = tableData.sort(
+            (f, s) => new Date(s.date).getTime() - new Date(f.date).getTime(),
+        )[0]
+        const json = JSON.stringify(items)
+            .replaceAll("'", '')
+            .replaceAll('"', "'")
+        graphqlClient
+            .mutate({
+                mutation: gql`
                 mutation {
-                    createItems(json: "${json}")
+                    createItems(
+                        json: "${json}",
+                        setPreSelect: ${setPreSelect ? 'true' : 'false'}
+                    )
                 }
             `,
-        })
-        .then(() => {
-            window.location.href = '/app'
-        })
-        .catch((e: Error) => {
-            console.error(e.message)
-        })
+            })
+            .then(() => {
+                dispatch(resetStorePreItems())
+                resetApolloCache()
+                const redirect = new Date(sorted.date)
+                const year = redirect.getUTCFullYear()
+                const month = redirect.getUTCMonth() + 1
+                history.push(`/app/daily/${year}/${month}`)
+            })
+            .catch((e: Error) => {
+                console.error(e.message)
+            })
+    }
+    return createItems
 }
 
 export const useGetPreItems = (): [
@@ -161,7 +200,7 @@ export const useGetPreItems = (): [
                             date
                             title
                             originTitle
-                            categories
+                            category
                             debit
                             credit
                         }

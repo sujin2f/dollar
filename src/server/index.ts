@@ -5,8 +5,8 @@ import session from 'express-session'
 import ConnectMongoDBSession from 'connect-mongodb-session'
 import http from 'http'
 import { config as detEnvConfig } from 'dotenv'
+import { baseDir } from 'src/server/utils/environment'
 
-import { baseDir } from 'src/utils'
 // Alias
 if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'stage') {
     moduleAlias.addAlias('src', baseDir)
@@ -15,7 +15,7 @@ if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'stage') {
 
 /* eslint-disable import/first */
 import { ErrorMessages } from 'src/constants'
-import { mongoConnect } from 'src/utils/mongo'
+import { mongoConnect } from 'src/server/utils/mongo'
 
 import { authRouter, staticRouter, apiRouter } from 'src/server/routes'
 /* eslint-enable import/first */

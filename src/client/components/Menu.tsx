@@ -38,6 +38,9 @@ export const Menu = (): JSX.Element => {
                 <Link to="/app" className="menu__item">
                     Home
                 </Link>
+                <Link to="/app/add" className="menu__item">
+                    Add Item
+                </Link>
                 <Link to="/app/add/text" className="menu__item">
                     Add by Text
                 </Link>

@@ -3,6 +3,7 @@ import {
     AccountBookHeader,
     AccountBookTable,
     AccountBookTypeSelector,
+    CategoryGraph,
     DeleteItemModal,
     Modal,
 } from 'src/client/components'
@@ -22,7 +23,13 @@ export const Home = (): JSX.Element => {
             )}
             <AccountBookTypeSelector />
             <AccountBookHeader />
-            {type === TableType.Daily && <AccountBookTable />}
+
+            {type === TableType.Daily && (
+                <Fragment>
+                    <CategoryGraph />
+                    <AccountBookTable />
+                </Fragment>
+            )}
         </Fragment>
     )
 }

@@ -9,7 +9,7 @@ import {
 } from 'react-router-dom'
 import { Store } from 'src/client/store'
 import { PublicWrapper, PublicHome } from 'src/client/scenes/public'
-import { AppWrapper, AppHome, AddItems } from 'src/client/scenes/app'
+import { AppWrapper, AppHome, AddItems, AddItem } from 'src/client/scenes/app'
 
 ReactDOM.render(
     <React.StrictMode>
@@ -24,15 +24,25 @@ ReactDOM.render(
                     </Route>
                     <Route
                         exact={true}
-                        path="/app/:type(daily)?/:year(\d+)?/:month(\d+)?"
+                        path="/app/:type(daily|monthly)?/:year(\d+)?/:month(\d+)?"
                     >
                         <AppWrapper>
                             <AppHome />
                         </AppWrapper>
                     </Route>
+                    <Route exact={true} path="/app/add">
+                        <AppWrapper>
+                            <AddItem />
+                        </AppWrapper>
+                    </Route>
                     <Route exact={true} path="/app/add/text">
                         <AppWrapper>
                             <AddItems />
+                        </AppWrapper>
+                    </Route>
+                    <Route exact={true} path="/app/modify/:itemId">
+                        <AppWrapper>
+                            <AddItem />
                         </AppWrapper>
                     </Route>
                 </Switch>

@@ -10,7 +10,6 @@ import {
 } from 'src/client/store'
 import { graphqlClient } from 'src/utils'
 import { User, ApiState, WithApiState, Fn } from 'src/types'
-import { userQuery } from 'src/constants'
 
 type GetUserQueryParam = {
     getUser: User
@@ -29,7 +28,14 @@ export const useUser = (): WithApiState<User> => {
         graphqlClient
             .query<GetUserQueryParam>({
                 query: gql`
-                    ${userQuery}
+                    query {
+                        getUser {
+                            name
+                            email
+                            photo
+                            darkMode
+                        }
+                    }
                 `,
             })
             .then((response) => {

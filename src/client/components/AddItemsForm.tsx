@@ -1,8 +1,8 @@
 import React, { useRef } from 'react'
-import { useGetPreItems } from 'src/client/hooks'
+import { usePreItem } from 'src/client/hooks'
 
 export const AddItemsForm = (): JSX.Element => {
-    const [, setPreItems] = useGetPreItems()
+    const { setPreItems } = usePreItem()
     const rawTextField = useRef<HTMLTextAreaElement>(null)
     const dateFormatField = useRef<HTMLSelectElement>(null)
 

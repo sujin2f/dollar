@@ -3,24 +3,18 @@ import { Link } from 'react-router-dom'
 import {
     useAccountBookMatch,
     useCategory,
-    useDeleteItemModal,
+    useGlobalOption,
     useItems,
 } from 'src/client/hooks'
-import { Column, isApiState, Item } from 'src/types'
+import { Column } from 'src/types'
 import { formatCurrency } from 'src/utils'
-import { Loading } from '..'
 
 export const Table = (): JSX.Element => {
     const { year, month, type } = useAccountBookMatch()
-    const [, setDeleteItemModal] = useDeleteItemModal()
+    const { setDeleteItemModal } = useGlobalOption()
     const { isCategoryHidden } = useCategory()
 
-    const maybeItems = useItems(year, month, type)
-    if (isApiState(maybeItems)) {
-        return <Loading />
-    }
-
-    const items = maybeItems as Item[]
+    const { items } = useItems(year, month, type)
     let totalDebit = 0
     let totalCredit = 0
 

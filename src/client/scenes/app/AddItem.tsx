@@ -1,27 +1,20 @@
 import React, { useRef } from 'react'
 import { Link, useRouteMatch } from 'react-router-dom'
-import { Loading } from 'src/client/components'
-import { useCreateItems, useCategory, useItems } from 'src/client/hooks'
-import { Column, CreateItemsParam, isApiState, Item } from 'src/types'
+import { useCategory, useItems } from 'src/client/hooks'
+import { Column, CreateItemsParam } from 'src/types'
 
 export const AddItem = (): JSX.Element => {
     const match = useRouteMatch<{ itemId?: string }>()
     const isModify = match.params?.itemId
 
     const { categories } = useCategory()
-    const maybeItems = useItems()
-    const createItems = useCreateItems()
+    const { items, createItems } = useItems()
     const date = useRef<HTMLInputElement>(null)
     const title = useRef<HTMLInputElement>(null)
     const debit = useRef<HTMLInputElement>(null)
     const credit = useRef<HTMLInputElement>(null)
     const categoryRef = useRef<HTMLInputElement>(null)
 
-    if (isApiState(maybeItems)) {
-        return <Loading />
-    }
-
-    const items = maybeItems as Item[]
     const currentItem = items.filter((v) => v._id === isModify)[0]
 
     const onClickSave = () => {

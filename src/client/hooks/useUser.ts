@@ -9,14 +9,13 @@ import {
     getUserFailed,
 } from 'src/client/store'
 import { graphqlClient } from 'src/utils'
-import { User, ApiState, WithApiState, Fn } from 'src/types'
+import { User, ApiState, isApiState } from 'src/types'
 
 type GetUserQueryParam = {
     getUser: User
 }
-type SetDarkMode = Fn<[boolean], void>
 
-export const useUser = (): WithApiState<User> => {
+export const useUser = () => {
     const [{ user }, dispatch] = useContext(Context) as ContextType
 
     useEffect(() => {
@@ -47,12 +46,6 @@ export const useUser = (): WithApiState<User> => {
             })
     }, [dispatch, user])
 
-    return user
-}
-
-export const useDarkMode = (): SetDarkMode => {
-    const [{ user }, dispatch] = useContext(Context) as ContextType
-
     const setDarkMode = (darkMode: boolean) => {
         graphqlClient
             .mutate({
@@ -73,5 +66,5 @@ export const useDarkMode = (): SetDarkMode => {
             })
     }
 
-    return setDarkMode
+    return { user: isApiState(user) ? undefined : (user as User), setDarkMode }
 }

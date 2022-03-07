@@ -1,8 +1,8 @@
 import React, { MouseEvent, PropsWithChildren, useRef } from 'react'
-import { useCloseModal } from 'src/client/hooks'
+import { useGlobalOption } from 'src/client/hooks'
 
 export const Modal = (props: PropsWithChildren<{}>): JSX.Element => {
-    const closeModal = useCloseModal()
+    const { setDeleteItemModal } = useGlobalOption()
     const overlay = useRef<HTMLDivElement>(null)
 
     const mayCloseModal = (e: MouseEvent) => {
@@ -10,7 +10,7 @@ export const Modal = (props: PropsWithChildren<{}>): JSX.Element => {
             e.preventDefault()
             return
         }
-        closeModal()
+        setDeleteItemModal()
     }
     return (
         <div

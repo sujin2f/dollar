@@ -1,11 +1,12 @@
 import React, { Fragment } from 'react'
 import { AddItemsForm, AddItemsTable } from 'src/client/components'
-import { useGetPreItems } from 'src/client/hooks'
+import { usePreItem } from 'src/client/hooks'
 
 export const AddItems = (): JSX.Element => {
-    const [{ preItemsDataset }] = useGetPreItems()
+    const { preItems } = usePreItem()
 
-    const hasProcessed = preItemsDataset.length !== 0
+    const hasProcessed = preItems.preItemsDataset.length !== 0
+
     return (
         <Fragment>
             {!hasProcessed && <AddItemsForm />}

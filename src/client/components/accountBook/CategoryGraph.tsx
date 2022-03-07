@@ -1,20 +1,13 @@
 import React, { useState } from 'react'
 import { useAccountBookMatch, useCategory, useItems } from 'src/client/hooks'
-import { isApiState, Item } from 'src/types'
 import { formatCurrency } from 'src/utils'
-import { Loading } from '..'
 
 export const CategoryGraph = (): JSX.Element => {
     const { year, month, type } = useAccountBookMatch()
     const [showTable, changeShowTable] = useState<boolean>(false)
     const { isCategoryHidden } = useCategory()
 
-    const maybeItems = useItems(year, month, type)
-    if (isApiState(maybeItems)) {
-        return <Loading />
-    }
-
-    const items = maybeItems as Item[]
+    const { items } = useItems(year, month, type)
 
     let totalDebit = 0
     const categoryDebit: Record<string, number> = {}

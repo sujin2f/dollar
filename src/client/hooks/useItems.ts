@@ -8,40 +8,18 @@ import {
     getItemsInit,
     getItemsSuccess,
     getItemsFailed,
-    getPreItemsInit,
-    getPreItemsSuccess,
-    getPreItemsFailed,
     resetPreItems as resetStorePreItems,
     getItemsReset,
 } from 'src/client/store'
-import {
-    Item,
-    WithApiState,
-    CreateItemsParam,
-    Fn,
-    StatePreItems,
-    ApiState,
-} from 'src/types'
-import { useCloseModal, useResetApolloCache } from 'src/client/hooks'
+import { Item, CreateItemsParam, ApiState, isApiState } from 'src/types'
+import { useGlobalOption } from 'src/client/hooks'
 import { useHistory } from 'react-router-dom'
 
 type GetItemsQueryParam = {
     getItems: Item[]
 }
 
-type GetPreItemsQueryParam = {
-    getPreItems: CreateItemsParam[]
-}
-
-type SetPreItems = Fn<[string, string], void>
-type ResetPreItems = Fn<[void], void>
-type CreateItems = Fn<[CreateItemsParam[], boolean], void>
-
-export const useItems = (
-    year?: number,
-    month?: number,
-    type?: string,
-): WithApiState<Item[]> => {
+export const useItems = (year?: number, month?: number, type?: string) => {
     const [
         {
             items,
@@ -49,6 +27,8 @@ export const useItems = (
         },
         dispatch,
     ] = useContext(Context) as ContextType
+    const history = useHistory()
+    const { setDeleteItemModal, resetApolloCache } = useGlobalOption()
 
     useEffect(() => {
         if (year && month && type) {
@@ -93,55 +73,34 @@ export const useItems = (
             })
     }, [dispatch, items, year, month, type, apolloCache])
 
-    return items
-}
-
-export const useDeleteItem = (): Fn<[void], void> => {
-    const [
-        {
-            option: { deleteItemModal },
-        },
-        dispatch,
-    ] = useContext(Context) as ContextType
-    const closeModal = useCloseModal()
-    const resetApolloCache = useResetApolloCache()
-    const deleteItem = () => {
+    const deleteItem = (itemId: string) => {
         graphqlClient
             .mutate({
                 mutation: gql`
                     mutation {
-                        deleteItem(itemId: "${deleteItemModal}")
+                        deleteItem(itemId: "${itemId}")
                     }
                 `,
             })
             .then(() => {
                 resetApolloCache()
                 dispatch(getItemsReset())
-                closeModal()
+                setDeleteItemModal()
             })
             .catch((e: Error) => {
                 console.error(e.message)
-                closeModal()
+                setDeleteItemModal()
             })
     }
-
-    return deleteItem
-}
-
-export const useCreateItems = (): CreateItems => {
-    const [, dispatch] = useContext(Context) as ContextType
-    const resetApolloCache = useResetApolloCache()
-    const history = useHistory()
 
     const createItems = (
         tableData: CreateItemsParam[],
         setPreSelect: boolean,
     ) => {
-        const items = tableData.filter((row) => row.checked)
         const sorted = tableData.sort(
             (f, s) => new Date(s.date).getTime() - new Date(f.date).getTime(),
         )[0]
-        const json = JSON.stringify(items)
+        const json = JSON.stringify(tableData.filter((row) => row.checked))
             .replaceAll("'", '')
             .replaceAll('"', "'")
         graphqlClient
@@ -159,65 +118,18 @@ export const useCreateItems = (): CreateItems => {
                 dispatch(resetStorePreItems())
                 resetApolloCache()
                 const redirect = new Date(sorted.date)
-                const year = redirect.getUTCFullYear()
-                const month = redirect.getUTCMonth() + 1
-                history.push(`/app/daily/${year}/${month}`)
+                const pathYear = redirect.getUTCFullYear()
+                const pathMonth = redirect.getUTCMonth() + 1
+                history.push(`/app/daily/${pathYear}/${pathMonth}`)
             })
             .catch((e: Error) => {
                 console.error(e.message)
             })
     }
-    return createItems
-}
 
-export const useGetPreItems = (): [
-    StatePreItems,
-    SetPreItems,
-    ResetPreItems,
-] => {
-    const [
-        {
-            option: { preItems },
-        },
-        dispatch,
-    ] = useContext(Context) as ContextType
-
-    const setPreItems = (dateFormat: string, rawText: string) => {
-        dispatch(getPreItemsInit(dateFormat, rawText))
-
-        graphqlClient
-            .query<GetPreItemsQueryParam>({
-                query: gql`
-                    query {
-                        getPreItems(
-                            rawText: "${rawText.replaceAll(
-                                '\n',
-                                '[line-break]',
-                            )}",
-                            dateFormat: "${dateFormat}"
-                        ) {
-                            checked
-                            date
-                            title
-                            originTitle
-                            category
-                            debit
-                            credit
-                        }
-                    }`,
-            })
-            .then((response) => {
-                dispatch(getPreItemsSuccess(response.data.getPreItems))
-            })
-            .catch((e: Error) => {
-                console.error(e.message)
-                dispatch(getPreItemsFailed())
-            })
+    return {
+        items: isApiState(items) ? [] : (items as Item[]),
+        deleteItem,
+        createItems,
     }
-
-    const resetPreItems = () => {
-        dispatch(resetStorePreItems())
-    }
-
-    return [preItems, setPreItems, resetPreItems]
 }

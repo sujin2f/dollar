@@ -1,16 +1,15 @@
 import React, { Fragment } from 'react'
 import { Link } from 'react-router-dom'
 
-import { useDarkMode, useMenuOpen, useUser } from 'src/client/hooks'
-import { isApiState, User } from 'src/types'
+import { useGlobalOption, useUser } from 'src/client/hooks'
 import { Loading } from '.'
 
 export const Menu = (): JSX.Element => {
-    const maybeUser = useUser()
-    const [menuOpen, setMenuOpen] = useMenuOpen()
-    const setDarkMode = useDarkMode()
+    const { user } = useUser()
+    const { menuOpen, setMenuOpen } = useGlobalOption()
+    const { setDarkMode } = useUser()
 
-    if (isApiState(maybeUser)) {
+    if (!user) {
         return <Loading />
     }
 
@@ -18,7 +17,6 @@ export const Menu = (): JSX.Element => {
         return <Fragment />
     }
 
-    const user = maybeUser as User
     const darkModeButtonText = user.darkMode ? 'Light mode' : 'Dark mode'
 
     return (

@@ -1,8 +1,8 @@
 import React from 'react'
-import { useMenuOpen } from '../hooks'
+import { useGlobalOption } from '../hooks'
 
 export const Hamburger = (): JSX.Element => {
-    const [menuOpen, setMenuOpen] = useMenuOpen()
+    const { menuOpen, setMenuOpen } = useGlobalOption()
 
     return (
         <button

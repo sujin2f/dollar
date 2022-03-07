@@ -7,16 +7,15 @@ import {
 } from 'src/client/components'
 
 import { useUser } from 'src/client/hooks'
-import { isApiState, User } from 'src/types'
 
 import 'src/assets/styles/style.scss'
 export const Wrapper = (prop: PropsWithChildren<{}>): JSX.Element => {
-    const maybeUser = useUser()
-    if (isApiState(maybeUser)) {
+    const { user } = useUser()
+
+    if (!user) {
         return <Loading />
     }
 
-    const user = maybeUser as User
     const classDarkMode = user.darkMode ? 'wrapper--dark-mode' : ''
 
     return (

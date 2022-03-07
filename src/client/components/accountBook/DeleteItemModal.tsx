@@ -1,22 +1,26 @@
 import React from 'react'
-import { useDeleteItemModal } from 'src/client/hooks'
-import { useDeleteItem } from 'src/client/hooks/useItems'
+import { useGlobalOption } from 'src/client/hooks'
+import { useItems } from 'src/client/hooks'
 
 export const DeleteItemModal = (): JSX.Element => {
-    const [, setDeleteItemModal] = useDeleteItemModal()
-    const deleteItem = useDeleteItem()
+    const { deleteItemModal, setDeleteItemModal } = useGlobalOption()
+    const { deleteItem } = useItems()
 
     return (
         <div className="reveal" style={{ display: 'block' }}>
             <h1>Remove Item</h1>
             <p className="lead">Do you want to remove this item?</p>
 
-            <button className="button" onClick={() => deleteItem()} autoFocus>
+            <button
+                className="button"
+                onClick={() => deleteItem(deleteItemModal || '')}
+                autoFocus
+            >
                 Confirm
             </button>
             <button
                 className="button secondary"
-                onClick={() => setDeleteItemModal(undefined)}
+                onClick={() => setDeleteItemModal()}
             >
                 Cancel
             </button>
@@ -24,7 +28,7 @@ export const DeleteItemModal = (): JSX.Element => {
                 className="close-button"
                 aria-label="Close reveal"
                 type="button"
-                onClick={() => setDeleteItemModal(undefined)}
+                onClick={() => setDeleteItemModal()}
             >
                 <span aria-hidden="true">&times;</span>
             </button>

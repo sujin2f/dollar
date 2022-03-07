@@ -7,11 +7,11 @@ import {
     DeleteItemModal,
     Modal,
 } from 'src/client/components'
-import { useAccountBookMatch, useDeleteItemModal } from 'src/client/hooks'
+import { useAccountBookMatch, useGlobalOption } from 'src/client/hooks'
 import { TableType } from 'src/constants'
 
 export const Home = (): JSX.Element => {
-    const [deleteItemModal] = useDeleteItemModal()
+    const { deleteItemModal } = useGlobalOption()
     const { type } = useAccountBookMatch()
 
     return (

@@ -13,6 +13,11 @@
         background-color: $black;
     }
 
+    tfoot {
+        background-color: map-get($foundation-palette, 'secondary');
+        color: $white;
+    }
+
     input,
     .switch {
         margin-bottom: 0;

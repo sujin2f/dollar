@@ -7,15 +7,11 @@ import {
     setDeleteItemModal as setStoreDeleteItemModal,
     resetApolloCache as resetStoreApolloCache,
 } from 'src/client/store'
-import { Fn, Nullable } from 'src/types'
 
-type SetMenuOpen = Fn<[boolean], void>
-type SetDeleteItemModal = Fn<[Nullable<string>], void>
-
-export const useMenuOpen = (): [boolean, SetMenuOpen] => {
+export const useGlobalOption = () => {
     const [
         {
-            option: { menuOpen },
+            option: { menuOpen, deleteItemModal, preItems, apolloCache },
         },
         dispatch,
     ] = useContext(Context) as ContextType
@@ -24,43 +20,21 @@ export const useMenuOpen = (): [boolean, SetMenuOpen] => {
         dispatch(setStoreMenuOpen(option))
     }
 
-    return [menuOpen, setMenuOpen]
-}
-
-export const useDeleteItemModal = (): [
-    Nullable<string>,
-    SetDeleteItemModal,
-] => {
-    const [
-        {
-            option: { deleteItemModal },
-        },
-        dispatch,
-    ] = useContext(Context) as ContextType
-
-    const setDeleteItemModal = (option: Nullable<string>) => {
+    const setDeleteItemModal = (option?: string) => {
         dispatch(setStoreDeleteItemModal(option))
     }
-
-    return [deleteItemModal, setDeleteItemModal]
-}
-
-export const useCloseModal = (): Fn<[void], void> => {
-    const [, dispatch] = useContext(Context) as ContextType
-
-    const closeModal = () => {
-        dispatch(setStoreDeleteItemModal(undefined))
-    }
-
-    return closeModal
-}
-
-export const useResetApolloCache = (): Fn<[void], void> => {
-    const [, dispatch] = useContext(Context) as ContextType
 
     const resetApolloCache = () => {
         dispatch(resetStoreApolloCache())
     }
 
-    return resetApolloCache
+    return {
+        menuOpen,
+        deleteItemModal,
+        preItems,
+        apolloCache,
+        setMenuOpen,
+        setDeleteItemModal,
+        resetApolloCache,
+    }
 }

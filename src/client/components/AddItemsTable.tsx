@@ -1,13 +1,13 @@
 import React, { ChangeEvent, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { useCreateItems, useCategory, useGetPreItems } from 'src/client/hooks'
+import { useItems, useCategory, usePreItem } from 'src/client/hooks'
 import { Column, CreateItemsParam } from 'src/types'
 import { deepCopy } from 'src/utils'
 
 export const AddItemsTable = (): JSX.Element => {
     const { categories } = useCategory()
-    const createItems = useCreateItems()
-    const [preItems, , resetPreItems] = useGetPreItems()
+    const { createItems } = useItems()
+    const { preItems, resetPreItems } = usePreItem()
     const [tableData, changeTableData] = useState<CreateItemsParam[]>(
         preItems.preItemsDataset,
     )

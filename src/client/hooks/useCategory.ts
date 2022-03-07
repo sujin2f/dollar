@@ -9,18 +9,13 @@ import {
     getCategoriesFailed,
 } from 'src/client/store'
 import { graphqlClient } from 'src/utils'
-import { ApiState, Category, Fn, isApiState, Nullable } from 'src/types'
+import { ApiState, Category, isApiState, Nullable } from 'src/types'
 
 type GetCategoriesQueryParam = {
     getCategories: Category[]
 }
 
-export const useCategory = (): {
-    categories: Category[]
-    toggleCategoryHidden: Fn<[string], void>
-    getCategoryById: Fn<[string], Nullable<Category>>
-    isCategoryHidden: Fn<[string], boolean>
-} => {
+export const useCategory = () => {
     const [
         {
             categories,

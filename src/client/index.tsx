@@ -10,45 +10,49 @@ import {
 import { Store } from 'src/client/store'
 import { PublicWrapper, PublicHome } from 'src/client/scenes/public'
 import { AppWrapper, AppHome, AddItems, AddItem } from 'src/client/scenes/app'
+import { ApolloProvider } from '@apollo/client/react'
+import { graphqlClient } from 'src/utils'
 
 ReactDOM.render(
-    <React.StrictMode>
-        <Router>
-            <Store>
-                <Switch>
-                    <Redirect from="/#" to="/" />
-                    <Route exact={true} path="/">
-                        <PublicWrapper>
-                            <PublicHome />
-                        </PublicWrapper>
-                    </Route>
-                    <Route
-                        exact={true}
-                        path="/app/:type(daily|monthly)?/:year(\d+)?/:month(\d+)?"
-                    >
-                        <AppWrapper>
-                            <AppHome />
-                        </AppWrapper>
-                    </Route>
-                    <Route exact={true} path="/app/add">
-                        <AppWrapper>
-                            <AddItem />
-                        </AppWrapper>
-                    </Route>
-                    <Route exact={true} path="/app/add/text">
-                        <AppWrapper>
-                            <AddItems />
-                        </AppWrapper>
-                    </Route>
-                    <Route exact={true} path="/app/modify/:itemId">
-                        <AppWrapper>
-                            <AddItem />
-                        </AppWrapper>
-                    </Route>
-                </Switch>
-            </Store>
-        </Router>
-    </React.StrictMode>,
+    <ApolloProvider client={graphqlClient}>
+        <React.StrictMode>
+            <Router>
+                <Store>
+                    <Switch>
+                        <Redirect from="/#" to="/" />
+                        <Route exact={true} path="/">
+                            <PublicWrapper>
+                                <PublicHome />
+                            </PublicWrapper>
+                        </Route>
+                        <Route
+                            exact={true}
+                            path="/app/:type(daily|monthly)?/:year(\d+)?/:month(\d+)?"
+                        >
+                            <AppWrapper>
+                                <AppHome />
+                            </AppWrapper>
+                        </Route>
+                        <Route exact={true} path="/app/add">
+                            <AppWrapper>
+                                <AddItem />
+                            </AppWrapper>
+                        </Route>
+                        <Route exact={true} path="/app/add/text">
+                            <AppWrapper>
+                                <AddItems />
+                            </AppWrapper>
+                        </Route>
+                        <Route exact={true} path="/app/modify/:itemId">
+                            <AppWrapper>
+                                <AddItem />
+                            </AppWrapper>
+                        </Route>
+                    </Switch>
+                </Store>
+            </Router>
+        </React.StrictMode>
+    </ApolloProvider>,
     document.getElementById('root'),
 )
 

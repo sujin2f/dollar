@@ -5,11 +5,11 @@ import { useGlobalOption, useUser } from 'src/client/hooks'
 import { Loading } from '.'
 
 export const Menu = (): JSX.Element => {
-    const { user } = useUser()
+    const { loading, user, setDarkMode } = useUser()
     const { menuOpen, setMenuOpen } = useGlobalOption()
-    const { setDarkMode } = useUser()
+    // const { setDarkMode } = useUser()
 
-    if (!user) {
+    if (loading || !user) {
         return <Loading />
     }
 
@@ -18,6 +18,8 @@ export const Menu = (): JSX.Element => {
     }
 
     const darkModeButtonText = user.darkMode ? 'Light mode' : 'Dark mode'
+
+    console.log(user)
 
     return (
         <div onClick={() => setMenuOpen(false)}>
@@ -45,7 +47,13 @@ export const Menu = (): JSX.Element => {
                 <Link
                     to="#"
                     className="menu__item"
-                    onClick={() => setDarkMode(!user.darkMode)}
+                    onClick={() =>
+                        setDarkMode({
+                            variables: {
+                                darkMode: !user.darkMode,
+                            },
+                        })
+                    }
                 >
                     {darkModeButtonText}
                 </Link>

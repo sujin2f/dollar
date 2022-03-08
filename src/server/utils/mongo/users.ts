@@ -1,6 +1,6 @@
 import mongoose, { Schema } from 'mongoose'
-import { ErrorMessages } from 'src/constants'
-import { Nullable, User } from 'src/types'
+import { ErrorMessages } from 'src/server/constants/messages'
+import { User } from 'src/types/model'
 
 const userSchema = new Schema({
     email: {
@@ -30,10 +30,7 @@ export const getUserByEmail = async (email: string): Promise<User> => {
         })
 }
 
-export const getUserById = async (_id?: string): Promise<Nullable<User>> => {
-    if (!_id) {
-        return
-    }
+export const getUserById = async (_id: string): Promise<User> => {
     return await UserModel.findOne({ _id })
         .then((user) => {
             if (!user) {
@@ -65,8 +62,8 @@ export const getOrAddUser = async (
 }
 
 export const setDarkMode = async (
+    _id: string,
     darkMode: boolean,
-    _id?: string,
 ): Promise<boolean> => {
     const result = await UserModel.updateOne({ _id }, { darkMode }).catch(
         () => {

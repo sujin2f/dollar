@@ -7,8 +7,8 @@
 import { google } from 'googleapis'
 import { OAuth2Client } from 'googleapis-common'
 import { Credentials } from 'google-auth-library'
-import { User } from 'src/types'
-import { ErrorMessages } from 'src/constants'
+import { User } from 'src/types/model'
+import { ErrorMessages } from 'src/server/constants/messages'
 
 /**
  * Create an OAuth2 client with the given credentials

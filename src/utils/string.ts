@@ -1,4 +1,4 @@
-import { Column } from 'src/types'
+import { Column } from 'src/types/table'
 
 export const getType = (str: string): Column => {
     if (!isNaN(Date.parse(str))) {

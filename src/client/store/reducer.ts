@@ -1,8 +1,5 @@
-import { Action, State, ApiState, initialState } from 'src/types'
+import { State, initialState, Action, ApiState } from 'src/types/store'
 import {
-    GET_USER_INIT,
-    GET_USER_SUCCESS,
-    GET_USER_FAILED,
     GET_ITEMS_INIT,
     GET_ITEMS_SUCCESS,
     GET_ITEMS_FAILED,
@@ -43,24 +40,6 @@ export const reducer = (state: State = initialState, action: Action): State => {
             return {
                 ...state,
                 items: ApiState.NotAssigned,
-            }
-        }
-        case GET_USER_INIT: {
-            return {
-                ...state,
-                user: ApiState.Loading,
-            }
-        }
-        case GET_USER_SUCCESS: {
-            return {
-                ...state,
-                user: action.user,
-            }
-        }
-        case GET_USER_FAILED: {
-            return {
-                ...state,
-                user: ApiState.Removed,
             }
         }
         case GET_CATEGORIES_INIT: {

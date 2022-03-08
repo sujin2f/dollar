@@ -3,7 +3,7 @@
  */
 
 import mongoose from 'mongoose'
-import { ErrorMessages } from 'src/constants'
+import { ErrorMessages } from 'src/server/constants/messages'
 
 /**
  * MongoDB connect

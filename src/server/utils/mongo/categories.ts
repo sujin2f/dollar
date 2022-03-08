@@ -1,6 +1,6 @@
 import mongoose, { Schema } from 'mongoose'
-import { ErrorMessages } from 'src/constants'
-import { Category } from 'src/types'
+import { ErrorMessages } from 'src/server/constants/messages'
+import { Category } from 'src/types/model'
 
 const categorySchema = new Schema({
     user: {
@@ -19,21 +19,10 @@ export const CategoryModel = mongoose.model<Category>(
     categorySchema,
 )
 
-export const getCategories = async (userId?: string): Promise<Category[]> => {
-    if (!userId) {
-        throw new Error(ErrorMessages.AUTHENTICATION_FAILED)
-    }
-
-    return await CategoryModel.find({ user: userId })
-        .then((categories) => {
-            if (!categories) {
-                throw new Error(ErrorMessages.FIND_CATEGORIES_FAILED)
-            }
-            return categories
-        })
-        .catch(() => {
-            throw new Error(ErrorMessages.FIND_CATEGORIES_FAILED)
-        })
+export const getCategories = async (user: string): Promise<Category[]> => {
+    return await CategoryModel.find({ user }).catch(() => {
+        throw new Error(ErrorMessages.FIND_CATEGORIES_FAILED)
+    })
 }
 
 export const findOrCreateCategory = async (

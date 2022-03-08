@@ -8,7 +8,7 @@ import {
     Modal,
 } from 'src/client/components'
 import { useAccountBookMatch, useGlobalOption } from 'src/client/hooks'
-import { TableType } from 'src/constants'
+import { TableType } from 'src/constants/accountBook'
 
 export const Home = (): JSX.Element => {
     const { deleteItemModal } = useGlobalOption()

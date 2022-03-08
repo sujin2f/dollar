@@ -6,7 +6,7 @@ import {
     useGlobalOption,
     useItems,
 } from 'src/client/hooks'
-import { Column } from 'src/types'
+import { Column } from 'src/types/table'
 import { formatCurrency } from 'src/utils'
 
 export const Table = (): JSX.Element => {

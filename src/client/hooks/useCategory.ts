@@ -9,7 +9,9 @@ import {
     getCategoriesFailed,
 } from 'src/client/store'
 import { graphqlClient } from 'src/utils'
-import { ApiState, Category, isApiState, Nullable } from 'src/types'
+import { Category } from 'src/types/model'
+import { ApiState, isApiState } from 'src/types/store'
+import { Nullable } from 'src/types/common'
 
 type GetCategoriesQueryParam = {
     getCategories: Category[]

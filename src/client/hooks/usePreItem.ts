@@ -10,7 +10,7 @@ import {
     getPreItemsFailed,
     resetPreItems as resetStorePreItems,
 } from 'src/client/store'
-import { CreateItemsParam } from 'src/types'
+import { CreateItemsParam } from 'src/types/model'
 
 type GetPreItemsQueryParam = {
     getPreItems: CreateItemsParam[]

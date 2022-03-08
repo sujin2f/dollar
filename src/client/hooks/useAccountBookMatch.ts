@@ -1,5 +1,5 @@
 import { useRouteMatch } from 'react-router-dom'
-import { TableType } from 'src/constants'
+import { TableType } from 'src/constants/accountBook'
 import { hasEnumValue } from 'src/utils'
 
 type Match = { type?: string; year?: string; month?: string }

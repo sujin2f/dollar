@@ -1,6 +1,7 @@
 import express, { Request, Response, NextFunction } from 'express'
 import { graphqlHTTP } from 'express-graphql'
 import { buildSchema } from 'graphql'
+import { ErrorMessages } from 'src/server/constants/messages'
 
 import {
     getItems,
@@ -71,8 +72,15 @@ const schema = buildSchema(`
     }
 `)
 
-const loggingMiddleware = (req: Request, _: Response, next: NextFunction) => {
-    next()
+const loggingMiddleware = (req: Request, res: Response, next: NextFunction) => {
+    if (req.session.user) {
+        next()
+        return
+    }
+
+    res.send({
+        errors: [{ message: ErrorMessages.AUTHENTICATION_FAILED }],
+    })
 }
 apiRouter.use(loggingMiddleware)
 
@@ -105,62 +113,57 @@ apiRouter.use(
         schema,
         rootValue: {
             getCategories: async (_: void, req: Request) => {
-                return await getCategories(req.session.user).catch(
+                return await getCategories(req.session.user!).catch(
                     (e: Error) => {
-                        console.error(e.message)
                         throw e
                     },
                 )
             },
             getUser: async (_: void, req: Request) => {
-                return await getUserById(req.session.user).catch((e: Error) => {
-                    console.error(e.message)
-                    throw e
-                })
+                return await getUserById(req.session.user!).catch(
+                    (e: Error) => {
+                        throw e
+                    },
+                )
             },
             createItems: async (param: CreateItemsParam, req: Request) => {
                 return await createItems(
+                    req.session.user!,
                     param.json,
                     param.setPreSelect,
-                    req.session.user,
                 ).catch((e: Error) => {
-                    console.error(e.message)
                     throw e
                 })
             },
             getItems: async (param: GetItemsParam, req: Request) => {
                 return await getItems(
+                    req.session.user!,
                     param.year,
                     param.month,
-                    req.session.user,
                 ).catch((e: Error) => {
-                    console.error(e.message)
                     throw e
                 })
             },
             setDarkMode: async (param: SetDarkModeParam, req: Request) => {
                 return await setDarkMode(
+                    req.session.user!,
                     param.darkMode,
-                    req.session.user,
                 ).catch((e: Error) => {
-                    console.error(e.message)
                     throw e
                 })
             },
             getPreItems: async (param: PreItemsParam, req: Request) => {
                 return await getPreItems(
+                    req.session.user!,
                     param.rawText,
                     param.dateFormat,
-                    req.session.user,
                 ).catch((e: Error) => {
-                    console.error(e.message)
                     throw e
                 })
             },
             deleteItem: async (param: DeleteItemParam, req: Request) => {
-                return await deleteItem(param.itemId, req.session.user).catch(
+                return await deleteItem(req.session.user!, param.itemId).catch(
                     (e: Error) => {
-                        console.error(e.message)
                         throw e
                     },
                 )

@@ -1,7 +1,6 @@
 import React, { createContext, PropsWithChildren, useReducer } from 'react'
+import { initialState, State } from 'src/types/store'
 import { reducer } from './reducer'
-import type { State } from 'src/types'
-import { initialState } from 'src/types'
 
 export const Context = createContext([initialState, null])
 export type ContextType = [State, any]
@@ -25,9 +24,6 @@ export {
     getCategoriesInit,
     getCategoriesSuccess,
     getCategoriesFailed,
-    getUserInit,
-    getUserSuccess,
-    getUserFailed,
     getPreItemsInit,
     getPreItemsSuccess,
     getPreItemsFailed,

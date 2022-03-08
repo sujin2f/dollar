@@ -1,4 +1,5 @@
-import { Category, CreateItemsParam, Item, Nullable, User } from '.'
+import { Category, CreateItemsParam, Item } from './model'
+import { Nullable } from './common'
 
 export enum ApiState {
     NotAssigned,
@@ -12,7 +13,6 @@ export type Action = {
     type: string
     items: Item[]
     _id: string
-    user: User
     categories: Category[]
     menuOpen: boolean
     dateFormat: string
@@ -28,7 +28,6 @@ export type StatePreItems = {
 }
 
 export type State = {
-    user: WithApiState<User>
     categories: WithApiState<Category[]>
     items: WithApiState<Item[]>
     option: {
@@ -40,7 +39,6 @@ export type State = {
 }
 
 export const initialState: State = {
-    user: ApiState.NotAssigned,
     categories: ApiState.NotAssigned,
     items: ApiState.NotAssigned,
     option: {

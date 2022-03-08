@@ -1,12 +1,13 @@
 import mongoose, { Schema } from 'mongoose'
-import { ErrorMessages } from 'src/constants'
-import { Column, CreateItemsParam, Item, Nullable } from 'src/types'
+import { ErrorMessages } from 'src/server/constants/messages'
 import {
     findOrCreateCategory,
     getPreSelect,
     findOrCreatePreSelect,
 } from 'src/server/utils/mongo'
+import { Item, CreateItemsParam } from 'src/types/model'
 import { currencyToNumber, addZero, formatDate } from 'src/utils'
+import { rawTextToCreateItemsParams } from '../create-items-params'
 import { CategoryModel } from './categories'
 
 const itemSchema = new Schema({
@@ -31,14 +32,10 @@ export const ItemModel = mongoose.model<Item>('item', itemSchema)
 
 // TODO get duration and cache
 export const getItems = async (
+    userId: string,
     year: number,
     month: number,
-    userId?: string,
 ): Promise<Item[]> => {
-    if (!userId) {
-        throw new Error(ErrorMessages.AUTHENTICATION_FAILED)
-    }
-
     return await ItemModel.find({
         user: userId,
         date: {
@@ -48,27 +45,16 @@ export const getItems = async (
     })
         .sort({ date: -1 })
         .populate({ path: 'category', model: CategoryModel })
-        .then((items) => {
-            if (!items) {
-                return []
-            }
-            return items
-        })
-        .catch((e: Error) => {
-            console.error(e.message)
-            throw new Error(`${ErrorMessages.FIND_ITEM_FAILED}: ${e.message}`)
+        .catch(() => {
+            throw new Error(ErrorMessages.FIND_ITEM_FAILED)
         })
 }
 
 export const createItems = async (
+    userId: string,
     json: string,
     setPreSelect: boolean,
-    userId?: string,
 ): Promise<boolean> => {
-    if (!userId) {
-        throw new Error(ErrorMessages.AUTHENTICATION_FAILED)
-    }
-
     const parsed = JSON.parse(json.replaceAll("'", '"')) as CreateItemsParam[]
     for (const row of parsed) {
         const category = row.category
@@ -115,26 +101,19 @@ export const createItems = async (
 }
 
 export const deleteItem = async (
+    userId: string,
     itemId: string,
-    userId?: string,
 ): Promise<boolean> => {
-    if (!userId) {
-        throw new Error(ErrorMessages.AUTHENTICATION_FAILED)
-    }
     return await ItemModel.deleteOne({ _id: itemId })
         .then(() => true)
         .catch(() => false)
 }
 
 export const getPreItems = async (
+    userId: string,
     rawText: string,
     dateFormat: string,
-    userId?: string,
 ): Promise<CreateItemsParam[]> => {
-    if (!userId) {
-        throw new Error(ErrorMessages.AUTHENTICATION_FAILED)
-    }
-
     const createItemsParams = rawTextToCreateItemsParams(rawText, dateFormat)
     for (const [index, item] of createItemsParams.entries()) {
         // Check the pre-input item matches to a new row
@@ -167,70 +146,4 @@ export const getPreItems = async (
     }
 
     return createItemsParams
-}
-
-const rawTextToCreateItemsParams = (
-    rawText: string,
-    dateFormat: string,
-): CreateItemsParam[] => {
-    const tabSeparated = rawText
-        .split('[line-break]')
-        .map((row) => row.split('\t'))
-    const columns: Column[] = []
-    const result = []
-
-    // Set columns with the first row
-    if (!tabSeparated[0][0]) {
-        return []
-    }
-
-    tabSeparated[0].forEach((text) => {
-        if (Object.keys(Column).includes(text)) {
-            columns.push(Column[text as keyof typeof Column])
-        } else {
-            columns.push(Column.Unknown)
-        }
-    })
-
-    // Put data into result
-    for (const row of tabSeparated.splice(1)) {
-        const rowData: Partial<Record<Column, string>> = {}
-        row.forEach((column, key) => (rowData[columns[key]] = column))
-        result.push(rowData)
-    }
-
-    return result
-        .map((row) => {
-            let date: Nullable<string> = null
-            switch (dateFormat) {
-                case 'DD/MM/YYYY':
-                    const dateString = row[Column.Date]?.split('/') || []
-                    if (dateString.length !== 3) {
-                        break
-                    }
-                    date = `${dateString[2]}-${addZero(
-                        dateString[1],
-                    )}-${addZero(dateString[0])}`
-                    break
-                default:
-                    date = formatDate(row[Column.Date] || '')
-            }
-            return {
-                checked: true,
-                date,
-                title: row[Column.Title],
-                originTitle: row[Column.Title],
-                category: '',
-                debit: row[Column.Debit],
-                credit: row[Column.Credit],
-            } as CreateItemsParam
-        })
-        .filter((row) => {
-            const dateValid =
-                !row.date || row.date.toString() !== 'Invalid Date'
-            if (!dateValid) {
-                return false
-            }
-            return row.debit || row.credit
-        })
 }

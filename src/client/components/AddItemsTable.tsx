@@ -1,7 +1,8 @@
 import React, { ChangeEvent, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useItems, useCategory, usePreItem } from 'src/client/hooks'
-import { Column, CreateItemsParam } from 'src/types'
+import { CreateItemsParam } from 'src/types/model'
+import { Column } from 'src/types/table'
 import { deepCopy } from 'src/utils'
 
 export const AddItemsTable = (): JSX.Element => {

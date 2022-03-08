@@ -1,7 +1,7 @@
 import ejs from 'ejs'
 import express, { Response } from 'express'
 import path from 'path'
-import { ErrorMessages } from 'src/constants'
+import { ErrorMessages } from 'src/server/constants/messages'
 import { publicDir, baseDir, bundles } from 'src/server/utils/environment'
 
 const staticRouter = express.Router()

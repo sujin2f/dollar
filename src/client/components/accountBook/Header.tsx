@@ -1,7 +1,8 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { useAccountBookMatch } from 'src/client/hooks'
-import { Month, TableType } from 'src/constants'
+import { TableType } from 'src/constants/accountBook'
+import { Month } from 'src/constants/datetime'
 import { addZero } from 'src/utils'
 
 export const Header = (): JSX.Element => {

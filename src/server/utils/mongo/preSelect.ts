@@ -1,6 +1,6 @@
 import mongoose, { Schema } from 'mongoose'
-import { ErrorMessages } from 'src/constants'
-import { Category, PreSelect } from 'src/types'
+import { ErrorMessages } from 'src/server/constants/messages'
+import { PreSelect, Category } from 'src/types/model'
 import { CategoryModel } from './categories'
 
 const preSelectSchema = new Schema({

@@ -1,7 +1,3 @@
-export const GET_USER_INIT = 'sujin/v1/GET_USER_INIT'
-export const GET_USER_SUCCESS = 'sujin/v1/GET_USER_SUCCESS'
-export const GET_USER_FAILED = 'sujin/v1/GET_USER_FAILED'
-
 export const GET_ITEMS_INIT = 'sujin/v1/GET_ITEMS_INIT'
 export const GET_ITEMS_SUCCESS = 'sujin/v1/GET_ITEMS_SUCCESS'
 export const GET_ITEMS_FAILED = 'sujin/v1/GET_ITEMS_FAILED'

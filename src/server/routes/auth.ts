@@ -1,6 +1,6 @@
 import express from 'express'
 import { Session } from 'express-session'
-import { User } from 'src/types'
+import { User } from 'src/types/model'
 import { getOrAddUser } from 'src/server/utils/mongo'
 import {
     getGoogleAccountFromCode,

@@ -10,9 +10,9 @@ import { useUser } from 'src/client/hooks'
 
 import 'src/assets/styles/style.scss'
 export const Wrapper = (prop: PropsWithChildren<{}>): JSX.Element => {
-    const { user } = useUser()
+    const { loading, user } = useUser()
 
-    if (!user) {
+    if (loading || !user) {
         return <Loading />
     }
 

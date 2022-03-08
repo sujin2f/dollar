@@ -14,7 +14,7 @@ if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'stage') {
 }
 
 /* eslint-disable import/first */
-import { ErrorMessages } from 'src/constants'
+import { ErrorMessages } from 'src/server/constants/messages'
 import { mongoConnect } from 'src/server/utils/mongo'
 
 import { authRouter, staticRouter, apiRouter } from 'src/server/routes'

@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { useAccountBookMatch } from 'src/client/hooks'
-import { TableType } from 'src/constants'
+import { TableType } from 'src/constants/accountBook'
 
 export const TypeSelector = (): JSX.Element => {
     const { year, month, type } = useAccountBookMatch()

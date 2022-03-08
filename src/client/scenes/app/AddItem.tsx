@@ -1,7 +1,8 @@
 import React, { useRef } from 'react'
 import { Link, useRouteMatch } from 'react-router-dom'
 import { useCategory, useItems } from 'src/client/hooks'
-import { Column, CreateItemsParam } from 'src/types'
+import { CreateItemsParam } from 'src/types/model'
+import { Column } from 'src/types/table'
 
 export const AddItem = (): JSX.Element => {
     const match = useRouteMatch<{ itemId?: string }>()

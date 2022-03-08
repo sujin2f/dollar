@@ -1,15 +1,7 @@
+import { Nullable } from 'src/types/common'
+import { Item, Category, CreateItemsParam } from 'src/types/model'
+import { Action } from 'src/types/store'
 import {
-    Action,
-    Category,
-    CreateItemsParam,
-    Item,
-    Nullable,
-    User,
-} from 'src/types'
-import {
-    GET_USER_INIT,
-    GET_USER_SUCCESS,
-    GET_USER_FAILED,
     GET_ITEMS_INIT,
     GET_ITEMS_SUCCESS,
     GET_ITEMS_FAILED,
@@ -48,25 +40,6 @@ export const getItemsSuccess = (items: Item[]): Partial<Action> => {
 export const getItemsFailed = (): Partial<Action> => {
     return {
         type: GET_ITEMS_FAILED,
-    }
-}
-
-export const getUserInit = (): Partial<Action> => {
-    return {
-        type: GET_USER_INIT,
-    }
-}
-
-export const getUserSuccess = (user: User): Partial<Action> => {
-    return {
-        type: GET_USER_SUCCESS,
-        user,
-    }
-}
-
-export const getUserFailed = (): Partial<Action> => {
-    return {
-        type: GET_USER_FAILED,
     }
 }
 

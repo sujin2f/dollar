@@ -1,70 +1,52 @@
-import { useContext, useEffect } from 'react'
-import { gql } from '@apollo/client'
+import { gql, useMutation, useQuery } from '@apollo/client'
 
-import {
-    ContextType,
-    Context,
-    getUserInit,
-    getUserSuccess,
-    getUserFailed,
-} from 'src/client/store'
-import { graphqlClient } from 'src/utils'
-import { User, ApiState, isApiState } from 'src/types'
+import { User } from 'src/types/model'
+import { useHistory } from 'react-router-dom'
 
 type GetUserQueryParam = {
     getUser: User
 }
 
-export const useUser = () => {
-    const [{ user }, dispatch] = useContext(Context) as ContextType
-
-    useEffect(() => {
-        if (user !== ApiState.NotAssigned) {
-            return
+const GET_USER = gql`
+    query {
+        getUser {
+            name
+            email
+            photo
+            darkMode
         }
+    }
+`
+const SET_DARK_MODE = gql`
+    mutation setDarkMode($darkMode: Boolean!) {
+        setDarkMode(darkMode: $darkMode)
+    }
+`
 
-        dispatch(getUserInit())
-        graphqlClient
-            .query<GetUserQueryParam>({
-                query: gql`
-                    query {
-                        getUser {
-                            name
-                            email
-                            photo
-                            darkMode
-                        }
-                    }
-                `,
-            })
-            .then((response) => {
-                dispatch(getUserSuccess(response.data.getUser))
-            })
-            .catch((e: Error) => {
-                console.error(e.message)
-                dispatch(getUserFailed())
-            })
-    }, [dispatch, user])
+export const useUser = () => {
+    const history = useHistory()
+    const {
+        loading,
+        error,
+        data: getUserData,
+    } = useQuery<GetUserQueryParam>(GET_USER)
 
-    const setDarkMode = (darkMode: boolean) => {
-        graphqlClient
-            .mutate({
-                mutation: gql`
-                    mutation {
-                        setDarkMode(
-                            darkMode: ${darkMode}
-                        )
-                    }
-                `,
-            })
-            .then(() => {
-                dispatch(getUserSuccess({ ...(user as User), darkMode }))
-            })
-            .catch((e: Error) => {
-                console.error(e.message)
-                console.error(e)
-            })
+    if (error) {
+        alert(error.message)
+        history.push('')
     }
 
-    return { user: isApiState(user) ? undefined : (user as User), setDarkMode }
+    const [setDarkMode] = useMutation(SET_DARK_MODE, {
+        variables: {
+            darkMode: false,
+        },
+        refetchQueries: [GET_USER, 'getUser'],
+    })
+
+    return {
+        loading,
+        error,
+        user: getUserData ? getUserData.getUser : getUserData,
+        setDarkMode,
+    }
 }

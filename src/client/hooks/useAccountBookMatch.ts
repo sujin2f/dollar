@@ -2,7 +2,12 @@ import { useRouteMatch } from 'react-router-dom'
 import { TableType } from 'src/constants/accountBook'
 import { hasEnumValue } from 'src/utils'
 
-type Match = { type?: string; year?: string; month?: string }
+type Match = {
+    type?: string
+    year?: string
+    month?: string
+    removeId?: string
+}
 
 export const useAccountBookMatch = () => {
     const match = useRouteMatch<Match>()
@@ -16,5 +21,5 @@ export const useAccountBookMatch = () => {
         ? (match.params.type as TableType)
         : TableType.Daily
 
-    return { year, month, type }
+    return { match, year, month, type, removeId: match.params.removeId }
 }

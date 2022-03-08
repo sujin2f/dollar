@@ -7,10 +7,21 @@ export type Item = {
     category: Category
 }
 
+export type RawItem = {
+    _id?: string
+    checked: boolean
+    date: string
+    title: string
+    originTitle: string
+    debit: number
+    credit: number
+    category: string
+}
+
 export type Category = {
     _id: string
     title: string
-    hide?: boolean
+    disabled: boolean
 }
 
 export type PreSelect = {
@@ -25,15 +36,4 @@ export type User = {
     name: string
     photo?: string
     darkMode?: boolean
-}
-
-export type CreateItemsParam = {
-    _id?: string
-    checked: boolean
-    date: string
-    title: string
-    originTitle: string
-    category: string
-    debit: string
-    credit: string
 }

@@ -1,8 +1,10 @@
 import React, { MouseEvent, PropsWithChildren, useRef } from 'react'
-import { useGlobalOption } from 'src/client/hooks'
+import { useHistory } from 'react-router-dom'
 
-export const Modal = (props: PropsWithChildren<{}>): JSX.Element => {
-    const { setDeleteItemModal } = useGlobalOption()
+export const Modal = (
+    props: PropsWithChildren<{ addressBack: string }>,
+): JSX.Element => {
+    const history = useHistory()
     const overlay = useRef<HTMLDivElement>(null)
 
     const mayCloseModal = (e: MouseEvent) => {
@@ -10,7 +12,7 @@ export const Modal = (props: PropsWithChildren<{}>): JSX.Element => {
             e.preventDefault()
             return
         }
-        setDeleteItemModal()
+        history.push(props.addressBack)
     }
     return (
         <div

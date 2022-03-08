@@ -1,10 +1,20 @@
-import React, { useRef } from 'react'
-import { usePreItem } from 'src/client/hooks'
+import React, { Dispatch, SetStateAction, FormEvent, useRef } from 'react'
+import { RawItem } from 'src/types/model'
+import { rawTextToRawItem } from 'src/client/utils/item'
 
-export const AddItemsForm = (): JSX.Element => {
-    const { setPreItems } = usePreItem()
+type Props = {
+    changeInput: Dispatch<SetStateAction<RawItem[]>>
+}
+export const AddItemsForm = (props: Props): JSX.Element => {
     const rawTextField = useRef<HTMLTextAreaElement>(null)
     const dateFormatField = useRef<HTMLSelectElement>(null)
+
+    const onSubmit = (e: FormEvent) => {
+        e.preventDefault()
+        const dateFormat = dateFormatField.current?.value || ''
+        const text = rawTextField.current?.value || ''
+        props.changeInput(rawTextToRawItem(text, dateFormat))
+    }
 
     return (
         <div className="row">
@@ -17,15 +27,8 @@ export const AddItemsForm = (): JSX.Element => {
                     </select>
                 </label>
                 <textarea ref={rawTextField} defaultValue="" rows={12} />
-                <button
-                    className="button primary"
-                    onClick={(e) => {
-                        e.preventDefault()
-                        const dateFormat = dateFormatField.current?.value || ''
-                        const text = rawTextField.current?.value || ''
-                        setPreItems(dateFormat, text)
-                    }}
-                >
+
+                <button className="button primary" onClick={(e) => onSubmit(e)}>
                     Submit
                 </button>
             </div>

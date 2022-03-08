@@ -1,17 +1,18 @@
-import React, { ChangeEvent, useState } from 'react'
+import React, { ChangeEvent, useState, Dispatch, SetStateAction } from 'react'
 import { Link } from 'react-router-dom'
-import { useItems, useCategory, usePreItem } from 'src/client/hooks'
-import { CreateItemsParam } from 'src/types/model'
+import { useItems, useCategory } from 'src/client/hooks'
+import { RawItem } from 'src/types/model'
 import { Column } from 'src/types/table'
 import { deepCopy } from 'src/utils'
 
-export const AddItemsTable = (): JSX.Element => {
+type Props = {
+    items: RawItem[]
+    changeInput: Dispatch<SetStateAction<RawItem[]>>
+}
+export const AddItemsTable = (props: Props): JSX.Element => {
     const { categories } = useCategory()
-    const { createItems } = useItems()
-    const { preItems, resetPreItems } = usePreItem()
-    const [tableData, changeTableData] = useState<CreateItemsParam[]>(
-        preItems.preItemsDataset,
-    )
+    const { addItems } = useItems()
+    const [items, changeItems] = useState<RawItem[]>(props.items)
     const [toggle, changeToggle] = useState<boolean>(true)
 
     const onToggleBoxClick = (): void => {
@@ -20,53 +21,53 @@ export const AddItemsTable = (): JSX.Element => {
         if (!toggle) {
             checked = true
         }
-        const newTableData = tableData.map((row) => ({
+        const newTableData = items.map((row) => ({
             ...row,
             checked,
         }))
-        changeTableData(newTableData)
+        changeItems(newTableData)
     }
 
     const onCheckboxClick = (index: number): void => {
-        const newTableData = deepCopy(tableData) as CreateItemsParam[]
+        const newTableData = deepCopy(items) as RawItem[]
         newTableData[index].checked = !newTableData[index].checked
-        changeTableData(newTableData)
+        changeItems(newTableData)
     }
 
     const onTitleChanged = (
         e: ChangeEvent<HTMLInputElement>,
         index: number,
     ): void => {
-        const newTableData = deepCopy(tableData) as CreateItemsParam[]
+        const newTableData = deepCopy(items) as RawItem[]
         newTableData[index].title = e.target.value
-        changeTableData(newTableData)
+        changeItems(newTableData)
     }
 
     const onCategoryChanged = (
         e: ChangeEvent<HTMLInputElement>,
         index: number,
     ): void => {
-        const newTableData = deepCopy(tableData) as CreateItemsParam[]
+        const newTableData = deepCopy(items) as RawItem[]
         newTableData[index].category = e.target.value
-        changeTableData(newTableData)
+        changeItems(newTableData)
     }
 
     const onDebitChanged = (
         e: ChangeEvent<HTMLInputElement>,
         index: number,
     ): void => {
-        const newTableData = deepCopy(tableData) as CreateItemsParam[]
-        newTableData[index].debit = e.target.value
-        changeTableData(newTableData)
+        const newTableData = deepCopy(items) as RawItem[]
+        newTableData[index].debit = parseFloat(e.target.value)
+        changeItems(newTableData)
     }
 
     const onCreditChanged = (
         e: ChangeEvent<HTMLInputElement>,
         index: number,
     ): void => {
-        const newTableData = deepCopy(tableData) as CreateItemsParam[]
-        newTableData[index].credit = e.target.value
-        changeTableData(newTableData)
+        const newTableData = deepCopy(items) as RawItem[]
+        newTableData[index].credit = parseFloat(e.target.value)
+        changeItems(newTableData)
     }
 
     return (
@@ -104,7 +105,7 @@ export const AddItemsTable = (): JSX.Element => {
                         </tr>
                     </thead>
                     <tbody>
-                        {tableData.map((row, index) => {
+                        {items.map((row, index) => {
                             return (
                                 <tr key={`row-${index}`}>
                                     <td>
@@ -185,14 +186,20 @@ export const AddItemsTable = (): JSX.Element => {
                 <div className="button-group">
                     <Link
                         to="#"
-                        onClick={() => createItems(tableData, true)}
+                        onClick={() =>
+                            addItems({
+                                variables: {
+                                    items: items.filter((v) => v.checked),
+                                },
+                            })
+                        }
                         className="button"
                     >
                         Submit
                     </Link>
                     <Link
                         to="#"
-                        onClick={() => resetPreItems()}
+                        onClick={() => props.changeInput([])}
                         className="button secondary"
                     >
                         Cancel

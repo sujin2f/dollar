@@ -1,7 +1,7 @@
 import React, { useRef } from 'react'
 import { Link, useRouteMatch } from 'react-router-dom'
 import { useCategory, useItems } from 'src/client/hooks'
-import { CreateItemsParam } from 'src/types/model'
+import { RawItem } from 'src/types/model'
 import { Column } from 'src/types/table'
 
 export const AddItem = (): JSX.Element => {
@@ -9,7 +9,7 @@ export const AddItem = (): JSX.Element => {
     const isModify = match.params?.itemId
 
     const { categories } = useCategory()
-    const { items, createItems } = useItems()
+    const { items, addItems } = useItems()
     const date = useRef<HTMLInputElement>(null)
     const title = useRef<HTMLInputElement>(null)
     const debit = useRef<HTMLInputElement>(null)
@@ -30,14 +30,18 @@ export const AddItem = (): JSX.Element => {
             originTitle: title.current?.value,
             date: date.current?.value,
             title: title.current?.value,
-            debit: debit.current?.value || '',
-            credit: credit.current?.value || '',
+            debit: parseFloat(debit.current?.value || ''),
+            credit: parseFloat(credit.current?.value || ''),
             category: categoryRef.current?.value || '',
-        } as CreateItemsParam
+        } as RawItem
         if (isModify) {
             item._id = currentItem._id
         }
-        createItems([item], false)
+        addItems({
+            variables: {
+                items: [item],
+            },
+        })
     }
 
     return (

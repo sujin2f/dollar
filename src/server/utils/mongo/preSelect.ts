@@ -1,7 +1,15 @@
+import { Request } from 'express'
 import mongoose, { Schema } from 'mongoose'
 import { ErrorMessages } from 'src/server/constants/messages'
-import { PreSelect, Category } from 'src/types/model'
+import { PreSelect, Category, RawItem } from 'src/types/model'
 import { CategoryModel } from './categories'
+import { ItemModel } from './items'
+
+declare module 'express-session' {
+    interface Session {
+        user?: string
+    }
+}
 
 const preSelectSchema = new Schema({
     title: String,
@@ -85,37 +93,61 @@ export const findOrCreatePreSelect = async (
         })
 }
 
-export const getPreSelect = async (
-    keyword: string,
-    userId?: string,
-): Promise<PreSelect> => {
-    if (!userId) {
-        throw new Error(ErrorMessages.AUTHENTICATION_FAILED)
+type GetRawItemsParam = {
+    items: RawItem[]
+}
+export const getRawItems = async (
+    param: GetRawItemsParam,
+    req: Request,
+): Promise<RawItem[]> => {
+    const items = param.items
+    for (const [index, item] of param.items.entries()) {
+        /**
+         * Change category from pre-select
+         */
+        const title = item.originTitle
+            .replace(/[^a-zA-Z]/g, ' ')
+            .toLowerCase()
+            .split(' ')
+            .filter((v) => v)
+        const unique = [...new Set(title)]
+
+        await PreSelectModel.findOne(
+            {
+                user: req.session.user,
+                $text: { $search: unique.join(' ') },
+            },
+            { score: { $meta: 'textScore' } },
+        )
+            .sort({ score: { $meta: 'textScore' } })
+            .populate({ path: 'category', model: CategoryModel })
+            .then((response) => {
+                if (!response) {
+                    return
+                }
+                items[index].category = response.category.title
+            })
+            .catch(() => {
+                return
+            })
+
+        /**
+         * Uncheck duplication
+         */
+        await ItemModel.findOne({
+            user: req.session.user,
+            title: item.originTitle,
+            date: item.date,
+        })
+            .then((response) => {
+                if (!response) {
+                    return
+                }
+                items[index].checked = false
+            })
+            .catch(() => {
+                return
+            })
     }
-
-    const title = keyword
-        .replace(/[^a-zA-Z]/g, ' ')
-        .toLowerCase()
-        .split(' ')
-        .filter((v) => v)
-    const unique = [...new Set(title)]
-
-    return await PreSelectModel.findOne(
-        {
-            user: userId,
-            $text: { $search: unique.join(' ') },
-        },
-        { score: { $meta: 'textScore' } },
-    )
-        .sort({ score: { $meta: 'textScore' } })
-        .populate({ path: 'category', model: CategoryModel })
-        .then((response) => {
-            if (!response) {
-                throw new Error(ErrorMessages.FIND_CATEGORIES_FAILED)
-            }
-            return response
-        })
-        .catch(() => {
-            throw new Error(ErrorMessages.FIND_CATEGORIES_FAILED)
-        })
+    return items
 }

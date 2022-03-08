@@ -7,7 +7,6 @@ import { Loading } from '.'
 export const Menu = (): JSX.Element => {
     const { loading, user, setDarkMode } = useUser()
     const { menuOpen, setMenuOpen } = useGlobalOption()
-    // const { setDarkMode } = useUser()
 
     if (loading || !user) {
         return <Loading />
@@ -18,8 +17,6 @@ export const Menu = (): JSX.Element => {
     }
 
     const darkModeButtonText = user.darkMode ? 'Light mode' : 'Dark mode'
-
-    console.log(user)
 
     return (
         <div onClick={() => setMenuOpen(false)}>

@@ -1,16 +1,20 @@
-import React, { Fragment } from 'react'
+import React, { Fragment, useState } from 'react'
 import { AddItemsForm, AddItemsTable } from 'src/client/components'
-import { usePreItem } from 'src/client/hooks'
+import { useRawItem } from 'src/client/hooks'
+import { RawItem } from 'src/types/model'
 
 export const AddItems = (): JSX.Element => {
-    const { preItems } = usePreItem()
+    const [items, changeInput] = useState<RawItem[]>([])
+    const { rawItem } = useRawItem(items)
 
-    const hasProcessed = preItems.preItemsDataset.length !== 0
+    const hasProcessed = rawItem.length !== 0
 
     return (
         <Fragment>
-            {!hasProcessed && <AddItemsForm />}
-            {hasProcessed && <AddItemsTable />}
+            {!hasProcessed && <AddItemsForm changeInput={changeInput} />}
+            {hasProcessed && (
+                <AddItemsTable items={rawItem} changeInput={changeInput} />
+            )}
         </Fragment>
     )
 }

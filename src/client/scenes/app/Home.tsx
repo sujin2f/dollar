@@ -4,23 +4,25 @@ import {
     AccountBookTable,
     AccountBookTypeSelector,
     CategoryGraph,
-    DeleteItemModal,
+    RemoveItemModal,
     Modal,
 } from 'src/client/components'
-import { useAccountBookMatch, useGlobalOption } from 'src/client/hooks'
+import { useAccountBookMatch } from 'src/client/hooks'
 import { TableType } from 'src/constants/accountBook'
 
 export const Home = (): JSX.Element => {
-    const { deleteItemModal } = useGlobalOption()
-    const { type } = useAccountBookMatch()
+    const { type, year, month, removeId } = useAccountBookMatch()
+    const addressBack =
+        '/' + ['app', type, year, month].filter((v) => v).join('/')
 
     return (
         <Fragment>
-            {deleteItemModal && (
-                <Modal>
-                    <DeleteItemModal />
+            {removeId && (
+                <Modal addressBack={addressBack}>
+                    <RemoveItemModal addressBack={addressBack} />
                 </Modal>
             )}
+
             <AccountBookTypeSelector />
             <AccountBookHeader />
 

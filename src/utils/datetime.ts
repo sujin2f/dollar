@@ -1,5 +1,12 @@
 export const formatDate = (dateString: string): string => {
+    if (!dateString) {
+        return ''
+    }
+
     const date = new Date(dateString)
+    if (date.toString() === 'Invalid Date') {
+        return 'Invalid Date'
+    }
 
     return `${date.getUTCFullYear()}-${addZero(
         date.getUTCMonth() + 1,

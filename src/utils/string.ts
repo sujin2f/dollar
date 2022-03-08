@@ -16,7 +16,10 @@ export const getType = (str: string): Column => {
     return Column.Title
 }
 
-export const currencyToNumber = (currency: string): number => {
+export const currencyToNumber = (currency?: string): number => {
+    if (!currency) {
+        return 0
+    }
     const float = parseFloat(currency.replace(/[^0-9.-]+/g, ''))
     if (!float || isNaN(float)) {
         return 0

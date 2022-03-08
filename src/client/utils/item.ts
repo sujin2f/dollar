@@ -1,15 +1,13 @@
 import { Nullable } from 'src/types/common'
-import { CreateItemsParam } from 'src/types/model'
+import { RawItem } from 'src/types/model'
 import { Column } from 'src/types/table'
-import { addZero, formatDate } from 'src/utils'
+import { addZero, currencyToNumber, formatDate } from 'src/utils'
 
-export const rawTextToCreateItemsParams = (
+export const rawTextToRawItem = (
     rawText: string,
     dateFormat: string,
-): CreateItemsParam[] => {
-    const tabSeparated = rawText
-        .split('[line-break]')
-        .map((row) => row.split('\t'))
+): RawItem[] => {
+    const tabSeparated = rawText.split('\n').map((row) => row.split('\t'))
     const columns: Column[] = []
     const result = []
 
@@ -55,9 +53,9 @@ export const rawTextToCreateItemsParams = (
                 title: row[Column.Title],
                 originTitle: row[Column.Title],
                 category: '',
-                debit: row[Column.Debit],
-                credit: row[Column.Credit],
-            } as CreateItemsParam
+                debit: currencyToNumber(row[Column.Debit]),
+                credit: currencyToNumber(row[Column.Credit]),
+            } as RawItem
         })
         .filter((row) => {
             const dateValid =

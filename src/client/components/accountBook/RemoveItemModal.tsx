@@ -1,10 +1,13 @@
 import React from 'react'
-import { useGlobalOption } from 'src/client/hooks'
-import { useItems } from 'src/client/hooks'
+import { useHistory } from 'react-router-dom'
+import { useAccountBookMatch, useItems } from 'src/client/hooks'
 
-export const DeleteItemModal = (): JSX.Element => {
-    const { deleteItemModal, setDeleteItemModal } = useGlobalOption()
-    const { deleteItem } = useItems()
+export const RemoveItemModal = (props: {
+    addressBack: string
+}): JSX.Element => {
+    const history = useHistory()
+    const { removeId } = useAccountBookMatch()
+    const { removeItem } = useItems()
 
     return (
         <div className="reveal" style={{ display: 'block' }}>
@@ -13,14 +16,20 @@ export const DeleteItemModal = (): JSX.Element => {
 
             <button
                 className="button"
-                onClick={() => deleteItem(deleteItemModal || '')}
+                onClick={() =>
+                    removeItem({
+                        variables: {
+                            _id: removeId!,
+                        },
+                    })
+                }
                 autoFocus
             >
                 Confirm
             </button>
             <button
                 className="button secondary"
-                onClick={() => setDeleteItemModal()}
+                onClick={() => history.push(props.addressBack)}
             >
                 Cancel
             </button>
@@ -28,7 +37,7 @@ export const DeleteItemModal = (): JSX.Element => {
                 className="close-button"
                 aria-label="Close reveal"
                 type="button"
-                onClick={() => setDeleteItemModal()}
+                onClick={() => history.push(props.addressBack)}
             >
                 <span aria-hidden="true">&times;</span>
             </button>

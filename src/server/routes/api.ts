@@ -4,13 +4,14 @@ import { buildSchema } from 'graphql'
 import { ErrorMessages } from 'src/server/constants/messages'
 
 import {
-    getItems,
-    createItems,
+    getUser,
     getCategories,
-    getUserById,
+    updateCategory,
+    getItems,
+    getRawItems,
+    addItems,
     setDarkMode,
-    getPreItems,
-    deleteItem,
+    removeItem,
 } from 'src/server/utils/mongo'
 
 declare module 'express-session' {
@@ -23,28 +24,29 @@ const apiRouter = express.Router()
 const schema = buildSchema(`
     type Query {
         getUser: User
-        getCategories(version: Float): [Category]
+        getCategories: [Category]
         getItems(
             year: Int,
-            month: Int,
-            version: Float
+            month: Int
         ): [Item]
-        getPreItems(
-            rawText: String!,
-            dateFormat: String!
-        ): [CreateItemsParam]
+        getRawItems(items: [RawItemInput]): [RawItem]
     }
     type Mutation {
-        createItems(
-            json: String!,
-            setPreSelect: Boolean!
-        ): Boolean
         setDarkMode(darkMode: Boolean!): Boolean
-        deleteItem(itemId: String!): Boolean
+        updateCategory(category: CategoryUpdate): Boolean
+        addItems(items: [RawItemInput]): Boolean
+        addItem(item: RawItemInput): Boolean
+        removeItem(_id: String!): Boolean
     }
     type Category {
         _id: String
         title: String
+        disabled: Boolean
+    }
+    input CategoryUpdate {
+        _id: String
+        title: String
+        disabled: Boolean
     }
     type User {
         _id: String
@@ -61,14 +63,25 @@ const schema = buildSchema(`
         credit: Float
         category: Category
     }
-    type CreateItemsParam {
+    type RawItem {
+        _id: String
         checked: Boolean
         date: String
         title: String
         originTitle: String
+        debit: Float
+        credit: Float
         category: String
-        debit: String
-        credit: String
+    }
+    input RawItemInput {
+        _id: String
+        checked: Boolean
+        date: String
+        title: String
+        originTitle: String
+        debit: Float
+        credit: Float
+        category: String
     }
 `)
 
@@ -84,90 +97,19 @@ const loggingMiddleware = (req: Request, res: Response, next: NextFunction) => {
 }
 apiRouter.use(loggingMiddleware)
 
-type CreateItemsParam = {
-    json: string
-    setPreSelect: boolean
-}
-
-type SetDarkModeParam = {
-    darkMode: boolean
-}
-
-type PreItemsParam = {
-    rawText: string
-    dateFormat: string
-}
-
-type GetItemsParam = {
-    year: number
-    month: number
-}
-
-type DeleteItemParam = {
-    itemId: string
-}
-
 apiRouter.use(
     '/',
     graphqlHTTP({
         schema,
         rootValue: {
-            getCategories: async (_: void, req: Request) => {
-                return await getCategories(req.session.user!).catch(
-                    (e: Error) => {
-                        throw e
-                    },
-                )
-            },
-            getUser: async (_: void, req: Request) => {
-                return await getUserById(req.session.user!).catch(
-                    (e: Error) => {
-                        throw e
-                    },
-                )
-            },
-            createItems: async (param: CreateItemsParam, req: Request) => {
-                return await createItems(
-                    req.session.user!,
-                    param.json,
-                    param.setPreSelect,
-                ).catch((e: Error) => {
-                    throw e
-                })
-            },
-            getItems: async (param: GetItemsParam, req: Request) => {
-                return await getItems(
-                    req.session.user!,
-                    param.year,
-                    param.month,
-                ).catch((e: Error) => {
-                    throw e
-                })
-            },
-            setDarkMode: async (param: SetDarkModeParam, req: Request) => {
-                return await setDarkMode(
-                    req.session.user!,
-                    param.darkMode,
-                ).catch((e: Error) => {
-                    throw e
-                })
-            },
-            getPreItems: async (param: PreItemsParam, req: Request) => {
-                return await getPreItems(
-                    req.session.user!,
-                    param.rawText,
-                    param.dateFormat,
-                ).catch((e: Error) => {
-                    throw e
-                })
-            },
-            deleteItem: async (param: DeleteItemParam, req: Request) => {
-                return await deleteItem(req.session.user!, param.itemId).catch(
-                    (e: Error) => {
-                        throw e
-                    },
-                )
-            },
+            getUser,
+            setDarkMode,
+            getCategories,
+            updateCategory,
+            getItems,
+            getRawItems,
+            addItems,
+            removeItem,
         },
         graphiql: true,
     }),

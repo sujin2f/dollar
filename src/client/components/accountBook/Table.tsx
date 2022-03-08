@@ -1,20 +1,19 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
-import {
-    useAccountBookMatch,
-    useCategory,
-    useGlobalOption,
-    useItems,
-} from 'src/client/hooks'
+import { Link, useHistory } from 'react-router-dom'
+import { useAccountBookMatch, useCategory, useItems } from 'src/client/hooks'
 import { Column } from 'src/types/table'
 import { formatCurrency } from 'src/utils'
+import { Loading } from '../Loading'
 
 export const Table = (): JSX.Element => {
     const { year, month, type } = useAccountBookMatch()
-    const { setDeleteItemModal } = useGlobalOption()
     const { isCategoryHidden } = useCategory()
+    const { loading, items } = useItems(year, month, type)
+    const history = useHistory()
+    if (loading) {
+        return <Loading />
+    }
 
-    const { items } = useItems(year, month, type)
     let totalDebit = 0
     let totalCredit = 0
 
@@ -64,7 +63,7 @@ export const Table = (): JSX.Element => {
                                     <td className="table__cell--center">
                                         <div className="button-group">
                                             <Link
-                                                to={`/app/modify/${item._id}`}
+                                                to={`/app/update/${item._id}`}
                                                 className="button tiny secondary hollow"
                                             >
                                                 <i className="fi-wrench" />
@@ -72,9 +71,22 @@ export const Table = (): JSX.Element => {
                                             <Link
                                                 to="#"
                                                 className="button tiny secondary hollow"
-                                                onClick={() =>
-                                                    setDeleteItemModal(item._id)
-                                                }
+                                                onClick={() => {
+                                                    const addressRemove =
+                                                        '/' +
+                                                        [
+                                                            'app',
+                                                            type,
+                                                            year,
+                                                            month,
+                                                            'remove',
+                                                            item._id,
+                                                        ]
+                                                            .filter((v) => v)
+                                                            .join('/')
+
+                                                    history.push(addressRemove)
+                                                }}
                                             >
                                                 <i className="fi-x" />
                                             </Link>

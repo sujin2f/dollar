@@ -1,5 +1,9 @@
 export { mongoConnect } from './connect'
-export { getItems, createItems, getPreItems, deleteItem } from './items'
-export { getUserById, setDarkMode, getOrAddUser } from './users'
-export { getCategories, findOrCreateCategory } from './categories'
-export { getPreSelect, findOrCreatePreSelect } from './preSelect'
+export { getItems, addItems, removeItem } from './items'
+export { getUser, setDarkMode, getOrAddUser } from './users'
+export {
+    getCategories,
+    updateCategory,
+    findOrCreateCategory,
+} from './categories'
+export { getRawItems, findOrCreatePreSelect } from './preSelect'

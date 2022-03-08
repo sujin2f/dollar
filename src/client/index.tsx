@@ -27,7 +27,12 @@ ReactDOM.render(
                         </Route>
                         <Route
                             exact={true}
-                            path="/app/:type(daily|monthly)?/:year(\d+)?/:month(\d+)?"
+                            path={[
+                                '/app',
+                                '/app/remove/:removeId',
+                                '/app/:type(daily)/:year(\\d+)?/:month(\\d+)?',
+                                '/app/:type(daily)/:year(\\d+)?/:month(\\d+)?/remove/:removeId',
+                            ]}
                         >
                             <AppWrapper>
                                 <AppHome />
@@ -43,7 +48,7 @@ ReactDOM.render(
                                 <AddItems />
                             </AppWrapper>
                         </Route>
-                        <Route exact={true} path="/app/modify/:itemId">
+                        <Route exact={true} path="/app/update/:itemId">
                             <AppWrapper>
                                 <AddItem />
                             </AppWrapper>

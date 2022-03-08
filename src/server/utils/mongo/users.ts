@@ -1,6 +1,13 @@
+import { Request } from 'express'
 import mongoose, { Schema } from 'mongoose'
 import { ErrorMessages } from 'src/server/constants/messages'
 import { User } from 'src/types/model'
+
+declare module 'express-session' {
+    interface Session {
+        user?: string
+    }
+}
 
 const userSchema = new Schema({
     email: {
@@ -17,21 +24,21 @@ const userSchema = new Schema({
 
 export const UserModel = mongoose.model<User>('user', userSchema)
 
-export const getUserByEmail = async (email: string): Promise<User> => {
-    return await UserModel.findOne({ email })
+export const getUser = async (_: void, req: Request): Promise<User> => {
+    return await UserModel.findOne({ _id: req.session.user })
         .then((user) => {
             if (!user) {
-                throw new Error(ErrorMessages.AUTHENTICATION_FAILED)
+                throw new Error(ErrorMessages.FIND_USER_FAILED)
             }
             return user
         })
         .catch(() => {
-            throw new Error(ErrorMessages.AUTHENTICATION_FAILED)
+            throw new Error(ErrorMessages.FIND_USER_FAILED)
         })
 }
 
-export const getUserById = async (_id: string): Promise<User> => {
-    return await UserModel.findOne({ _id })
+export const getUserByEmail = async (email: string): Promise<User> => {
+    return await UserModel.findOne({ email })
         .then((user) => {
             if (!user) {
                 throw new Error(ErrorMessages.AUTHENTICATION_FAILED)
@@ -61,17 +68,21 @@ export const getOrAddUser = async (
     return result as User
 }
 
+type SetDarkModeParam = {
+    darkMode: boolean
+}
 export const setDarkMode = async (
-    _id: string,
-    darkMode: boolean,
+    param: SetDarkModeParam,
+    req: Request,
 ): Promise<boolean> => {
-    const result = await UserModel.updateOne({ _id }, { darkMode }).catch(
-        () => {
-            throw new Error(ErrorMessages.AUTHENTICATION_FAILED)
-        },
-    )
+    const result = await UserModel.updateOne(
+        { _id: req.session.user },
+        { darkMode: param.darkMode },
+    ).catch(() => {
+        throw new Error(ErrorMessages.AUTHENTICATION_FAILED)
+    })
     if (result.modifiedCount) {
-        return darkMode
+        return param.darkMode
     }
     throw new Error(ErrorMessages.AUTHENTICATION_FAILED)
 }

@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
-import { useCategory } from '../hooks'
+import { useCategory } from 'src/client/hooks'
 
 export const CategorySelector = (): JSX.Element => {
     const [open, changeOpen] = useState<boolean>(false)
-    const { categories, toggleCategoryHidden } = useCategory()
+    const { categories, updateCategory } = useCategory()
 
     return (
         <header className="category-selector__wrapper">
@@ -24,10 +24,18 @@ export const CategorySelector = (): JSX.Element => {
                                     className="switch-input"
                                     id={`category-selector-${category._id}`}
                                     type="checkbox"
-                                    defaultChecked={!category.hide}
-                                    onChange={() =>
-                                        toggleCategoryHidden(category._id)
-                                    }
+                                    checked={!category.disabled}
+                                    onChange={() => {
+                                        updateCategory({
+                                            variables: {
+                                                category: {
+                                                    _id: category._id,
+                                                    disabled:
+                                                        !category.disabled,
+                                                },
+                                            },
+                                        })
+                                    }}
                                 />
                                 <label
                                     className="switch-paddle"

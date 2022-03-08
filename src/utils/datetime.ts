@@ -1,9 +1,9 @@
-export const formatDate = (dateString: string): string => {
+export const formatDate = (dateString: string | Date): string => {
     if (!dateString) {
         return ''
     }
 
-    const date = new Date(dateString)
+    const date = dateString instanceof Date ? dateString : new Date(dateString)
     if (date.toString() === 'Invalid Date') {
         return 'Invalid Date'
     }

@@ -19,25 +19,28 @@ ReactDOM.render(
             <Router>
                 <Store>
                     <Switch>
+                        {/* Public */}
                         <Redirect from="/#" to="/" />
                         <Route exact={true} path="/">
                             <PublicWrapper>
                                 <PublicHome />
                             </PublicWrapper>
                         </Route>
-                        <Route
-                            exact={true}
-                            path={[
-                                '/app',
-                                '/app/remove/:removeId',
-                                '/app/:type(daily)/:year(\\d+)?/:month(\\d+)?',
-                                '/app/:type(daily)/:year(\\d+)?/:month(\\d+)?/remove/:removeId',
-                            ]}
-                        >
+
+                        {/* Account Book */}
+                        <Route path="/app/:type(daily)?/:year(\d+)?/:month(\d+)?">
                             <AppWrapper>
                                 <AppHome />
                             </AppWrapper>
                         </Route>
+
+                        {/* Remove Item */}
+                        <Route exact={true} path="/app/remove/:removeId">
+                            <AppWrapper>
+                                <AppHome />
+                            </AppWrapper>
+                        </Route>
+
                         <Route exact={true} path="/app/add">
                             <AppWrapper>
                                 <AddItem />

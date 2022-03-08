@@ -53,12 +53,14 @@ export const Table = (): JSX.Element => {
                                     <td>{item.title.toLowerCase()}</td>
                                     <td>{item.category?.title || ''}</td>
                                     <td className="table__cell--right">
-                                        {item.debit !== 0 &&
-                                            formatCurrency(item.debit)}
+                                        {item.debit
+                                            ? formatCurrency(item.debit)
+                                            : ''}
                                     </td>
                                     <td className="table__cell--right">
-                                        {item.credit !== 0 &&
-                                            formatCurrency(item.credit)}
+                                        {item.credit
+                                            ? formatCurrency(item.credit)
+                                            : ''}
                                     </td>
                                     <td className="table__cell--center">
                                         <div className="button-group">

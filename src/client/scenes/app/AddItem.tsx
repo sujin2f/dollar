@@ -3,6 +3,7 @@ import { Link, useRouteMatch } from 'react-router-dom'
 import { useCategory, useItems } from 'src/client/hooks'
 import { RawItem } from 'src/types/model'
 import { Column } from 'src/types/table'
+import { formatDate } from 'src/utils'
 
 export const AddItem = (): JSX.Element => {
     const match = useRouteMatch<{ itemId?: string }>()
@@ -52,7 +53,9 @@ export const AddItem = (): JSX.Element => {
                     {Column.Date}
                     <input
                         type="date"
-                        defaultValue={isModify ? currentItem.date : ''}
+                        defaultValue={
+                            isModify ? currentItem.date : formatDate(new Date())
+                        }
                         ref={date}
                     />
                 </label>

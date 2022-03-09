@@ -51,6 +51,3 @@ export const useItems = (year?: number, month?: number, type?: string) => {
         addItems,
     }
 }
-function useEffect(arg0: () => void, arg1: never[]) {
-    throw new Error('Function not implemented.')
-}

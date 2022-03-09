@@ -1,10 +1,11 @@
 import React, { MouseEvent, PropsWithChildren, useRef } from 'react'
-import { useHistory } from 'react-router-dom'
+import { Fn } from 'src/types/common'
 
-export const Modal = (
-    props: PropsWithChildren<{ addressBack: string }>,
-): JSX.Element => {
-    const history = useHistory()
+type Props = PropsWithChildren<{
+    closeModal: Fn<[void], void>
+}>
+
+export const Modal = (props: Props): JSX.Element => {
     const overlay = useRef<HTMLDivElement>(null)
 
     const mayCloseModal = (e: MouseEvent) => {
@@ -12,7 +13,7 @@ export const Modal = (
             e.preventDefault()
             return
         }
-        history.push(props.addressBack)
+        props.closeModal()
     }
     return (
         <div

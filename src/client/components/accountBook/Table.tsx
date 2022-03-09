@@ -1,15 +1,21 @@
 import React from 'react'
-import { Link, useHistory } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { useAccountBookMatch, useCategory, useItems } from 'src/client/hooks'
+import { Fn } from 'src/types/common'
+import { Item } from 'src/types/model'
 import { Column } from 'src/types/table'
 import { formatCurrency } from 'src/utils'
 import { Loading } from '../Loading'
 
-export const Table = (): JSX.Element => {
+type Props = {
+    removeAction: Fn<[Item], void>
+}
+
+export const Table = (props: Props): JSX.Element => {
     const { year, month, type } = useAccountBookMatch()
     const { isCategoryHidden } = useCategory()
     const { loading, items } = useItems(year, month, type)
-    const history = useHistory()
+
     if (loading) {
         return <Loading />
     }
@@ -73,22 +79,9 @@ export const Table = (): JSX.Element => {
                                             <Link
                                                 to="#"
                                                 className="button tiny secondary hollow"
-                                                onClick={() => {
-                                                    const addressRemove =
-                                                        '/' +
-                                                        [
-                                                            'app',
-                                                            type,
-                                                            year,
-                                                            month,
-                                                            'remove',
-                                                            item._id,
-                                                        ]
-                                                            .filter((v) => v)
-                                                            .join('/')
-
-                                                    history.push(addressRemove)
-                                                }}
+                                                onClick={() =>
+                                                    props.removeAction(item)
+                                                }
                                             >
                                                 <i className="fi-x" />
                                             </Link>
@@ -100,7 +93,9 @@ export const Table = (): JSX.Element => {
                     <tfoot>
                         <tr>
                             <th>Total</th>
-                            <td></td>
+                            <td className="table__cell--right">
+                                {formatCurrency(totalCredit - totalDebit)}
+                            </td>
                             <td></td>
                             <td className="table__cell--right">
                                 {formatCurrency(totalDebit)}
@@ -108,9 +103,7 @@ export const Table = (): JSX.Element => {
                             <td className="table__cell--right">
                                 {formatCurrency(totalCredit)}
                             </td>
-                            <td className="table__cell--right">
-                                {formatCurrency(totalCredit - totalDebit)}
-                            </td>
+                            <td></td>
                         </tr>
                     </tfoot>
                 </table>

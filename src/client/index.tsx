@@ -1,17 +1,24 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import * as serviceWorker from 'src/client/serviceWorker'
+import { ApolloProvider } from '@apollo/client/react'
 import {
     BrowserRouter as Router,
     Switch,
     Route,
     Redirect,
 } from 'react-router-dom'
+import * as serviceWorker from 'src/client/serviceWorker'
+
 import { Store } from 'src/client/store'
 import { PublicWrapper, PublicHome } from 'src/client/scenes/public'
-import { AppWrapper, AppHome, AddItems, AddItem } from 'src/client/scenes/app'
-import { ApolloProvider } from '@apollo/client/react'
+import {
+    AppWrapper,
+    AccountBook,
+    AddItems,
+    AddItem,
+} from 'src/client/scenes/app'
 import { graphqlClient } from 'src/utils'
+import { TableType } from 'src/constants/accountBook'
 
 ReactDOM.render(
     <ApolloProvider client={graphqlClient}>
@@ -28,16 +35,11 @@ ReactDOM.render(
                         </Route>
 
                         {/* Account Book */}
-                        <Route path="/app/:type(daily)?/:year(\d+)?/:month(\d+)?">
+                        <Route
+                            path={`/app/:type(${TableType.Daily})?/:year(\\d+)?/:month(\\d+)?`}
+                        >
                             <AppWrapper>
-                                <AppHome />
-                            </AppWrapper>
-                        </Route>
-
-                        {/* Remove Item */}
-                        <Route exact={true} path="/app/remove/:removeId">
-                            <AppWrapper>
-                                <AppHome />
+                                <AccountBook />
                             </AppWrapper>
                         </Route>
 
@@ -46,7 +48,7 @@ ReactDOM.render(
                                 <AddItem />
                             </AppWrapper>
                         </Route>
-                        <Route exact={true} path="/app/add/text">
+                        <Route exact={true} path="/app/add/bulkAdd">
                             <AppWrapper>
                                 <AddItems />
                             </AppWrapper>

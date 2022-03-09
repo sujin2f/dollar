@@ -1,35 +1,38 @@
 import React from 'react'
-import { useHistory } from 'react-router-dom'
-import { useAccountBookMatch, useItems } from 'src/client/hooks'
+import { useItems } from 'src/client/hooks'
+import { Fn } from 'src/types/common'
+import { Item } from 'src/types/model'
 
-export const RemoveItemModal = (props: {
-    addressBack: string
-}): JSX.Element => {
-    const history = useHistory()
-    const { removeId } = useAccountBookMatch()
+type Props = {
+    closeModal: Fn<[void], void>
+    item: Item
+}
+
+export const RemoveItemModal = (props: Props): JSX.Element => {
     const { removeItem } = useItems()
 
     return (
         <div className="reveal" style={{ display: 'block' }}>
             <h1>Remove Item</h1>
-            <p className="lead">Do you want to remove this item?</p>
+            <p className="lead">Do you want to remove {props.item.title}?</p>
 
             <button
                 className="button"
-                onClick={() =>
+                onClick={() => {
                     removeItem({
                         variables: {
-                            _id: removeId!,
+                            _id: props.item._id,
                         },
                     })
-                }
+                    props.closeModal()
+                }}
                 autoFocus
             >
                 Confirm
             </button>
             <button
                 className="button secondary"
-                onClick={() => history.push(props.addressBack)}
+                onClick={() => props.closeModal()}
             >
                 Cancel
             </button>
@@ -37,7 +40,7 @@ export const RemoveItemModal = (props: {
                 className="close-button"
                 aria-label="Close reveal"
                 type="button"
-                onClick={() => history.push(props.addressBack)}
+                onClick={() => props.closeModal()}
             >
                 <span aria-hidden="true">&times;</span>
             </button>

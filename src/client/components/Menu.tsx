@@ -38,7 +38,7 @@ export const Menu = (): JSX.Element => {
                 <Link to="/app/add" className="menu__item">
                     Add Item
                 </Link>
-                <Link to="/app/add/text" className="menu__item">
+                <Link to="/app/add/bulkAdd" className="menu__item">
                     Add by Text
                 </Link>
                 <Link

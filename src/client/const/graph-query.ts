@@ -56,7 +56,7 @@ export const GraphQuery = {
         }
     `,
     REMOVE_ITEM: gql`
-        mutation RemoveItem($_id: String) {
+        mutation RemoveItem($_id: String!) {
             removeItem(_id: $_id)
         }
     `,

@@ -21,5 +21,5 @@ export const useAccountBookMatch = () => {
         ? (match.params.type as TableType)
         : TableType.Daily
 
-    return { match, year, month, type, removeId: match.params.removeId }
+    return { match, year, month, type }
 }

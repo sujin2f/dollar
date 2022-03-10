@@ -1,6 +1,6 @@
 import { Nullable } from 'src/types/common'
 import { RawItem } from 'src/types/model'
-import { Column } from 'src/types/table'
+import { TableHeader } from 'src/types/table'
 import { addZero, currencyToNumber, formatDate } from 'src/utils'
 
 export const rawTextToRawItem = (
@@ -8,7 +8,7 @@ export const rawTextToRawItem = (
     dateFormat: string,
 ): RawItem[] => {
     const tabSeparated = rawText.split('\n').map((row) => row.split('\t'))
-    const columns: Column[] = []
+    const columns: TableHeader[] = []
     const result = []
 
     // Set columns with the first row
@@ -17,16 +17,16 @@ export const rawTextToRawItem = (
     }
 
     tabSeparated[0].forEach((text) => {
-        if (Object.keys(Column).includes(text)) {
-            columns.push(Column[text as keyof typeof Column])
+        if (Object.keys(TableHeader).includes(text)) {
+            columns.push(TableHeader[text as keyof typeof TableHeader])
         } else {
-            columns.push(Column.Unknown)
+            columns.push(TableHeader.Unknown)
         }
     })
 
     // Put data into result
     for (const row of tabSeparated.splice(1)) {
-        const rowData: Partial<Record<Column, string>> = {}
+        const rowData: Partial<Record<TableHeader, string>> = {}
         row.forEach((column, key) => (rowData[columns[key]] = column))
         result.push(rowData)
     }
@@ -36,7 +36,7 @@ export const rawTextToRawItem = (
             let date: Nullable<string> = null
             switch (dateFormat) {
                 case 'DD/MM/YYYY':
-                    const dateString = row[Column.Date]?.split('/') || []
+                    const dateString = row[TableHeader.Date]?.split('/') || []
                     if (dateString.length !== 3) {
                         break
                     }
@@ -45,16 +45,16 @@ export const rawTextToRawItem = (
                     )}-${addZero(dateString[0])}`
                     break
                 default:
-                    date = formatDate(row[Column.Date] || '')
+                    date = formatDate(row[TableHeader.Date] || '')
             }
             return {
                 checked: true,
                 date,
-                title: row[Column.Title],
-                originTitle: row[Column.Title],
+                title: row[TableHeader.Title],
+                originTitle: row[TableHeader.Title],
                 category: '',
-                debit: currencyToNumber(row[Column.Debit]),
-                credit: currencyToNumber(row[Column.Credit]),
+                debit: currencyToNumber(row[TableHeader.Debit]),
+                credit: currencyToNumber(row[TableHeader.Credit]),
             } as RawItem
         })
         .filter((row) => {

@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { useCategory } from 'src/client/hooks'
+import { Column, Row } from 'src/client/components'
 
 export const CategorySelector = (): JSX.Element => {
     const [open, changeOpen] = useState<boolean>(false)
@@ -13,8 +14,8 @@ export const CategorySelector = (): JSX.Element => {
                 </button>
             )}
             {open && (
-                <div className="row">
-                    <div className="columns small-12 category-selector">
+                <Row>
+                    <Column className="category-selector">
                         {categories.map((category) => (
                             <div
                                 key={`category-selector-${category._id}`}
@@ -50,17 +51,17 @@ export const CategorySelector = (): JSX.Element => {
                                 {category.title}
                             </div>
                         ))}
-                    </div>
+                    </Column>
 
-                    <div className="columns small-12 category-selector">
+                    <Column className="category-selector">
                         <button
                             className="button secondary"
                             onClick={() => changeOpen(false)}
                         >
                             Close
                         </button>
-                    </div>
-                </div>
+                    </Column>
+                </Row>
             )}
         </header>
     )

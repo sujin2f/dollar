@@ -11,7 +11,8 @@ import {
     getRawItems,
     addItems,
     setDarkMode,
-    removeItem,
+    deleteItem,
+    updateItem,
 } from 'src/server/utils/mongo'
 
 declare module 'express-session' {
@@ -36,7 +37,8 @@ const schema = buildSchema(`
         updateCategory(category: CategoryUpdate): Boolean
         addItems(items: [RawItemInput]): Boolean
         addItem(item: RawItemInput): Boolean
-        removeItem(_id: String!): Boolean
+        deleteItem(_id: String!): Boolean
+        updateItem(item: RawItemInput): Boolean
     }
     type Category {
         _id: String
@@ -109,7 +111,8 @@ apiRouter.use(
             getItems,
             getRawItems,
             addItems,
-            removeItem,
+            deleteItem,
+            updateItem,
         },
         graphiql: true,
     }),

@@ -1,42 +1,61 @@
-import React, { Fragment, useState } from 'react'
+import React, { Fragment } from 'react'
 import {
     AccountBookHeader,
     AccountBookTable,
     AccountBookTypeSelector,
     CategoryGraph,
     Modal,
-    RemoveItemModal,
+    DeleteItemModal,
+    UpdateItemModal,
+    Row,
+    Column,
 } from 'src/client/components'
-import { useAccountBookMatch } from 'src/client/hooks'
+import { useAccountBookMatch, useGlobalOption } from 'src/client/hooks'
 import { TableType } from 'src/constants/accountBook'
-import { Nullable } from 'src/types/common'
-import { Item } from 'src/types/model'
 
 export const AccountBook = (): JSX.Element => {
     const { type: typeMatch } = useAccountBookMatch()
+    const { deleteModal, updateModal } = useGlobalOption()
     const type = typeMatch || TableType.Daily
-    const [remove, changeRemove] = useState<Nullable<Item>>(undefined)
-
-    // State to modal
-    const closeModal = () => {
-        changeRemove(undefined)
-    }
 
     return (
         <Fragment>
-            {remove && (
-                <Modal closeModal={closeModal}>
-                    <RemoveItemModal closeModal={closeModal} item={remove} />
+            {/* Delete Modal */}
+            {deleteModal && (
+                <Modal>
+                    <DeleteItemModal />
+                </Modal>
+            )}
+            {/* Update Modal */}
+            {updateModal && (
+                <Modal>
+                    <UpdateItemModal />
                 </Modal>
             )}
 
-            <AccountBookTypeSelector />
-            <AccountBookHeader />
+            <Row>
+                <Column>
+                    <AccountBookTypeSelector />
+                </Column>
+            </Row>
+            <Row>
+                <Column>
+                    <AccountBookHeader />
+                </Column>
+            </Row>
 
             {type === TableType.Daily && (
                 <Fragment>
-                    <CategoryGraph />
-                    <AccountBookTable removeAction={changeRemove} />
+                    <Row>
+                        <Column>
+                            <CategoryGraph />
+                        </Column>
+                    </Row>
+                    <Row>
+                        <Column>
+                            <AccountBookTable />
+                        </Column>
+                    </Row>
                 </Fragment>
             )}
         </Fragment>

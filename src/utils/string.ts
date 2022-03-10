@@ -1,19 +1,19 @@
-import { Column } from 'src/types/table'
+import { TableHeader } from 'src/types/table'
 
-export const getType = (str: string): Column => {
+export const getType = (str: string): TableHeader => {
     if (!isNaN(Date.parse(str))) {
-        return Column.Date
+        return TableHeader.Date
     }
 
     if (/^[A-Z]{2}$/.test(str)) {
-        return Column.Code
+        return TableHeader.Code
     }
 
     if (/^\$?(([1-9]\d{0,2}(,\d{3})*)|0)?\.\d{1,2}$/.test(str)) {
-        return Column.Debit
+        return TableHeader.Debit
     }
 
-    return Column.Title
+    return TableHeader.Title
 }
 
 export const currencyToNumber = (currency?: string): number => {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { Fragment, useState } from 'react'
 import { useAccountBookMatch, useCategory, useItems } from 'src/client/hooks'
 import { formatCurrency } from 'src/utils'
 
@@ -38,50 +38,45 @@ export const CategoryGraph = (): JSX.Element => {
         .sort((f, s) => s.total - f.total)
 
     return (
-        <div className="row">
-            <div className="columns small-12">
-                <div
-                    className="category-graph"
-                    onClick={() => changeShowTable(!showTable)}
-                >
-                    {categoryDebitSort.map((category) => {
-                        const percent = (category.total * 100) / totalDebit
-                        return (
-                            <div
-                                key={`category-graph-${category.title}`}
-                                className="category-graph__item"
-                                style={{ width: `${percent}%` }}
-                            />
-                        )
-                    })}
-                </div>
-
-                {showTable && (
-                    <table className="table table__category-amount">
-                        <tbody className="table table__category-amount__tbody">
-                            {categoryDebitSort.map((category) => {
-                                const percent =
-                                    (category.total * 100) / totalDebit
-                                return (
-                                    <tr
-                                        key={`category-amount-${category.title}`}
-                                        className="category-amount__item"
-                                    >
-                                        <td>
-                                            <div className="category-amount__chip" />
-                                        </td>
-                                        <td>{category.title}</td>
-                                        <td>
-                                            {formatCurrency(category.total)}
-                                        </td>
-                                        <td>{percent.toFixed(2)}%</td>
-                                    </tr>
-                                )
-                            })}
-                        </tbody>
-                    </table>
-                )}
+        <Fragment>
+            <div
+                className="category-graph"
+                onClick={() => changeShowTable(!showTable)}
+            >
+                {categoryDebitSort.map((category) => {
+                    const percent = (category.total * 100) / totalDebit
+                    return (
+                        <div
+                            key={`category-graph-${category.title}`}
+                            className="category-graph__item"
+                            style={{ width: `${percent}%` }}
+                        />
+                    )
+                })}
             </div>
-        </div>
+
+            {showTable && (
+                <table className="table table__category-amount">
+                    <tbody className="table table__category-amount__tbody">
+                        {categoryDebitSort.map((category) => {
+                            const percent = (category.total * 100) / totalDebit
+                            return (
+                                <tr
+                                    key={`category-amount-${category.title}`}
+                                    className="category-amount__item"
+                                >
+                                    <td>
+                                        <div className="category-amount__chip" />
+                                    </td>
+                                    <td>{category.title}</td>
+                                    <td>{formatCurrency(category.total)}</td>
+                                    <td>{percent.toFixed(2)}%</td>
+                                </tr>
+                            )
+                        })}
+                    </tbody>
+                </table>
+            )}
+        </Fragment>
     )
 }

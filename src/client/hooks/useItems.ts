@@ -34,7 +34,17 @@ export const useItems = (year?: number, month?: number, type?: string) => {
         },
     })
 
-    const [removeItem] = useMutation(GraphQuery.REMOVE_ITEM, {
+    const [updateItem] = useMutation(GraphQuery.UPDATE_ITEM, {
+        variables: {
+            item: {} as RawItem,
+        },
+        refetchQueries: [GraphQuery.GET_ITEMS, 'getItems'],
+        onError: (e) => {
+            console.log(e)
+        },
+    })
+
+    const [deleteItem] = useMutation(GraphQuery.DELETE_ITEM, {
         variables: {
             _id: '',
         },
@@ -47,7 +57,8 @@ export const useItems = (year?: number, month?: number, type?: string) => {
     return {
         loading,
         items: data ? data.getItems : [],
-        removeItem,
+        deleteItem,
         addItems,
+        updateItem,
     }
 }

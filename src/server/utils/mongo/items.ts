@@ -35,24 +35,23 @@ const itemSchema = new Schema({
 
 export const ItemModel = mongoose.model<Item>('item', itemSchema)
 
-// TODO get duration and cache
 type GetItemsParam = {
     year: number
     month: number
 }
 export const getItems = async (
-    param: GetItemsParam,
-    req: Request,
+    { year, month }: GetItemsParam,
+    { session: { user } }: Request,
 ): Promise<Item[]> => {
-    if (!param.year && !param.month) {
+    if (!year && !month) {
         return []
     }
 
     return await ItemModel.find({
-        user: req.session.user,
+        user,
         date: {
-            $gte: `${param.year}-${addZero(param.month)}-01`,
-            $lte: `${param.year}-${addZero(param.month)}-31`,
+            $gte: `${year}-${addZero(month)}-01`,
+            $lte: `${year}-${addZero(month)}-31`,
         },
     })
         .sort({ date: -1 })
@@ -66,29 +65,23 @@ type AddItemsParam = {
     items: RawItem[]
 }
 export const addItems = async (
-    param: AddItemsParam,
-    req: Request,
+    { items }: AddItemsParam,
+    { session: { user } }: Request,
 ): Promise<boolean> => {
-    for (const item of param.items) {
+    for (const item of items) {
         const category = item.category
-            ? await findOrCreateCategory(item.category, req.session.user).catch(
-                  () => {
-                      throw new Error(ErrorMessages.FIND_CATEGORIES_FAILED)
-                  },
-              )
+            ? await findOrCreateCategory(item.category, user).catch(() => {
+                  throw new Error(ErrorMessages.FIND_CATEGORIES_FAILED)
+              })
             : undefined
 
         if (category) {
-            await findOrCreatePreSelect(
-                item.originTitle,
-                category,
-                req.session.user,
-            )
+            await findOrCreatePreSelect(item.originTitle, category, user)
         }
 
         const itemModel = new ItemModel({
             ...item,
-            user: req.session.user,
+            user,
             category: category ? category._id : undefined,
         })
         await itemModel.save().catch(() => {
@@ -99,17 +92,44 @@ export const addItems = async (
     return true
 }
 
-type RemoveItemParam = {
+type DeleteItemParam = {
     _id: string
 }
-export const removeItem = async (
-    param: RemoveItemParam,
-    req: Request,
+export const deleteItem = async (
+    { _id }: DeleteItemParam,
+    { session: { user } }: Request,
 ): Promise<boolean> => {
     return await ItemModel.deleteOne({
-        _id: param._id,
-        user: req.session.user,
+        _id,
+        user,
     })
+        .then(() => true)
+        .catch(() => false)
+}
+
+type UpdateItemParam = {
+    item: RawItem
+}
+export const updateItem = async (
+    { item }: UpdateItemParam,
+    { session: { user } }: Request,
+): Promise<boolean> => {
+    const category = item.category
+        ? await findOrCreateCategory(item.category, user).catch(() => {
+              throw new Error(ErrorMessages.FIND_CATEGORIES_FAILED)
+          })
+        : undefined
+
+    return await ItemModel.updateOne(
+        {
+            _id: item._id,
+            user,
+        },
+        {
+            ...item,
+            category: category ? category._id : undefined,
+        },
+    )
         .then(() => true)
         .catch(() => false)
 }

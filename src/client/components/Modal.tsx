@@ -1,11 +1,8 @@
 import React, { MouseEvent, PropsWithChildren, useRef } from 'react'
-import { Fn } from 'src/types/common'
+import { useGlobalOption } from '../hooks'
 
-type Props = PropsWithChildren<{
-    closeModal: Fn<[void], void>
-}>
-
-export const Modal = (props: Props): JSX.Element => {
+export const Modal = (props: PropsWithChildren<{}>): JSX.Element => {
+    const { closeModal } = useGlobalOption()
     const overlay = useRef<HTMLDivElement>(null)
 
     const mayCloseModal = (e: MouseEvent) => {
@@ -13,8 +10,9 @@ export const Modal = (props: Props): JSX.Element => {
             e.preventDefault()
             return
         }
-        props.closeModal()
+        closeModal()
     }
+
     return (
         <div
             className="reveal-overlay"
@@ -22,7 +20,24 @@ export const Modal = (props: Props): JSX.Element => {
             ref={overlay}
             onClick={(e) => mayCloseModal(e)}
         >
-            {props.children}
+            <div className="reveal" style={{ display: 'block' }}>
+                {props.children}
+
+                <button
+                    className="button secondary"
+                    onClick={() => closeModal()}
+                >
+                    Cancel
+                </button>
+                <button
+                    className="close-button"
+                    aria-label="Close reveal"
+                    type="button"
+                    onClick={() => closeModal()}
+                >
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
         </div>
     )
 }

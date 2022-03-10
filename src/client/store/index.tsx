@@ -15,5 +15,3 @@ export const Store = ({
         </Context.Provider>
     )
 }
-
-export { setMenuOpen } from './actions'

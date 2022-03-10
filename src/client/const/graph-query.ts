@@ -55,9 +55,14 @@ export const GraphQuery = {
             addItems(items: $items)
         }
     `,
-    REMOVE_ITEM: gql`
-        mutation RemoveItem($_id: String!) {
-            removeItem(_id: $_id)
+    DELETE_ITEM: gql`
+        mutation DeleteItem($_id: String!) {
+            deleteItem(_id: $_id)
+        }
+    `,
+    UPDATE_ITEM: gql`
+        mutation UpdateItem($item: RawItemInput!) {
+            updateItem(item: $item)
         }
     `,
     GET_RAW_ITEMS: gql`

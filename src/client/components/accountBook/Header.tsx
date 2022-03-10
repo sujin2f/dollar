@@ -39,31 +39,18 @@ export const Header = (): JSX.Element => {
     }
 
     return (
-        <div className="row">
-            <div className="columns small-12">
-                <div className="flex flex--space-between">
-                    <h1>{heading}</h1>
-                    <div className="button-group">
-                        <Link
-                            to={prev}
-                            className="button tiny secondary hollow"
-                        >
-                            <i className="fi-arrow-left" />
-                        </Link>
-                        <Link
-                            to={today}
-                            className="button tiny secondary hollow"
-                        >
-                            Today
-                        </Link>
-                        <Link
-                            to={next}
-                            className="button tiny secondary hollow"
-                        >
-                            <i className="fi-arrow-right" />
-                        </Link>
-                    </div>
-                </div>
+        <div className="flex flex--space-between">
+            <h1>{heading}</h1>
+            <div className="button-group">
+                <Link to={prev} className="button tiny secondary hollow">
+                    <i className="fi-arrow-left" />
+                </Link>
+                <Link to={today} className="button tiny secondary hollow">
+                    Today
+                </Link>
+                <Link to={next} className="button tiny secondary hollow">
+                    <i className="fi-arrow-right" />
+                </Link>
             </div>
         </div>
     )

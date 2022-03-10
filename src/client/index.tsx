@@ -17,6 +17,7 @@ import {
     AddItems,
     AddItem,
 } from 'src/client/scenes/app'
+import { Row, Column } from 'src/client/components'
 import { graphqlClient } from 'src/utils'
 import { TableType } from 'src/constants/accountBook'
 
@@ -34,18 +35,17 @@ ReactDOM.render(
                             </PublicWrapper>
                         </Route>
 
-                        {/* Account Book */}
-                        <Route
-                            path={`/app/:type(${TableType.Daily})?/:year(\\d+)?/:month(\\d+)?`}
-                        >
-                            <AppWrapper>
-                                <AccountBook />
-                            </AppWrapper>
-                        </Route>
-
                         <Route exact={true} path="/app/add">
                             <AppWrapper>
-                                <AddItem />
+                                <Row>
+                                    <Column
+                                        small={12}
+                                        medium={6}
+                                        mediumOffset={3}
+                                    >
+                                        <AddItem />
+                                    </Column>
+                                </Row>
                             </AppWrapper>
                         </Route>
                         <Route exact={true} path="/app/add/bulkAdd">
@@ -56,6 +56,15 @@ ReactDOM.render(
                         <Route exact={true} path="/app/update/:itemId">
                             <AppWrapper>
                                 <AddItem />
+                            </AppWrapper>
+                        </Route>
+
+                        {/* Account Book */}
+                        <Route
+                            path={`/app/:type(${TableType.Daily})?/:year(\\d+)?/:month(\\d+)?`}
+                        >
+                            <AppWrapper>
+                                <AccountBook />
                             </AppWrapper>
                         </Route>
                     </Switch>

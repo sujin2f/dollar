@@ -1,4 +1,10 @@
-import React, { Dispatch, SetStateAction, FormEvent, useRef } from 'react'
+import React, {
+    Dispatch,
+    SetStateAction,
+    FormEvent,
+    useRef,
+    Fragment,
+} from 'react'
 import { RawItem } from 'src/types/model'
 import { rawTextToRawItem } from 'src/client/utils/item'
 
@@ -17,21 +23,19 @@ export const AddItemsForm = (props: Props): JSX.Element => {
     }
 
     return (
-        <div className="row">
-            <div className="columns small-12">
-                <label htmlFor="select-date-format">
-                    Date Format
-                    <select ref={dateFormatField} id="select-date-format">
-                        <option value="">Auto Detect</option>
-                        <option value="DD/MM/YYYY">DD/MM/YYYY</option>
-                    </select>
-                </label>
-                <textarea ref={rawTextField} defaultValue="" rows={12} />
+        <Fragment>
+            <label htmlFor="select-date-format">
+                Date Format
+                <select ref={dateFormatField} id="select-date-format">
+                    <option value="">Auto Detect</option>
+                    <option value="DD/MM/YYYY">DD/MM/YYYY</option>
+                </select>
+            </label>
+            <textarea ref={rawTextField} defaultValue="" rows={12} />
 
-                <button className="button primary" onClick={(e) => onSubmit(e)}>
-                    Submit
-                </button>
-            </div>
-        </div>
+            <button className="button primary" onClick={(e) => onSubmit(e)}>
+                Submit
+            </button>
+        </Fragment>
     )
 }

@@ -1,4 +1,4 @@
-export enum Column {
+export enum TableHeader {
     Unknown,
     Date = 'date',
     'Transaction Date' = 'date',

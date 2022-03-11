@@ -39,27 +39,78 @@ export const ItemModel = mongoose.model<Item>('item', itemSchema)
 type GetItemsParam = {
     year: number
     month: number
+    type: string
 }
 export const getItems = async (
-    { year, month }: GetItemsParam,
+    { year, month, type }: GetItemsParam,
     { session: { user } }: Request,
 ): Promise<Item[]> => {
-    if (!year && !month) {
-        return []
+    switch (type) {
+        case TableType.Daily:
+            return await ItemModel.find({
+                user,
+                date: {
+                    $gte: `${year}-${addZero(month)}-01`,
+                    $lte: `${year}-${addZero(month)}-31`,
+                },
+            })
+                .sort({ date: -1 })
+                .populate({ path: 'category', model: CategoryModel })
+                .catch(() => {
+                    throw new Error(ErrorMessages.FIND_ITEM_FAILED)
+                })
+        case TableType.Monthly:
+            return await ItemModel.aggregate([
+                {
+                    $addFields: {
+                        month: {
+                            $substr: ['$date', 0, 7],
+                        },
+                    },
+                },
+                {
+                    $addFields: {
+                        idx: {
+                            $concat: [
+                                { $toString: '$category' },
+                                '-',
+                                '$month',
+                            ],
+                        },
+                    },
+                },
+                {
+                    $match: {
+                        date: {
+                            $gte: `${year}-01-01`,
+                            $lte: `${year}-12-24`,
+                        },
+                    },
+                },
+                {
+                    $group: {
+                        _id: '$idx',
+                        debit: {
+                            $sum: '$debit',
+                        },
+                        credit: {
+                            $sum: '$credit',
+                        },
+                        date: { $first: '$month' },
+                        title: { $first: '$category' },
+                    },
+                },
+                {
+                    $sort: {
+                        date: 1,
+                    },
+                },
+            ]).catch(() => {
+                throw new Error(ErrorMessages.FIND_ITEM_FAILED)
+            })
     }
 
-    return await ItemModel.find({
-        user,
-        date: {
-            $gte: `${year}-${addZero(month)}-01`,
-            $lte: `${year}-${addZero(month)}-31`,
-        },
-    })
-        .sort({ date: -1 })
-        .populate({ path: 'category', model: CategoryModel })
-        .catch(() => {
-            throw new Error(ErrorMessages.FIND_ITEM_FAILED)
-        })
+    return []
 }
 
 type AddItemsParam = {

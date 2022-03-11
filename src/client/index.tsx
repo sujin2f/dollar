@@ -37,7 +37,7 @@ ReactDOM.render(
 
                         {/* Account Book */}
                         <Route
-                            path={`/app/:type(${TableType.Daily})?/:year(\\d+)?/:month(\\d+)?`}
+                            path={`/app/:type(${TableType.Daily}|${TableType.Monthly})?/:year(\\d+)?/:month(\\d+)?`}
                         >
                             <AppWrapper>
                                 <AccountBook />

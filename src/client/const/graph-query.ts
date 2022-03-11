@@ -31,8 +31,8 @@ export const GraphQuery = {
         }
     `,
     GET_ITEMS: gql`
-        query GetItems($year: Int, $month: Int) {
-            getItems(year: $year, month: $month) {
+        query GetItems($year: Int!, $month: Int!, $type: String!) {
+            getItems(year: $year, month: $month, type: $type) {
                 _id
                 date
                 title

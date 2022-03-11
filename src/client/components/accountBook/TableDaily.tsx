@@ -10,7 +10,7 @@ import { TableHeader } from 'src/types/table'
 import { formatCurrency } from 'src/utils'
 import { Loading } from '../Loading'
 
-export const Table = (): JSX.Element => {
+export const TableDaily = (): JSX.Element => {
     const { year, month, type } = useAccountBookMatch()
     const { isCategoryHidden } = useCategory()
     const { loading, items } = useItems(year, month, type)

@@ -1,7 +1,8 @@
 import React, { Fragment } from 'react'
 import {
     AccountBookHeader,
-    AccountBookTable,
+    AccountBookTableDaily,
+    AccountBookTableMonthly,
     AccountBookTypeSelector,
     CategoryGraph,
     Row,
@@ -26,20 +27,25 @@ export const AccountBook = (): JSX.Element => {
                     <AccountBookHeader />
                 </Column>
             </Row>
+            <Row>
+                <Column>
+                    <CategoryGraph />
+                </Column>
+            </Row>
 
             {type === TableType.Daily && (
-                <Fragment>
-                    <Row>
-                        <Column>
-                            <CategoryGraph />
-                        </Column>
-                    </Row>
-                    <Row>
-                        <Column>
-                            <AccountBookTable />
-                        </Column>
-                    </Row>
-                </Fragment>
+                <Row>
+                    <Column>
+                        <AccountBookTableDaily />
+                    </Column>
+                </Row>
+            )}
+            {type === TableType.Monthly && (
+                <Row>
+                    <Column>
+                        <AccountBookTableMonthly />
+                    </Column>
+                </Row>
             )}
         </Fragment>
     )

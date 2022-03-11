@@ -3,6 +3,7 @@ import { useGlobalOption, useItems } from 'src/client/hooks'
 import { RawItem } from 'src/types/model'
 import { TableHeader } from 'src/types/table'
 import { CategoryDatalist } from 'src/client/components'
+import { Button } from '../form/Button'
 
 export const UpdateItem = (): JSX.Element => {
     const { updateItem } = useItems()
@@ -95,9 +96,7 @@ export const UpdateItem = (): JSX.Element => {
                 <CategoryDatalist />
             </label>
 
-            <button className="button" onClick={() => onClick()} autoFocus>
-                Update
-            </button>
+            <Button onClick={onClick} autoFocus={true} title="Update" />
         </Fragment>
     )
 }

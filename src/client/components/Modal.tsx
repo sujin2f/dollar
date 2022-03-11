@@ -1,5 +1,7 @@
 import React, { MouseEvent, PropsWithChildren, useRef } from 'react'
 import { useGlobalOption } from '../hooks'
+import { Button } from './form/Button'
+import { CloseButton } from './form/CloseButton'
 
 export const Modal = (props: PropsWithChildren<{}>): JSX.Element => {
     const { closeModal } = useGlobalOption()
@@ -23,20 +25,13 @@ export const Modal = (props: PropsWithChildren<{}>): JSX.Element => {
             <div className="reveal" style={{ display: 'block' }}>
                 {props.children}
 
-                <button
-                    className="button secondary"
-                    onClick={() => closeModal()}
-                >
-                    Cancel
-                </button>
-                <button
-                    className="close-button"
-                    aria-label="Close reveal"
-                    type="button"
-                    onClick={() => closeModal()}
-                >
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <Button
+                    className="secondary"
+                    onClick={closeModal}
+                    title="Cancel"
+                />
+
+                <CloseButton onClick={closeModal} />
             </div>
         </div>
     )

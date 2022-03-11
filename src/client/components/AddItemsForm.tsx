@@ -7,6 +7,7 @@ import React, {
 } from 'react'
 import { RawItem } from 'src/types/model'
 import { rawTextToRawItem } from 'src/client/utils/item'
+import { Button } from './form/Button'
 
 type Props = {
     changeInput: Dispatch<SetStateAction<RawItem[]>>
@@ -33,9 +34,7 @@ export const AddItemsForm = (props: Props): JSX.Element => {
             </label>
             <textarea ref={rawTextField} defaultValue="" rows={12} />
 
-            <button className="button primary" onClick={(e) => onSubmit(e)}>
-                Submit
-            </button>
+            <Button onClick={onSubmit} />
         </Fragment>
     )
 }

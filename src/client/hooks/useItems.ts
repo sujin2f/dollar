@@ -4,6 +4,8 @@ import { useHistory } from 'react-router-dom'
 import { Item, RawItem } from 'src/types/model'
 import { GraphQuery } from 'src/client/const/graph-query'
 import { useGlobalOption } from './useGlobalOption'
+import { useCategory } from './useCategory'
+import { TableType } from 'src/constants/accountBook'
 
 type GetItemsReturn = {
     getItems: Item[]
@@ -15,13 +17,14 @@ type AddItemReturn = {
     addItem: string
 }
 export const useItems = (year?: number, month?: number, type?: string) => {
+    const { getCategoryById } = useCategory()
     const { setCallout, closeModal } = useGlobalOption()
     const history = useHistory()
 
     const { loading, error, data } = useQuery<GetItemsReturn>(
         GraphQuery.GET_ITEMS,
         {
-            variables: { year, month },
+            variables: { year, month, type },
             skip: !year && !month && !type,
         },
     )
@@ -81,9 +84,17 @@ export const useItems = (year?: number, month?: number, type?: string) => {
         },
     })
 
+    const items =
+        data?.getItems && type === TableType.Monthly
+            ? (data.getItems.map((item) => ({
+                  ...item,
+                  category: getCategoryById(item.title),
+              })) as Item[])
+            : data?.getItems || []
+
     return {
         loading,
-        items: data ? data.getItems : [],
+        items,
         deleteItem,
         addItems,
         addItem,

@@ -20,7 +20,7 @@ export const DeleteItem = (): JSX.Element => {
             <h1>Delete Item</h1>
             <p className="lead">Do you want to remove {item?.title}?</p>
 
-            <Button onClick={onClick} autoFocus={true} title="Confirm" />
+            <Button onClick={onClick} autoFocus title="Confirm" />
         </Fragment>
     )
 }

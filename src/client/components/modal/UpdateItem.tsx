@@ -1,13 +1,16 @@
-import React, { Fragment, useRef } from 'react'
+import React, { Fragment, useRef, useState } from 'react'
 import { useGlobalOption, useItems } from 'src/client/hooks'
 import { RawItem } from 'src/types/model'
 import { TableHeader } from 'src/types/table'
-import { CategoryDatalist } from 'src/client/components'
+import { CategoryDatalist, Input } from 'src/client/components'
 import { Button } from '../form/Button'
 
 export const UpdateItem = (): JSX.Element => {
     const { updateItem } = useItems()
     const { updateItem: currentItem } = useGlobalOption()
+    const [dateError, setDateError] = useState<string>('')
+    const [titleError, setTitleError] = useState<string>('')
+    const [amountError, setAmountError] = useState<string>('')
 
     const date = useRef<HTMLInputElement>(null)
     const title = useRef<HTMLInputElement>(null)
@@ -15,14 +18,30 @@ export const UpdateItem = (): JSX.Element => {
     const credit = useRef<HTMLInputElement>(null)
     const categoryRef = useRef<HTMLInputElement>(null)
 
-    const onClick = () => {
+    const validate = () => {
+        let validated = true
+        setDateError('')
+        setTitleError('')
+        setAmountError('')
+
         if (!date.current?.value) {
-            return
+            setDateError('Date is required.')
+            validated = false
         }
         if (!title.current?.value) {
-            return
+            setTitleError('Title is required.')
+            validated = false
         }
         if (!debit.current?.value && !credit.current?.value) {
+            setAmountError('Either debit or credit should be filled.')
+            validated = false
+        }
+
+        return validated
+    }
+
+    const onSubmit = () => {
+        if (!validate()) {
             return
         }
         const item = {
@@ -44,58 +63,53 @@ export const UpdateItem = (): JSX.Element => {
     return (
         <Fragment>
             <h1>Update Item</h1>
-            <label>
-                {TableHeader.Date}
-                <input
+            <form onSubmit={onSubmit}>
+                <Input
+                    label={TableHeader.Date as string}
                     type="date"
                     defaultValue={currentItem?.date}
-                    ref={date}
+                    reference={date}
+                    errorMessage={dateError}
+                    onEnterKeyDown={onSubmit}
+                    required
                 />
-            </label>
-            <label>
-                {TableHeader.Title}
-                <input
-                    type="text"
-                    ref={title}
+                <Input
+                    label={TableHeader.Title as string}
+                    reference={title}
                     defaultValue={currentItem?.title}
+                    errorMessage={titleError}
+                    onEnterKeyDown={onSubmit}
+                    required
+                    autoFocus
                 />
-            </label>
-            <label>
-                {TableHeader.Debit}
-                <div className="input-group">
-                    <span className="input-group-label">$</span>
-                    <input
-                        type="number"
-                        className="input-group-field"
-                        defaultValue={currentItem?.debit}
-                        ref={debit}
-                    />
-                </div>
-            </label>
-            <label>
-                {TableHeader.Credit}
-                <div className="input-group">
-                    <span className="input-group-label">$</span>
-                    <input
-                        type="number"
-                        className="input-group-field"
-                        defaultValue={currentItem?.credit}
-                        ref={credit}
-                    />
-                </div>
-            </label>
-            <label>
-                {TableHeader.Category}
-                <input
-                    type="text"
+                <Input
+                    label={TableHeader.Debit as string}
+                    reference={debit}
+                    inlineLabel="$"
+                    type="number"
+                    errorMessage={amountError}
+                    onEnterKeyDown={onSubmit}
+                    defaultValue={currentItem?.debit}
+                />
+                <Input
+                    label={TableHeader.Credit as string}
+                    reference={credit}
+                    inlineLabel="$"
+                    type="number"
+                    errorMessage={amountError}
+                    onEnterKeyDown={onSubmit}
+                    defaultValue={currentItem?.credit}
+                />
+                <Input
+                    label={TableHeader.Category as string}
+                    reference={categoryRef}
                     list="category-list"
-                    ref={categoryRef}
+                    onEnterKeyDown={onSubmit}
                     defaultValue={currentItem?.category?.title}
                 />
                 <CategoryDatalist />
-            </label>
-
-            <Button onClick={onClick} autoFocus={true} title="Update" />
+            </form>
+            <Button type="submit" title="Update Item" onClick={onSubmit} />
         </Fragment>
     )
 }

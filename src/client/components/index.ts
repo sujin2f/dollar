@@ -4,6 +4,7 @@ export { Column } from './Column'
 export { Callout } from './Callout'
 export { Button } from './form/Button'
 export { CloseButton } from './form/CloseButton'
+export { Input } from './form/Input'
 
 export { Loading } from './Loading'
 export { Menu } from './Menu'

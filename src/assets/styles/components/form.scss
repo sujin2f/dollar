@@ -1,0 +1,20 @@
+.form-label__text {
+    text-transform: capitalize;
+    font-size: 0.9rem;
+}
+
+.form-label--required {
+    .form-label__text::after {
+        content: ' *';
+        color: map-get($foundation-palette, 'primary');
+    }
+}
+
+.form-label__error {
+    color: map-get($foundation-palette, 'primary');
+    margin-left: 0.3rem;
+}
+
+.input--error {
+    border-color: map-get($foundation-palette, 'primary');
+}

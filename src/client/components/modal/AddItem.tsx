@@ -1,29 +1,26 @@
 import React, { Fragment, useRef } from 'react'
-import { Link, useRouteMatch } from 'react-router-dom'
-import { CategoryDatalist } from 'src/client/components'
+import { Button, CategoryDatalist } from 'src/client/components'
 import { useItems } from 'src/client/hooks'
 import { RawItem } from 'src/types/model'
 import { TableHeader } from 'src/types/table'
 import { formatDate } from 'src/utils'
 
 export const AddItem = (): JSX.Element => {
-    const match = useRouteMatch<{ itemId?: string }>()
-    const isModify = match.params?.itemId
-
-    const { items, addItems } = useItems()
+    const { addItem } = useItems()
     const date = useRef<HTMLInputElement>(null)
     const title = useRef<HTMLInputElement>(null)
     const debit = useRef<HTMLInputElement>(null)
     const credit = useRef<HTMLInputElement>(null)
     const categoryRef = useRef<HTMLInputElement>(null)
 
-    const currentItem = items.filter((v) => v._id === isModify)[0]
-
-    const onClickSave = () => {
+    const onClick = () => {
         if (!date.current?.value) {
             return
         }
         if (!title.current?.value) {
+            return
+        }
+        if (!debit.current?.value && !credit.current?.value) {
             return
         }
         const item = {
@@ -35,36 +32,28 @@ export const AddItem = (): JSX.Element => {
             credit: parseFloat(credit.current?.value || ''),
             category: categoryRef.current?.value || '',
         } as RawItem
-        if (isModify) {
-            item._id = currentItem._id
-        }
-        addItems({
+
+        addItem({
             variables: {
-                items: [item],
+                item,
             },
         })
     }
 
     return (
         <Fragment>
-            <h1>{isModify ? 'Modify Item' : 'Add Item'}</h1>
+            <h1>Add Item</h1>
             <label>
                 {TableHeader.Date}
                 <input
                     type="date"
-                    defaultValue={
-                        isModify ? currentItem.date : formatDate(new Date())
-                    }
+                    defaultValue={formatDate(new Date())}
                     ref={date}
                 />
             </label>
             <label>
                 {TableHeader.Title}
-                <input
-                    type="text"
-                    ref={title}
-                    defaultValue={isModify ? currentItem.title : ''}
-                />
+                <input type="text" ref={title} />
             </label>
             <label>
                 {TableHeader.Debit}
@@ -73,7 +62,6 @@ export const AddItem = (): JSX.Element => {
                     <input
                         type="number"
                         className="input-group-field"
-                        defaultValue={isModify ? currentItem.debit : ''}
                         ref={debit}
                     />
                 </div>
@@ -85,30 +73,17 @@ export const AddItem = (): JSX.Element => {
                     <input
                         type="number"
                         className="input-group-field"
-                        defaultValue={isModify ? currentItem.credit : ''}
                         ref={credit}
                     />
                 </div>
             </label>
             <label>
                 {TableHeader.Category}
-                <input
-                    type="text"
-                    list="category-list"
-                    ref={categoryRef}
-                    defaultValue={isModify ? currentItem.category?.title : ''}
-                />
+                <input type="text" list="category-list" ref={categoryRef} />
                 <CategoryDatalist />
             </label>
 
-            <div className="button-group">
-                <Link to="#" className="button" onClick={() => onClickSave()}>
-                    Save
-                </Link>
-                <Link to="/app" className="button secondary">
-                    Cancel
-                </Link>
-            </div>
+            <Button onClick={onClick} autoFocus={true} title="Update" />
         </Fragment>
     )
 }

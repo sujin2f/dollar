@@ -5,6 +5,7 @@ type Props = {
     className?: string
     onClick: (e: FormEvent) => void
     autoFocus?: boolean
+    icon?: string
 }
 
 export const Button = (props: Props): JSX.Element => {
@@ -16,8 +17,10 @@ export const Button = (props: Props): JSX.Element => {
             className={`button ${className}`}
             onClick={(e) => props.onClick(e)}
             autoFocus={props.autoFocus}
+            aria-label={title}
         >
-            {title}
+            {props.icon && <i className={`fi-${props.icon}`} />}
+            {!props.icon && title}
         </button>
     )
 }

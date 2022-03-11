@@ -7,6 +7,7 @@ export type Action = {
     item: Item
     message: string
     timeout: NodeJS.Timeout
+    addItem: boolean
 }
 
 export type State = {
@@ -14,6 +15,7 @@ export type State = {
     modal: {
         deleteItem: Nullable<Item>
         updateItem: Nullable<Item>
+        addItem: boolean
     }
     callout: {
         message: Nullable<string>
@@ -26,6 +28,7 @@ export const initialState: State = {
     modal: {
         deleteItem: undefined,
         updateItem: undefined,
+        addItem: false,
     },
     callout: {
         message: undefined,

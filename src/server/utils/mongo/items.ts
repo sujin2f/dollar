@@ -104,6 +104,36 @@ export const addItems = async (
     return redirection
 }
 
+type AddItemParam = {
+    item: RawItem
+}
+export const addItem = async (
+    { item }: AddItemParam,
+    { session: { user } }: Request,
+): Promise<string> => {
+    const category = item.category
+        ? await findOrCreateCategory(item.category, user).catch(() => {
+              throw new Error(ErrorMessages.FIND_CATEGORIES_FAILED)
+          })
+        : undefined
+
+    const itemModel = new ItemModel({
+        ...item,
+        user,
+        category: category ? category._id : undefined,
+    })
+    await itemModel.save().catch(() => {
+        throw new Error(ErrorMessages.CREATE_ITEM_FAILED)
+    })
+
+    // Redirection
+    const date = new Date(item.date)
+    const redirection = `/app/${TableType.Daily}/${date.getUTCFullYear()}/${
+        date.getUTCMonth() + 1
+    }`
+    return redirection
+}
+
 type DeleteItemParam = {
     _id: string
 }

@@ -7,7 +7,7 @@ import { Button } from '../form/Button'
 
 export const UpdateItem = (): JSX.Element => {
     const { updateItem } = useItems()
-    const { updateItem: currentItem, closeModal } = useGlobalOption()
+    const { updateItem: currentItem } = useGlobalOption()
 
     const date = useRef<HTMLInputElement>(null)
     const title = useRef<HTMLInputElement>(null)
@@ -39,7 +39,6 @@ export const UpdateItem = (): JSX.Element => {
                 item,
             },
         })
-        closeModal()
     }
 
     return (

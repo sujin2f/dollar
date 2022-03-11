@@ -4,6 +4,7 @@ import {
     SET_MENU_OPEN,
     SET_DELETE_MODAL,
     SET_UPDATE_MODAL,
+    SET_ADD_MODAL,
     CLOSE_MODAL,
     SET_CALLOUT,
 } from './type'
@@ -26,6 +27,13 @@ export const setUpdateModal = (item: Item): Partial<Action> => {
     return {
         type: SET_UPDATE_MODAL,
         item,
+    }
+}
+
+export const setAddModal = (addItem: boolean): Partial<Action> => {
+    return {
+        type: SET_ADD_MODAL,
+        addItem,
     }
 }
 

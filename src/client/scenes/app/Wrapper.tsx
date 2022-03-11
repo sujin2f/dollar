@@ -5,12 +5,17 @@ import {
     Loading,
     CategorySelector,
     Callout,
+    Modal,
+    DeleteItemModal,
+    UpdateItemModal,
+    AddItemModal,
 } from 'src/client/components'
 
-import { useUser } from 'src/client/hooks'
+import { useUser, useGlobalOption } from 'src/client/hooks'
 
 import 'src/assets/styles/style.scss'
 export const Wrapper = (prop: PropsWithChildren<{}>): JSX.Element => {
+    const { deleteItem, updateItem, addItem } = useGlobalOption()
     const { loading, user } = useUser()
 
     if (loading || !user) {
@@ -21,6 +26,27 @@ export const Wrapper = (prop: PropsWithChildren<{}>): JSX.Element => {
 
     return (
         <div className={`wrapper ${classDarkMode}`}>
+            {/* Delete Modal */}
+            {deleteItem && (
+                <Modal>
+                    <DeleteItemModal />
+                </Modal>
+            )}
+
+            {/* Update Modal */}
+            {updateItem && (
+                <Modal>
+                    <UpdateItemModal />
+                </Modal>
+            )}
+
+            {/* Add Modal */}
+            {addItem && (
+                <Modal>
+                    <AddItemModal />
+                </Modal>
+            )}
+
             <Callout />
             <AppHeader />
             <CategorySelector />

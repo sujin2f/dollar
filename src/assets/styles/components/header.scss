@@ -22,6 +22,16 @@
     width: 100vw;
     padding: $margin;
     top: 0;
+
+    .add-item {
+        background: $white;
+        color: $black;
+        padding: 0;
+        margin: 0;
+        font-size: 2rem;
+        width: 2rem;
+        height: 2rem;
+    }
 }
 
 .login {

@@ -7,6 +7,7 @@ import {
     setUpdateModal as setStoreUpdateModal,
     closeModal as closeStoreModal,
     setCallOut as setStoreCallOut,
+    setAddModal as setStoreAddItemModal,
 } from 'src/client/store/actions'
 import { Item } from 'src/types/model'
 
@@ -14,7 +15,7 @@ export const useGlobalOption = () => {
     const [
         {
             menuOpen,
-            modal: { deleteItem, updateItem },
+            modal: { deleteItem, updateItem, addItem },
             callout: { message: callOutMessage, timeout },
         },
         dispatch,
@@ -38,6 +39,11 @@ export const useGlobalOption = () => {
     const setUpdateModal = (item: Item) => {
         document.addEventListener('keydown', keyCloseModal)
         dispatch(setStoreUpdateModal(item))
+    }
+
+    const setAddModal = () => {
+        document.addEventListener('keydown', keyCloseModal)
+        dispatch(setStoreAddItemModal(true))
     }
 
     const closeModal = () => {
@@ -68,9 +74,11 @@ export const useGlobalOption = () => {
         menuOpen,
         deleteItem,
         updateItem,
+        addItem,
         setMenuOpen,
         setDeleteModal,
         setUpdateModal,
+        setAddModal,
         closeModal,
         callOutMessage,
         setCallout,

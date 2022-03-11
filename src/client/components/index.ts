@@ -22,3 +22,4 @@ export { CategoryDatalist } from './CategoryDatalist'
 
 export { DeleteItem as DeleteItemModal } from './modal/DeleteItem'
 export { UpdateItem as UpdateItemModal } from './modal/UpdateItem'
+export { AddItem as AddItemModal } from './modal/AddItem'

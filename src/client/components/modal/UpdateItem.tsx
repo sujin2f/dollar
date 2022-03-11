@@ -6,7 +6,7 @@ import { CategoryDatalist } from 'src/client/components'
 
 export const UpdateItem = (): JSX.Element => {
     const { updateItem } = useItems()
-    const { updateModal, closeModal } = useGlobalOption()
+    const { updateItem: currentItem, closeModal } = useGlobalOption()
 
     const date = useRef<HTMLInputElement>(null)
     const title = useRef<HTMLInputElement>(null)
@@ -25,7 +25,7 @@ export const UpdateItem = (): JSX.Element => {
             return
         }
         const item = {
-            _id: updateModal?._id,
+            _id: currentItem?._id,
             date: date.current?.value,
             title: title.current?.value,
             debit: parseFloat(debit.current?.value || ''),
@@ -48,7 +48,7 @@ export const UpdateItem = (): JSX.Element => {
                 {TableHeader.Date}
                 <input
                     type="date"
-                    defaultValue={updateModal?.date}
+                    defaultValue={currentItem?.date}
                     ref={date}
                 />
             </label>
@@ -57,7 +57,7 @@ export const UpdateItem = (): JSX.Element => {
                 <input
                     type="text"
                     ref={title}
-                    defaultValue={updateModal?.title}
+                    defaultValue={currentItem?.title}
                 />
             </label>
             <label>
@@ -67,7 +67,7 @@ export const UpdateItem = (): JSX.Element => {
                     <input
                         type="number"
                         className="input-group-field"
-                        defaultValue={updateModal?.debit}
+                        defaultValue={currentItem?.debit}
                         ref={debit}
                     />
                 </div>
@@ -79,7 +79,7 @@ export const UpdateItem = (): JSX.Element => {
                     <input
                         type="number"
                         className="input-group-field"
-                        defaultValue={updateModal?.credit}
+                        defaultValue={currentItem?.credit}
                         ref={credit}
                     />
                 </div>
@@ -90,7 +90,7 @@ export const UpdateItem = (): JSX.Element => {
                     type="text"
                     list="category-list"
                     ref={categoryRef}
-                    defaultValue={updateModal?.category?.title}
+                    defaultValue={currentItem?.category?.title}
                 />
                 <CategoryDatalist />
             </label>

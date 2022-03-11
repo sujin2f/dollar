@@ -14,4 +14,5 @@ export enum ErrorMessages {
     CREATE_PRE_SELECT_FAILED = '🤬 Cannot create a pre-select.',
     UPDATE_PRE_SELECT_FAILED = '🤬 Cannot update a pre-select.',
     FIND_PRE_ITEM_FAILED = '🤬 Cannot find a pre-item.',
+    SOMETHING_WENT_WRONG = '🤬 Something went wrong. Please try later.',
 }

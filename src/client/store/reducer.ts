@@ -4,6 +4,7 @@ import {
     SET_DELETE_MODAL,
     SET_UPDATE_MODAL,
     CLOSE_MODAL,
+    SET_CALLOUT,
 } from './type'
 
 export const reducer = (state: State = initialState, action: Action): State => {
@@ -11,29 +12,47 @@ export const reducer = (state: State = initialState, action: Action): State => {
         case SET_MENU_OPEN: {
             return {
                 ...state,
-                updateModal: action.item,
+                menuOpen: action.menuOpen,
             }
         }
 
         case SET_DELETE_MODAL: {
             return {
                 ...state,
-                deleteModal: action.item,
+                modal: {
+                    ...state.modal,
+                    deleteItem: action.item,
+                },
             }
         }
 
         case SET_UPDATE_MODAL: {
             return {
                 ...state,
-                updateModal: action.item,
+                modal: {
+                    ...state.modal,
+                    updateItem: action.item,
+                },
             }
         }
 
         case CLOSE_MODAL: {
             return {
                 ...state,
-                deleteModal: undefined,
-                updateModal: undefined,
+                modal: {
+                    updateItem: undefined,
+                    deleteItem: undefined,
+                },
+            }
+        }
+
+        case SET_CALLOUT: {
+            return {
+                ...state,
+                callout: {
+                    message: action.message,
+                    timeout: action.timeout,
+                },
             }
         }
 

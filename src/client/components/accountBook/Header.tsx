@@ -40,7 +40,7 @@ export const Header = (): JSX.Element => {
 
     return (
         <div className="flex flex--space-between">
-            <h1>{heading}</h1>
+            <h1 className="table__heading">{heading}</h1>
             <div className="button-group">
                 <Link to={prev} className="button tiny secondary hollow">
                     <i className="fi-arrow-left" />

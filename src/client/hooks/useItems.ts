@@ -3,15 +3,20 @@ import { useMutation, useQuery } from '@apollo/client'
 import { useHistory } from 'react-router-dom'
 import { Item, RawItem } from 'src/types/model'
 import { GraphQuery } from 'src/client/const/graph-query'
+import { useGlobalOption } from './useGlobalOption'
 
-type GetItemsQueryParam = {
+type GetItemsReturn = {
     getItems: Item[]
+}
+type AddItemsReturn = {
+    addItems: string
 }
 
 export const useItems = (year?: number, month?: number, type?: string) => {
+    const { setCallout } = useGlobalOption()
     const history = useHistory()
 
-    const { loading, error, data } = useQuery<GetItemsQueryParam>(
+    const { loading, error, data } = useQuery<GetItemsReturn>(
         GraphQuery.GET_ITEMS,
         {
             variables: { year, month },
@@ -20,17 +25,20 @@ export const useItems = (year?: number, month?: number, type?: string) => {
     )
 
     if (error) {
-        console.log(error.message)
+        setCallout(error.message)
         history.push('/')
     }
 
-    const [addItems] = useMutation(GraphQuery.ADD_ITEMS, {
+    const [addItems] = useMutation<AddItemsReturn>(GraphQuery.ADD_ITEMS, {
         variables: {
             items: [] as RawItem[],
         },
-        refetchQueries: [GraphQuery.GET_ITEMS, 'getItems'],
+        refetchQueries: [GraphQuery.GET_ITEMS],
         onError: (e) => {
-            console.log(e)
+            setCallout(e.message)
+        },
+        onCompleted: ({ addItems: redirection }) => {
+            history.push(redirection)
         },
     })
 
@@ -38,9 +46,9 @@ export const useItems = (year?: number, month?: number, type?: string) => {
         variables: {
             item: {} as RawItem,
         },
-        refetchQueries: [GraphQuery.GET_ITEMS, 'getItems'],
+        refetchQueries: [GraphQuery.GET_ITEMS],
         onError: (e) => {
-            console.log(e)
+            setCallout(e.message)
         },
     })
 
@@ -48,9 +56,9 @@ export const useItems = (year?: number, month?: number, type?: string) => {
         variables: {
             _id: '',
         },
-        refetchQueries: [GraphQuery.GET_ITEMS, 'getItems'],
+        refetchQueries: [GraphQuery.GET_ITEMS],
         onError: (e) => {
-            console.log(e)
+            setCallout(e.message)
         },
     })
 

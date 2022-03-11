@@ -1,5 +1,6 @@
 import { Request } from 'express'
 import mongoose, { Schema } from 'mongoose'
+import { TableType } from 'src/constants/accountBook'
 import { ErrorMessages } from 'src/server/constants/messages'
 import {
     findOrCreateCategory,
@@ -67,7 +68,8 @@ type AddItemsParam = {
 export const addItems = async (
     { items }: AddItemsParam,
     { session: { user } }: Request,
-): Promise<boolean> => {
+): Promise<string> => {
+    let recentDate = new Date('1977-01-02')
     for (const item of items) {
         const category = item.category
             ? await findOrCreateCategory(item.category, user).catch(() => {
@@ -87,9 +89,19 @@ export const addItems = async (
         await itemModel.save().catch(() => {
             throw new Error(ErrorMessages.CREATE_ITEM_FAILED)
         })
+
+        // Redirection
+        const itemDate = new Date(item.date)
+        if (recentDate.getTime() < itemDate.getTime()) {
+            recentDate = itemDate
+        }
     }
 
-    return true
+    const date = new Date(recentDate)
+    const redirection = `/app/${TableType.Daily}/${date.getUTCFullYear()}/${
+        date.getUTCMonth() + 1
+    }`
+    return redirection
 }
 
 type DeleteItemParam = {

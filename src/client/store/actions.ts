@@ -5,6 +5,7 @@ import {
     SET_DELETE_MODAL,
     SET_UPDATE_MODAL,
     CLOSE_MODAL,
+    SET_CALLOUT,
 } from './type'
 
 export const setMenuOpen = (menuOpen: boolean): Partial<Action> => {
@@ -31,5 +32,13 @@ export const setUpdateModal = (item: Item): Partial<Action> => {
 export const closeModal = (): Partial<Action> => {
     return {
         type: CLOSE_MODAL,
+    }
+}
+
+export const setCallOut = (message?: string, timeout?: NodeJS.Timeout) => {
+    return {
+        type: SET_CALLOUT,
+        message,
+        timeout,
     }
 }

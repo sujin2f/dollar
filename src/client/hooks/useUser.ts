@@ -3,19 +3,21 @@ import { useMutation, useQuery } from '@apollo/client'
 
 import { User } from 'src/types/model'
 import { GraphQuery } from 'src/client/const/graph-query'
+import { useGlobalOption } from './useGlobalOption'
 
 type GetUserQueryParam = {
     getUser: User
 }
 
 export const useUser = () => {
+    const { setCallout } = useGlobalOption()
     const history = useHistory()
     const { loading, error, data } = useQuery<GetUserQueryParam>(
         GraphQuery.GET_USER,
     )
 
     if (error) {
-        console.log(error.message)
+        setCallout(error.message)
         history.push('/')
     }
 
@@ -25,7 +27,7 @@ export const useUser = () => {
         },
         refetchQueries: [GraphQuery.GET_USER, 'getUser'],
         onError: (e) => {
-            console.log(e)
+            setCallout(e.message)
         },
     })
 

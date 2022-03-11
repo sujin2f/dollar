@@ -17,6 +17,7 @@
 @include foundation-reveal;
 @include foundation-close-button;
 @include foundation-progress-bar;
+@include foundation-callout;
 
 /**
  * Light mode and components
@@ -26,6 +27,7 @@
 @import 'components/header';
 @import 'components/table';
 @import 'components/button';
+@import 'components/callout';
 
 /**
  * Dark mode

@@ -9,7 +9,7 @@ export type Item = {
 
 export type RawItem = {
     _id?: string
-    checked: boolean
+    checked?: boolean
     date: string
     title: string
     originTitle: string

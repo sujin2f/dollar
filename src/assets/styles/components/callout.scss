@@ -1,0 +1,13 @@
+.callout__wrapper {
+    position: relative;
+
+    .columns {
+        position: absolute;
+        margin-top: 1rem;
+        width: 100%;
+    }
+
+    p {
+        margin-bottom: 0;
+    }
+}

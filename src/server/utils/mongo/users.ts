@@ -79,10 +79,10 @@ export const setDarkMode = async (
         { _id: req.session.user },
         { darkMode: param.darkMode },
     ).catch(() => {
-        throw new Error(ErrorMessages.AUTHENTICATION_FAILED)
+        throw new Error(ErrorMessages.SOMETHING_WENT_WRONG)
     })
     if (result.modifiedCount) {
         return param.darkMode
     }
-    throw new Error(ErrorMessages.AUTHENTICATION_FAILED)
+    throw new Error(ErrorMessages.SOMETHING_WENT_WRONG)
 }

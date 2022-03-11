@@ -188,7 +188,16 @@ export const AddItemsTable = (props: Props): JSX.Element => {
                     onClick={() =>
                         addItems({
                             variables: {
-                                items: items.filter((v) => v.checked),
+                                items: items
+                                    .filter((v) => v.checked)
+                                    .map((v) => ({
+                                        date: v.date,
+                                        category: v.category,
+                                        originTitle: v.originTitle,
+                                        title: v.title,
+                                        debit: v.debit,
+                                        credit: v.credit,
+                                    })),
                             },
                         })
                     }

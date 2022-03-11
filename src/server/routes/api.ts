@@ -35,7 +35,7 @@ const schema = buildSchema(`
     type Mutation {
         setDarkMode(darkMode: Boolean!): Boolean
         updateCategory(category: CategoryUpdate): Boolean
-        addItems(items: [RawItemInput]): Boolean
+        addItems(items: [RawItemInput]): String
         addItem(item: RawItemInput): Boolean
         deleteItem(_id: String!): Boolean
         updateItem(item: RawItemInput): Boolean

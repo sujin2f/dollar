@@ -4,6 +4,7 @@ import {
     Menu,
     Loading,
     CategorySelector,
+    Callout,
 } from 'src/client/components'
 
 import { useUser } from 'src/client/hooks'
@@ -20,6 +21,7 @@ export const Wrapper = (prop: PropsWithChildren<{}>): JSX.Element => {
 
     return (
         <div className={`wrapper ${classDarkMode}`}>
+            <Callout />
             <AppHeader />
             <CategorySelector />
             <Menu />

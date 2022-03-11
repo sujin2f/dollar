@@ -15,19 +15,19 @@ import { TableType } from 'src/constants/accountBook'
 
 export const AccountBook = (): JSX.Element => {
     const { type: typeMatch } = useAccountBookMatch()
-    const { deleteModal, updateModal } = useGlobalOption()
+    const { deleteItem, updateItem } = useGlobalOption()
     const type = typeMatch || TableType.Daily
 
     return (
         <Fragment>
             {/* Delete Modal */}
-            {deleteModal && (
+            {deleteItem && (
                 <Modal>
                     <DeleteItemModal />
                 </Modal>
             )}
             {/* Update Modal */}
-            {updateModal && (
+            {updateItem && (
                 <Modal>
                     <UpdateItemModal />
                 </Modal>

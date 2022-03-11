@@ -1,17 +1,15 @@
 import React, { Fragment, useRef, useState } from 'react'
-import { useGlobalOption, useItems } from 'src/client/hooks'
+import { Button, CategoryDatalist, Input } from 'src/client/components'
+import { useItems } from 'src/client/hooks'
 import { RawItem } from 'src/types/model'
 import { TableHeader } from 'src/types/table'
-import { CategoryDatalist, Input } from 'src/client/components'
-import { Button } from '../form/Button'
+import { formatDate } from 'src/utils'
 
-export const UpdateItem = (): JSX.Element => {
-    const { updateItem } = useItems()
-    const { updateItem: currentItem } = useGlobalOption()
+export const AddItem = (): JSX.Element => {
+    const { addItem } = useItems()
     const [dateError, setDateError] = useState<string>('')
     const [titleError, setTitleError] = useState<string>('')
     const [amountError, setAmountError] = useState<string>('')
-
     const date = useRef<HTMLInputElement>(null)
     const title = useRef<HTMLInputElement>(null)
     const debit = useRef<HTMLInputElement>(null)
@@ -45,7 +43,8 @@ export const UpdateItem = (): JSX.Element => {
             return
         }
         const item = {
-            _id: currentItem?._id,
+            checked: true,
+            originTitle: title.current?.value,
             date: date.current?.value,
             title: title.current?.value,
             debit: parseFloat(debit.current?.value || ''),
@@ -53,7 +52,7 @@ export const UpdateItem = (): JSX.Element => {
             category: categoryRef.current?.value || '',
         } as RawItem
 
-        updateItem({
+        addItem({
             variables: {
                 item,
             },
@@ -62,12 +61,12 @@ export const UpdateItem = (): JSX.Element => {
 
     return (
         <Fragment>
-            <h1>Update Item</h1>
+            <h1>Add Item</h1>
             <form onSubmit={onSubmit}>
                 <Input
                     label={TableHeader.Date as string}
                     type="date"
-                    defaultValue={currentItem?.date}
+                    defaultValue={formatDate(new Date())}
                     reference={date}
                     errorMessage={dateError}
                     onEnterKeyDown={onSubmit}
@@ -76,7 +75,6 @@ export const UpdateItem = (): JSX.Element => {
                 <Input
                     label={TableHeader.Title as string}
                     reference={title}
-                    defaultValue={currentItem?.title}
                     errorMessage={titleError}
                     onEnterKeyDown={onSubmit}
                     required
@@ -89,7 +87,6 @@ export const UpdateItem = (): JSX.Element => {
                     type="number"
                     errorMessage={amountError}
                     onEnterKeyDown={onSubmit}
-                    defaultValue={currentItem?.debit}
                 />
                 <Input
                     label={TableHeader.Credit as string}
@@ -98,18 +95,16 @@ export const UpdateItem = (): JSX.Element => {
                     type="number"
                     errorMessage={amountError}
                     onEnterKeyDown={onSubmit}
-                    defaultValue={currentItem?.credit}
                 />
                 <Input
                     label={TableHeader.Category as string}
                     reference={categoryRef}
                     list="category-list"
                     onEnterKeyDown={onSubmit}
-                    defaultValue={currentItem?.category?.title}
                 />
                 <CategoryDatalist />
             </form>
-            <Button type="submit" title="Update Item" onClick={onSubmit} />
+            <Button type="submit" title="Add Item" onClick={onSubmit} />
         </Fragment>
     )
 }

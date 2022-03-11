@@ -11,13 +11,7 @@ import * as serviceWorker from 'src/client/serviceWorker'
 
 import { Store } from 'src/client/store'
 import { PublicWrapper, PublicHome } from 'src/client/scenes/public'
-import {
-    AppWrapper,
-    AccountBook,
-    AddItems,
-    AddItem,
-} from 'src/client/scenes/app'
-import { Row, Column } from 'src/client/components'
+import { AppWrapper, AccountBook, AddItems } from 'src/client/scenes/app'
 import { graphqlClient } from 'src/utils'
 import { TableType } from 'src/constants/accountBook'
 
@@ -35,27 +29,9 @@ ReactDOM.render(
                             </PublicWrapper>
                         </Route>
 
-                        <Route exact={true} path="/app/add">
-                            <AppWrapper>
-                                <Row>
-                                    <Column
-                                        small={12}
-                                        medium={6}
-                                        mediumOffset={3}
-                                    >
-                                        <AddItem />
-                                    </Column>
-                                </Row>
-                            </AppWrapper>
-                        </Route>
                         <Route exact={true} path="/app/add/bulkAdd">
                             <AppWrapper>
                                 <AddItems />
-                            </AppWrapper>
-                        </Route>
-                        <Route exact={true} path="/app/update/:itemId">
-                            <AppWrapper>
-                                <AddItem />
                             </AppWrapper>
                         </Route>
 

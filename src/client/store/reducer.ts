@@ -5,6 +5,7 @@ import {
     SET_UPDATE_MODAL,
     CLOSE_MODAL,
     SET_CALLOUT,
+    SET_ADD_MODAL,
 } from './type'
 
 export const reducer = (state: State = initialState, action: Action): State => {
@@ -36,12 +37,23 @@ export const reducer = (state: State = initialState, action: Action): State => {
             }
         }
 
+        case SET_ADD_MODAL: {
+            return {
+                ...state,
+                modal: {
+                    ...state.modal,
+                    addItem: action.addItem,
+                },
+            }
+        }
+
         case CLOSE_MODAL: {
             return {
                 ...state,
                 modal: {
                     updateItem: undefined,
                     deleteItem: undefined,
+                    addItem: false,
                 },
             }
         }

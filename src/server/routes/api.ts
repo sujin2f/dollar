@@ -10,6 +10,7 @@ import {
     getItems,
     getRawItems,
     addItems,
+    addItem,
     setDarkMode,
     deleteItem,
     updateItem,
@@ -36,7 +37,7 @@ const schema = buildSchema(`
         setDarkMode(darkMode: Boolean!): Boolean
         updateCategory(category: CategoryUpdate): Boolean
         addItems(items: [RawItemInput]): String
-        addItem(item: RawItemInput): Boolean
+        addItem(item: RawItemInput): String
         deleteItem(_id: String!): Boolean
         updateItem(item: RawItemInput): Boolean
     }
@@ -111,6 +112,7 @@ apiRouter.use(
             getItems,
             getRawItems,
             addItems,
+            addItem,
             deleteItem,
             updateItem,
         },

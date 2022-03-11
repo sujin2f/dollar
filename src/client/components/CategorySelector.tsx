@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useCategory } from 'src/client/hooks'
 import { Column, Row } from 'src/client/components'
+import { Button } from './form/Button'
 
 export const CategorySelector = (): JSX.Element => {
     const [open, changeOpen] = useState<boolean>(false)
@@ -54,12 +55,11 @@ export const CategorySelector = (): JSX.Element => {
                     </Column>
 
                     <Column className="category-selector">
-                        <button
-                            className="button secondary"
+                        <Button
+                            className="secondary"
                             onClick={() => changeOpen(false)}
-                        >
-                            Close
-                        </button>
+                            title="Close"
+                        />
                     </Column>
                 </Row>
             )}

@@ -8,9 +8,9 @@ export const formatDate = (dateString: string | Date): string => {
         return 'Invalid Date'
     }
 
-    return `${date.getUTCFullYear()}-${addZero(
-        date.getUTCMonth() + 1,
-    )}-${addZero(date.getUTCDate())}`
+    return `${date.getFullYear()}-${addZero(date.getMonth() + 1)}-${addZero(
+        date.getDate(),
+    )}`
 }
 
 /**

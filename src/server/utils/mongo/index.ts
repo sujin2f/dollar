@@ -1,5 +1,5 @@
 export { mongoConnect } from './connect'
-export { getItems, addItems, deleteItem, updateItem } from './items'
+export { getItems, addItems, deleteItem, updateItem, addItem } from './items'
 export { getUser, setDarkMode, getOrAddUser } from './users'
 export {
     getCategories,

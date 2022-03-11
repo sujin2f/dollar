@@ -11,9 +11,11 @@ type GetItemsReturn = {
 type AddItemsReturn = {
     addItems: string
 }
-
+type AddItemReturn = {
+    addItem: string
+}
 export const useItems = (year?: number, month?: number, type?: string) => {
-    const { setCallout } = useGlobalOption()
+    const { setCallout, closeModal } = useGlobalOption()
     const history = useHistory()
 
     const { loading, error, data } = useQuery<GetItemsReturn>(
@@ -42,6 +44,20 @@ export const useItems = (year?: number, month?: number, type?: string) => {
         },
     })
 
+    const [addItem] = useMutation<AddItemReturn>(GraphQuery.ADD_ITEM, {
+        variables: {
+            item: {} as RawItem,
+        },
+        refetchQueries: [GraphQuery.GET_ITEMS],
+        onError: (e) => {
+            setCallout(e.message)
+        },
+        onCompleted: ({ addItem: redirection }) => {
+            history.push(redirection)
+            closeModal()
+        },
+    })
+
     const [updateItem] = useMutation(GraphQuery.UPDATE_ITEM, {
         variables: {
             item: {} as RawItem,
@@ -49,6 +65,9 @@ export const useItems = (year?: number, month?: number, type?: string) => {
         refetchQueries: [GraphQuery.GET_ITEMS],
         onError: (e) => {
             setCallout(e.message)
+        },
+        onCompleted: () => {
+            closeModal()
         },
     })
 
@@ -67,6 +86,7 @@ export const useItems = (year?: number, month?: number, type?: string) => {
         items: data ? data.getItems : [],
         deleteItem,
         addItems,
+        addItem,
         updateItem,
     }
 }

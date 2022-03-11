@@ -1,6 +1,7 @@
 import React, { Fragment } from 'react'
 import { useGlobalOption } from '../hooks'
 import { Column } from './Column'
+import { CloseButton } from './form/CloseButton'
 import { Row } from './Row'
 
 export const Callout = (): JSX.Element => {
@@ -15,13 +16,7 @@ export const Callout = (): JSX.Element => {
             <Column>
                 <div className="callout alert">
                     <p>{callOutMessage}</p>
-                    <button
-                        className="close-button"
-                        aria-label="Dismiss alert"
-                        onClick={closeCallout}
-                    >
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+                    <CloseButton onClick={closeCallout} />
                 </div>
             </Column>
         </Row>

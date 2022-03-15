@@ -13,7 +13,6 @@ import { Store } from 'src/client/store'
 import { PublicWrapper, PublicHome } from 'src/client/scenes/public'
 import { AppWrapper, AccountBook, AddItems } from 'src/client/scenes/app'
 import { graphqlClient } from 'src/utils'
-import { TableType } from 'src/constants/accountBook'
 
 ReactDOM.render(
     <ApolloProvider client={graphqlClient}>
@@ -36,9 +35,7 @@ ReactDOM.render(
                         </Route>
 
                         {/* Account Book */}
-                        <Route
-                            path={`/app/:type(${TableType.Daily}|${TableType.Monthly})?/:year(\\d+)?/:month(\\d+)?`}
-                        >
+                        <Route path={`/app/:type?/:year(\\d+)?/:month(\\d+)?`}>
                             <AppWrapper>
                                 <AccountBook />
                             </AppWrapper>

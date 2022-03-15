@@ -22,11 +22,13 @@ export const AccountBook = (): JSX.Element => {
                     <AccountBookTypeSelector />
                 </Column>
             </Row>
+
             <Row>
                 <Column>
                     <AccountBookHeader />
                 </Column>
             </Row>
+
             <Row>
                 <Column>
                     <CategoryGraph />
@@ -41,6 +43,13 @@ export const AccountBook = (): JSX.Element => {
                 </Row>
             )}
             {type === TableType.Monthly && (
+                <Row>
+                    <Column>
+                        <AccountBookTableMonthly />
+                    </Column>
+                </Row>
+            )}
+            {type === TableType.Annual && (
                 <Row>
                     <Column>
                         <AccountBookTableMonthly />

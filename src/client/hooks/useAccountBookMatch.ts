@@ -3,7 +3,7 @@ import { TableType } from 'src/constants/accountBook'
 import { hasEnumValue } from 'src/utils'
 
 type Match = {
-    type?: string
+    type?: TableType
     year?: string
     month?: string
     removeId?: string

@@ -13,22 +13,14 @@ import { Loading } from '../Loading'
 export const TableDaily = (): JSX.Element => {
     const { year, month, type } = useAccountBookMatch()
     const { isCategoryHidden } = useCategory()
-    const { loading, items } = useItems(year, month, type)
+    const { loading, items, itemsToTableData } = useItems(year, month, type)
     const { setDeleteModal, setUpdateModal } = useGlobalOption()
 
     if (loading) {
         return <Loading />
     }
 
-    let totalDebit = 0
-    let totalCredit = 0
-
-    items.forEach((item) => {
-        if (!isCategoryHidden(item.category?._id)) {
-            totalDebit += item.debit
-            totalCredit += item.credit
-        }
-    })
+    const { totalCredit, totalDebit } = itemsToTableData()
 
     return (
         <table className="table unstriped">

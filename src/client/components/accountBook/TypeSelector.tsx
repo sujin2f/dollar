@@ -4,7 +4,10 @@ import { useAccountBookMatch } from 'src/client/hooks'
 import { TableType } from 'src/constants/accountBook'
 
 export const TypeSelector = (): JSX.Element => {
-    const { year, month, type } = useAccountBookMatch()
+    const { type } = useAccountBookMatch()
+    const today = new Date()
+    const year = today.getFullYear()
+    const month = today.getMonth() + 1
     return (
         <div className="button-group flex flex--center">
             <Link
@@ -13,7 +16,7 @@ export const TypeSelector = (): JSX.Element => {
                     type !== TableType.Daily && 'hollow'
                 }`}
             >
-                Daily
+                {TableType.Daily}
             </Link>
             <Link
                 to={`/app/${TableType.Monthly}/${year}`}
@@ -21,7 +24,7 @@ export const TypeSelector = (): JSX.Element => {
                     type !== TableType.Monthly && 'hollow'
                 }`}
             >
-                Monthly
+                {TableType.Monthly}
             </Link>
             <Link
                 to={`/app/${TableType.Annual}`}
@@ -29,7 +32,7 @@ export const TypeSelector = (): JSX.Element => {
                     type !== TableType.Annual && 'hollow'
                 }`}
             >
-                Annual
+                {TableType.Annual}
             </Link>
         </div>
     )

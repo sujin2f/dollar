@@ -1,5 +1,6 @@
 import { Request } from 'express'
 import mongoose, { Schema } from 'mongoose'
+import { PipelineStage } from 'mongoose'
 import { TableType } from 'src/constants/accountBook'
 import { ErrorMessages } from 'src/server/constants/messages'
 import {
@@ -45,72 +46,76 @@ export const getItems = async (
     { year, month, type }: GetItemsParam,
     { session: { user } }: Request,
 ): Promise<Item[]> => {
-    switch (type) {
-        case TableType.Daily:
-            return await ItemModel.find({
-                user,
-                date: {
-                    $gte: `${year}-${addZero(month)}-01`,
-                    $lte: `${year}-${addZero(month)}-31`,
-                },
-            })
-                .sort({ date: -1 })
-                .populate({ path: 'category', model: CategoryModel })
-                .catch(() => {
-                    throw new Error(ErrorMessages.FIND_ITEM_FAILED)
-                })
-        case TableType.Monthly:
-            return await ItemModel.aggregate([
-                {
-                    $addFields: {
-                        month: {
-                            $substr: ['$date', 0, 7],
-                        },
-                    },
-                },
-                {
-                    $addFields: {
-                        idx: {
-                            $concat: [
-                                { $toString: '$category' },
-                                '-',
-                                '$month',
-                            ],
-                        },
-                    },
-                },
-                {
-                    $match: {
-                        date: {
-                            $gte: `${year}-01-01`,
-                            $lte: `${year}-12-24`,
-                        },
-                    },
-                },
-                {
-                    $group: {
-                        _id: '$idx',
-                        debit: {
-                            $sum: '$debit',
-                        },
-                        credit: {
-                            $sum: '$credit',
-                        },
-                        date: { $first: '$month' },
-                        title: { $first: '$category' },
-                    },
-                },
-                {
-                    $sort: {
-                        date: 1,
-                    },
-                },
-            ]).catch(() => {
+    if (type === TableType.Daily) {
+        return await ItemModel.find({
+            user,
+            date: {
+                $gte: `${year}-${addZero(month)}-01`,
+                $lte: `${year}-${addZero(month)}-31`,
+            },
+        })
+            .sort({ date: -1 })
+            .populate({ path: 'category', model: CategoryModel })
+            .catch(() => {
                 throw new Error(ErrorMessages.FIND_ITEM_FAILED)
             })
     }
 
-    return []
+    const stage: PipelineStage[] = [
+        {
+            $addFields: {
+                month: {
+                    $substr:
+                        type === TableType.Monthly
+                            ? ['$date', 0, 7]
+                            : ['$date', 0, 4],
+                },
+            },
+        },
+        {
+            $addFields: {
+                idx: {
+                    $concat: [{ $toString: '$category' }, '-', '$month'],
+                },
+            },
+        },
+    ]
+
+    if (type === TableType.Monthly) {
+        stage.push({
+            $match: {
+                date: {
+                    $gte: `${year}-01-01`,
+                    $lte: `${year}-12-24`,
+                },
+            },
+        })
+    }
+
+    stage.push(
+        {
+            $group: {
+                _id: '$idx',
+                debit: {
+                    $sum: '$debit',
+                },
+                credit: {
+                    $sum: '$credit',
+                },
+                date: { $first: '$month' },
+                title: { $first: '$category' },
+            },
+        },
+        {
+            $sort: {
+                date: 1,
+            },
+        },
+    )
+
+    return await ItemModel.aggregate(stage).catch(() => {
+        throw new Error(ErrorMessages.FIND_ITEM_FAILED)
+    })
 }
 
 type AddItemsParam = {

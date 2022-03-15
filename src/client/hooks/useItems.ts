@@ -17,14 +17,17 @@ type AddItemReturn = {
     addItem: string
 }
 export const useItems = (year?: number, month?: number, type?: string) => {
-    const { getCategoryById } = useCategory()
+    const { getCategoryById, isCategoryHidden } = useCategory()
     const { setCallout, closeModal } = useGlobalOption()
     const history = useHistory()
+
+    const variables =
+        type === TableType.Daily ? { year, month, type } : { year, type }
 
     const { loading, error, data } = useQuery<GetItemsReturn>(
         GraphQuery.GET_ITEMS,
         {
-            variables: { year, month, type },
+            variables,
             skip: !year && !month && !type,
         },
     )
@@ -84,8 +87,43 @@ export const useItems = (year?: number, month?: number, type?: string) => {
         },
     })
 
+    const itemsToTableData = () => {
+        let totalDebit = 0
+        let totalCredit = 0
+
+        const rows: {
+            date: string
+            debit: number
+            credit: number
+        }[] = []
+
+        items.forEach((item) => {
+            if (isCategoryHidden(item.category?._id)) {
+                return
+            }
+            totalDebit += item.debit
+            totalCredit += item.credit
+
+            if (type === TableType.Daily) {
+                return
+            }
+            const monthString =
+                type === TableType.Monthly
+                    ? item.date.substring(5, 7)
+                    : item.date.substring(0, 4)
+            const existing = rows[parseInt(monthString, 10)] || {}
+            rows[parseInt(monthString, 10)] = {
+                date: item.date,
+                debit: item.debit + (existing.debit || 0),
+                credit: item.credit + (existing.credit || 0),
+            }
+        })
+
+        return { items: rows, totalCredit, totalDebit }
+    }
+
     const items =
-        data?.getItems && type === TableType.Monthly
+        data?.getItems && type !== TableType.Daily
             ? (data.getItems.map((item) => ({
                   ...item,
                   category: getCategoryById(item.title),
@@ -99,5 +137,6 @@ export const useItems = (year?: number, month?: number, type?: string) => {
         addItems,
         addItem,
         updateItem,
+        itemsToTableData,
     }
 }

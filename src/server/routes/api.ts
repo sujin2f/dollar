@@ -29,8 +29,8 @@ const schema = buildSchema(`
         getCategories: [Category]
         getItems(
             year: Int!,
-            month: Int!,
             type: String!
+            month: Int,
         ): [Item]
         getRawItems(items: [RawItemInput]): [RawItem]
     }

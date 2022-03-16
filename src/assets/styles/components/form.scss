@@ -19,11 +19,23 @@
     border-color: map-get($foundation-palette, 'primary');
 }
 
-[type='color'] {
-    padding: 0;
-    margin: 0;
-    border: none;
-    width: 30px;
-    height: 30px;
-    box-shadow: none;
+.color-picker__swatch {
+    display: none;
+}
+
+.color-picker__popover {
+    position: absolute;
+    z-index: 2;
+}
+
+.color-picker__cover {
+    position: fixed;
+    top: 0px;
+    right: 0px;
+    bottom: 0px;
+    left: 0px;
+}
+
+.color-picker__label {
+    cursor: pointer;
 }

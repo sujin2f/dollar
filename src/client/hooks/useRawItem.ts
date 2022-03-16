@@ -1,6 +1,6 @@
 import { useQuery } from '@apollo/client'
 import { RawItem } from 'src/types/model'
-import { GraphQuery } from 'src/client/const/graph-query'
+import { GraphQuery } from 'src/client/constants/graph-query'
 import { useGlobalOption } from './useGlobalOption'
 
 type GetRawItemsQueryParam = {

@@ -1,5 +1,5 @@
 import React, { Fragment, useState } from 'react'
-import { Palette } from 'src/client/const/palette'
+import { BW } from 'src/constants/color'
 import { useAccountBookMatch, useCategory, useItems } from 'src/client/hooks'
 import { formatCurrency } from 'src/utils'
 
@@ -54,7 +54,7 @@ export const CategoryGraph = (): JSX.Element => {
                                 width: `${percent}%`,
                                 backgroundColor:
                                     getCategoryByTitle(category.title)?.color ||
-                                    Palette.PRIMARY,
+                                    BW.BLACK,
                             }}
                         />
                     )
@@ -78,7 +78,7 @@ export const CategoryGraph = (): JSX.Element => {
                                                 backgroundColor:
                                                     getCategoryByTitle(
                                                         category.title,
-                                                    )?.color || Palette.PRIMARY,
+                                                    )?.color || BW.BLACK,
                                             }}
                                         />
                                     </td>

@@ -1,8 +1,9 @@
 import React, { Fragment } from 'react'
+
 import { useCategory, useGlobalOption, useOverlay } from 'src/client/hooks'
-import { Column, Row, Button, Switch } from 'src/client/components'
+import { Column, Row, Button, Switch, ColorPicker } from 'src/client/components'
 import { splitItems } from 'src/utils'
-import { Palette } from '../const/palette'
+import { BW } from 'src/constants/color'
 
 export const CategorySelector = (): JSX.Element => {
     const { categories, updateCategory } = useCategory()
@@ -10,6 +11,7 @@ export const CategorySelector = (): JSX.Element => {
     const { closeModal, Overlay } = useOverlay()
 
     const items = splitItems(categories, 4)
+
     const cols = items.map((itemRow, index) => (
         <Column
             className="category-selector"
@@ -37,32 +39,24 @@ export const CategorySelector = (): JSX.Element => {
                         title={`Toggle ${category.title}`}
                         style={{
                             backgroundColor: category.disabled
-                                ? Palette.GREY
-                                : category.color || Palette.PRIMARY,
+                                ? BW.GREY
+                                : category.color || BW.BLACK,
                         }}
                     />
-                    <input
-                        type="color"
-                        className="category-selector__color"
-                        id={`category-selector-color-${category._id}`}
-                        defaultValue={category.color || Palette.PRIMARY}
-                        onChange={(e) => {
+                    <ColorPicker
+                        color={category.color || BW.BLACK}
+                        onChange={(color) => {
                             updateCategory({
                                 variables: {
                                     category: {
                                         _id: category._id,
-                                        color: e.target.value,
+                                        color,
                                     },
                                 },
                             })
                         }}
+                        label={category.title}
                     />
-                    <label
-                        htmlFor={`category-selector-color-${category._id}`}
-                        className="category-selector__color__label"
-                    >
-                        {category.title}
-                    </label>
                 </div>
             ))}
         </Column>

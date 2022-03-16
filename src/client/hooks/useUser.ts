@@ -2,7 +2,7 @@ import { useHistory } from 'react-router-dom'
 import { useMutation, useQuery } from '@apollo/client'
 
 import { User } from 'src/types/model'
-import { GraphQuery } from 'src/client/const/graph-query'
+import { GraphQuery } from 'src/client/constants/graph-query'
 import { useGlobalOption } from './useGlobalOption'
 
 type GetUserQueryParam = {

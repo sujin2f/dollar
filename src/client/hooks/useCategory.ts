@@ -2,7 +2,7 @@ import { useMutation, useQuery } from '@apollo/client'
 
 import { Category } from 'src/types/model'
 import { Nullable } from 'src/types/common'
-import { GraphQuery } from 'src/client/const/graph-query'
+import { GraphQuery } from 'src/client/constants/graph-query'
 import { useGlobalOption } from './useGlobalOption'
 
 type GetCategoriesQueryParam = {

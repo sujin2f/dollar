@@ -8,6 +8,7 @@ export enum ErrorMessages {
     GOOGLE_ACCOUNT_FAILED = '🤬 Google account information (email or name) is missing.',
     AUTHENTICATION_FAILED = '🤬 Please login.',
     FIND_USER_FAILED = '🤬 We cannot find your account info.',
+    FIND_CATEGORY_FAILED = '🤬 Cannot find a category.',
     FIND_CATEGORIES_FAILED = '🤬 Cannot find categories.',
     CREATE_CATEGORY_FAILED = '🤬 Cannot create a category.',
     UPDATE_CATEGORY_FAILED = '🤬 Cannot update a category.',

@@ -1,7 +1,10 @@
 import { Request } from 'express'
 import mongoose, { Schema } from 'mongoose'
+import { Palette } from 'src/constants/color'
 import { ErrorMessages } from 'src/server/constants/messages'
 import { Category } from 'src/types/model'
+import { random } from 'src/utils/array'
+import { getEnumValues } from 'src/utils/enum'
 
 declare module 'express-session' {
     interface Session {
@@ -63,23 +66,41 @@ export const getCategories = async (
     })
 }
 
+const getCategory = async (user: string, title: string): Promise<Category> => {
+    return await CategoryModel.findOne({
+        user,
+        title,
+    })
+        .then((result) => {
+            if (!result) {
+                throw new Error(ErrorMessages.FIND_CATEGORY_FAILED)
+            }
+            return result
+        })
+        .catch((e) => {
+            throw new Error(ErrorMessages.FIND_CATEGORY_FAILED)
+        })
+}
+
+const addCategory = async (user: string, title: string): Promise<Category> => {
+    const color = random(getEnumValues(Palette))
+
+    const category = new CategoryModel({
+        user,
+        title,
+        color,
+    })
+
+    await category.save()
+
+    return getCategory(user, title)
+}
+
 export const findOrCreateCategory = async (
     title: string,
-    userId?: string,
+    user: string,
 ): Promise<Category> => {
-    if (!userId) {
-        throw new Error(ErrorMessages.AUTHENTICATION_FAILED)
-    }
-
-    return await CategoryModel.findOneAndUpdate(
-        {
-            user: userId,
-            title,
-        },
-        {},
-        {
-            returnOriginal: false,
-            upsert: true,
-        },
-    )
+    return await getCategory(user, title).catch(() => {
+        return addCategory(user, title)
+    })
 }

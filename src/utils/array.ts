@@ -22,3 +22,7 @@ export const splitItems = <T>(arr: T[], numOfRows: number): T[][] => {
     })
     return result
 }
+
+export const random = <T>(arr: T[]): T => {
+    return arr[Math.floor(Math.random() * arr.length)]
+}

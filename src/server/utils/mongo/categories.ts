@@ -19,6 +19,7 @@ const categorySchema = new Schema({
         type: String,
         required: true,
     },
+    color: String,
     disabled: Boolean,
 })
 
@@ -31,17 +32,18 @@ type UpdateCategoryParam = {
     category: Category
 }
 export const updateCategory = async (
-    param: UpdateCategoryParam,
-    req: Request,
+    { category: { _id, title, disabled, color } }: UpdateCategoryParam,
+    { session: { user } }: Request,
 ): Promise<boolean> => {
     const result = await CategoryModel.updateOne(
         {
-            _id: param.category._id,
-            user: req.session.user,
+            _id,
+            user,
         },
         {
-            title: param.category.title,
-            disabled: param.category.disabled,
+            title,
+            disabled,
+            color,
         },
     ).catch(() => {
         throw new Error(ErrorMessages.UPDATE_CATEGORY_FAILED)

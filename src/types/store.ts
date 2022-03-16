@@ -3,11 +3,10 @@ import { Item } from './model'
 
 export type Action = {
     type: string
-    menuOpen: boolean
     item: Item
     message: string
     timeout: NodeJS.Timeout
-    addItem: boolean
+    bool: boolean
 }
 
 export type State = {
@@ -16,6 +15,7 @@ export type State = {
         deleteItem: Nullable<Item>
         updateItem: Nullable<Item>
         addItem: boolean
+        categorySelector: boolean
     }
     callout: {
         message: Nullable<string>
@@ -29,6 +29,7 @@ export const initialState: State = {
         deleteItem: undefined,
         updateItem: undefined,
         addItem: false,
+        categorySelector: false,
     },
     callout: {
         message: undefined,

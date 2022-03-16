@@ -8,6 +8,7 @@ import {
     closeModal as closeStoreModal,
     setCallOut as setStoreCallOut,
     setAddModal as setStoreAddItemModal,
+    setCategorySelector as setStoreCategorySelector,
 } from 'src/client/store/actions'
 import { Item } from 'src/types/model'
 
@@ -15,7 +16,7 @@ export const useGlobalOption = () => {
     const [
         {
             menuOpen,
-            modal: { deleteItem, updateItem, addItem },
+            modal: { deleteItem, updateItem, addItem, categorySelector },
             callout: { message: callOutMessage, timeout },
         },
         dispatch,
@@ -28,22 +29,32 @@ export const useGlobalOption = () => {
     }
 
     const setMenuOpen = (option: boolean) => {
+        closeModal()
         dispatch(setStoreMenuOpen(option))
     }
 
     const setDeleteModal = (item: Item) => {
+        closeModal()
         document.addEventListener('keydown', keyCloseModal)
         dispatch(setStoreDeleteModal(item))
     }
 
     const setUpdateModal = (item: Item) => {
+        closeModal()
         document.addEventListener('keydown', keyCloseModal)
         dispatch(setStoreUpdateModal(item))
     }
 
     const setAddModal = () => {
+        closeModal()
         document.addEventListener('keydown', keyCloseModal)
         dispatch(setStoreAddItemModal(true))
+    }
+
+    const setCategorySelector = () => {
+        closeModal()
+        document.addEventListener('keydown', keyCloseModal)
+        dispatch(setStoreCategorySelector(true))
     }
 
     const closeModal = () => {
@@ -83,5 +94,7 @@ export const useGlobalOption = () => {
         callOutMessage,
         setCallout,
         closeCallout,
+        categorySelector,
+        setCategorySelector,
     }
 }

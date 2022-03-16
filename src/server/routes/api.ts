@@ -46,11 +46,13 @@ const schema = buildSchema(`
         _id: String
         title: String
         disabled: Boolean
+        color: String
     }
     input CategoryUpdate {
         _id: String
         title: String
         disabled: Boolean
+        color: String
     }
     type User {
         _id: String

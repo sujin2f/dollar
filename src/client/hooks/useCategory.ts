@@ -23,7 +23,7 @@ export const useCategory = () => {
         variables: {
             category: {},
         },
-        refetchQueries: [GraphQuery.GET_CATEGORIES, 'getCategories'],
+        refetchQueries: [GraphQuery.GET_CATEGORIES],
         onError: (e) => {
             setCallout(e.message)
         },
@@ -36,6 +36,20 @@ export const useCategory = () => {
 
         for (const category of data.getCategories) {
             if (category._id === categoryId) {
+                return category
+            }
+        }
+
+        return
+    }
+
+    const getCategoryByTitle = (title: string): Nullable<Category> => {
+        if (!data || !data.getCategories) {
+            return
+        }
+
+        for (const category of data.getCategories) {
+            if (category.title === title) {
                 return category
             }
         }
@@ -56,5 +70,6 @@ export const useCategory = () => {
         getCategoryById,
         isCategoryHidden,
         updateCategory,
+        getCategoryByTitle,
     }
 }

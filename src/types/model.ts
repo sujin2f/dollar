@@ -22,6 +22,7 @@ export type Category = {
     _id: string
     title: string
     disabled: boolean
+    color?: string
 }
 
 export type PreSelect = {

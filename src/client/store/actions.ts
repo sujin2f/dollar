@@ -7,12 +7,13 @@ import {
     SET_ADD_MODAL,
     CLOSE_MODAL,
     SET_CALLOUT,
+    SET_CATEGORY_SELECTOR,
 } from './type'
 
-export const setMenuOpen = (menuOpen: boolean): Partial<Action> => {
+export const setMenuOpen = (bool: boolean): Partial<Action> => {
     return {
         type: SET_MENU_OPEN,
-        menuOpen,
+        bool,
     }
 }
 
@@ -30,10 +31,17 @@ export const setUpdateModal = (item: Item): Partial<Action> => {
     }
 }
 
-export const setAddModal = (addItem: boolean): Partial<Action> => {
+export const setAddModal = (bool: boolean): Partial<Action> => {
     return {
         type: SET_ADD_MODAL,
-        addItem,
+        bool,
+    }
+}
+
+export const setCategorySelector = (bool: boolean): Partial<Action> => {
+    return {
+        type: SET_CATEGORY_SELECTOR,
+        bool,
     }
 }
 

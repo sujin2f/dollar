@@ -1,11 +1,12 @@
 import React, { Fragment, useState } from 'react'
+import { Palette } from 'src/client/const/palette'
 import { useAccountBookMatch, useCategory, useItems } from 'src/client/hooks'
 import { formatCurrency } from 'src/utils'
 
 export const CategoryGraph = (): JSX.Element => {
     const { year, month, type } = useAccountBookMatch()
     const [showTable, changeShowTable] = useState<boolean>(false)
-    const { isCategoryHidden } = useCategory()
+    const { isCategoryHidden, getCategoryByTitle } = useCategory()
 
     const { items } = useItems(year, month, type)
 
@@ -49,7 +50,12 @@ export const CategoryGraph = (): JSX.Element => {
                         <div
                             key={`category-graph-${category.title}`}
                             className="category-graph__item"
-                            style={{ width: `${percent}%` }}
+                            style={{
+                                width: `${percent}%`,
+                                backgroundColor:
+                                    getCategoryByTitle(category.title)?.color ||
+                                    Palette.PRIMARY,
+                            }}
                         />
                     )
                 })}
@@ -66,7 +72,15 @@ export const CategoryGraph = (): JSX.Element => {
                                     className="category-amount__item"
                                 >
                                     <td>
-                                        <div className="category-amount__chip" />
+                                        <div
+                                            className="category-amount__chip"
+                                            style={{
+                                                backgroundColor:
+                                                    getCategoryByTitle(
+                                                        category.title,
+                                                    )?.color || Palette.PRIMARY,
+                                            }}
+                                        />
                                     </td>
                                     <td>{category.title}</td>
                                     <td>{formatCurrency(category.total)}</td>

@@ -18,3 +18,12 @@
 .input--error {
     border-color: map-get($foundation-palette, 'primary');
 }
+
+[type='color'] {
+    padding: 0;
+    margin: 0;
+    border: none;
+    width: 30px;
+    height: 30px;
+    box-shadow: none;
+}

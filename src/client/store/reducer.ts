@@ -6,6 +6,7 @@ import {
     CLOSE_MODAL,
     SET_CALLOUT,
     SET_ADD_MODAL,
+    SET_CATEGORY_SELECTOR,
 } from './type'
 
 export const reducer = (state: State = initialState, action: Action): State => {
@@ -13,7 +14,7 @@ export const reducer = (state: State = initialState, action: Action): State => {
         case SET_MENU_OPEN: {
             return {
                 ...state,
-                menuOpen: action.menuOpen,
+                menuOpen: action.bool,
             }
         }
 
@@ -42,7 +43,7 @@ export const reducer = (state: State = initialState, action: Action): State => {
                 ...state,
                 modal: {
                     ...state.modal,
-                    addItem: action.addItem,
+                    addItem: action.bool,
                 },
             }
         }
@@ -54,6 +55,7 @@ export const reducer = (state: State = initialState, action: Action): State => {
                     updateItem: undefined,
                     deleteItem: undefined,
                     addItem: false,
+                    categorySelector: false,
                 },
             }
         }
@@ -64,6 +66,16 @@ export const reducer = (state: State = initialState, action: Action): State => {
                 callout: {
                     message: action.message,
                     timeout: action.timeout,
+                },
+            }
+        }
+
+        case SET_CATEGORY_SELECTOR: {
+            return {
+                ...state,
+                modal: {
+                    ...state.modal,
+                    categorySelector: action.bool,
                 },
             }
         }

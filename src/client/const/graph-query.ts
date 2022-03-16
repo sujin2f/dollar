@@ -22,6 +22,7 @@ export const GraphQuery = {
                 _id
                 title
                 disabled
+                color
             }
         }
     `,
@@ -41,6 +42,7 @@ export const GraphQuery = {
                 category {
                     _id
                     title
+                    color
                 }
             }
         }

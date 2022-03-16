@@ -1,0 +1,32 @@
+.category-selector__wrapper {
+    background-color: $white;
+    padding: 1rem 0 0;
+}
+
+.category-selector {
+    flex-wrap: wrap;
+    margin-bottom: 0.5rem;
+}
+
+.category-selector__item {
+    display: flex;
+    align-items: center;
+
+    .switch-paddle {
+        transform: scale(0.7);
+    }
+}
+
+.category-selector__color {
+    margin: 0;
+    padding: 0;
+    width: 0;
+    height: 0;
+    border: 0;
+    box-shadow: none;
+    visibility: hidden;
+}
+
+.category-selector__color__label {
+    cursor: pointer;
+}

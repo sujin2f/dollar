@@ -11,3 +11,14 @@ export const deepCopy = (items: any) => {
         return item
     })
 }
+
+export const splitItems = <T>(arr: T[], numOfRows: number): T[][] => {
+    const result = new Array(numOfRows)
+    arr.forEach((item, index) => {
+        if (!result[index % numOfRows]) {
+            result[index % numOfRows] = []
+        }
+        result[index % numOfRows].push(item)
+    })
+    return result
+}

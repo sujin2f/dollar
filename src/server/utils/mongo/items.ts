@@ -4,18 +4,12 @@ import { PipelineStage } from 'mongoose'
 import { TableType } from 'src/constants/accountBook'
 import { ErrorMessages } from 'src/server/constants/messages'
 import {
-    findOrCreateCategory,
+    getCategoryByString,
     findOrCreatePreSelect,
 } from 'src/server/utils/mongo'
 import { Item, RawItem } from 'src/types/model'
 import { addZero } from 'src/utils'
 import { CategoryModel } from './categories'
-
-declare module 'express-session' {
-    interface Session {
-        user?: string
-    }
-}
 
 const itemSchema = new Schema({
     date: String,
@@ -128,7 +122,7 @@ export const addItems = async (
     let recentDate = new Date('1977-01-02')
     for (const item of items) {
         const category = item.category
-            ? await findOrCreateCategory(item.category, user).catch(() => {
+            ? await getCategoryByString(user, item.category).catch(() => {
                   throw new Error(ErrorMessages.FIND_CATEGORIES_FAILED)
               })
             : undefined
@@ -168,7 +162,7 @@ export const addItem = async (
     { session: { user } }: Request,
 ): Promise<string> => {
     const category = item.category
-        ? await findOrCreateCategory(item.category, user).catch(() => {
+        ? await getCategoryByString(user, item.category).catch(() => {
               throw new Error(ErrorMessages.FIND_CATEGORIES_FAILED)
           })
         : undefined
@@ -213,7 +207,7 @@ export const updateItem = async (
     { session: { user } }: Request,
 ): Promise<boolean> => {
     const category = item.category
-        ? await findOrCreateCategory(item.category, user).catch(() => {
+        ? await getCategoryByString(user, item.category).catch(() => {
               throw new Error(ErrorMessages.FIND_CATEGORIES_FAILED)
           })
         : undefined

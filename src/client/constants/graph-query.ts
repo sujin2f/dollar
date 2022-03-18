@@ -23,6 +23,12 @@ export const GraphQuery = {
                 title
                 disabled
                 color
+                children {
+                    _id
+                    title
+                    disabled
+                    color
+                }
             }
         }
     `,

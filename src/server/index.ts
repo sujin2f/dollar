@@ -20,12 +20,6 @@ import { mongoConnect } from 'src/server/utils/mongo'
 import { authRouter, staticRouter, apiRouter } from 'src/server/routes'
 /* eslint-enable import/first */
 
-declare module 'express-session' {
-    interface Session {
-        user?: string
-    }
-}
-
 const app: Application = express()
 const server = http.createServer(app)
 let port: number = 8080

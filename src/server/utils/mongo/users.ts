@@ -3,12 +3,6 @@ import mongoose, { Schema } from 'mongoose'
 import { ErrorMessages } from 'src/server/constants/messages'
 import { User } from 'src/types/model'
 
-declare module 'express-session' {
-    interface Session {
-        user?: string
-    }
-}
-
 const userSchema = new Schema({
     email: {
         type: String,

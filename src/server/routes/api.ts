@@ -16,12 +16,6 @@ import {
     updateItem,
 } from 'src/server/utils/mongo'
 
-declare module 'express-session' {
-    interface Session {
-        user?: string
-    }
-}
-
 const apiRouter = express.Router()
 const schema = buildSchema(`
     type Query {
@@ -47,6 +41,7 @@ const schema = buildSchema(`
         title: String
         disabled: Boolean
         color: String
+        children: [Category]
     }
     input CategoryUpdate {
         _id: String

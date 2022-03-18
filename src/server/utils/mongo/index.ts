@@ -4,6 +4,6 @@ export { getUser, setDarkMode, getOrAddUser } from './users'
 export {
     getCategories,
     updateCategory,
-    findOrCreateCategory,
+    getCategoryByString,
 } from './categories'
 export { getRawItems, findOrCreatePreSelect } from './preSelect'

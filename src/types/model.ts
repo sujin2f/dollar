@@ -23,6 +23,8 @@ export type Category = {
     title: string
     disabled: boolean
     color?: string
+    parent?: Category
+    children?: Category[]
 }
 
 export type PreSelect = {

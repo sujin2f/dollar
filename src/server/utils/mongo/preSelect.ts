@@ -5,12 +5,6 @@ import { PreSelect, Category, RawItem } from 'src/types/model'
 import { CategoryModel } from './categories'
 import { ItemModel } from './items'
 
-declare module 'express-session' {
-    interface Session {
-        user?: string
-    }
-}
-
 const preSelectSchema = new Schema({
     title: String,
     user: {

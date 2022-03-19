@@ -1,30 +1,29 @@
-export type Item = {
-    _id: string
+type RawItemRequired = {
     date: string
     title: string
     debit: number
     credit: number
+}
+
+export type Item = RawItemRequired & {
+    _id: string
     category: Category
 }
 
-export type RawItem = {
+export type RawItem = RawItemRequired & {
     _id?: string
     checked?: boolean
-    date: string
-    title: string
     originTitle: string
-    debit: number
-    credit: number
     category?: string
-    parentCategory?: string
+    subCategory?: string
 }
 
 export type Category = {
     _id: string
     title: string
-    disabled: boolean
+    disabled?: boolean
     color?: string
-    parent?: Category
+    parent?: string
     children?: Category[]
 }
 

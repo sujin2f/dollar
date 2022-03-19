@@ -1,7 +1,8 @@
 import { Nullable } from 'src/types/common'
 import { RawItem } from 'src/types/model'
 import { TableHeader } from 'src/types/table'
-import { addZero, currencyToNumber, formatDate } from 'src/utils'
+import { addZero, formatDate } from 'src/utils/datetime'
+import { currencyToNumber } from 'src/utils/string'
 
 export const rawTextToRawItem = (
     rawText: string,

@@ -9,7 +9,7 @@ import { Link } from 'react-router-dom'
 import { useItems } from 'src/client/hooks'
 import { RawItem } from 'src/types/model'
 import { TableHeader } from 'src/types/table'
-import { deepCopy } from 'src/utils'
+import { deepCopy } from 'src/utils/array'
 import { CategoryDatalist } from 'src/client/components'
 
 type Props = {

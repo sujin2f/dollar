@@ -1,16 +1,14 @@
 import React from 'react'
 import { useCategory } from 'src/client/hooks'
+import { Datalist } from 'src/client/components/form/Datalist'
 
 export const CategoryDatalist = (): JSX.Element => {
-    const { categories } = useCategory()
+    const { getRootCategories } = useCategory()
 
     return (
-        <datalist id="category-list">
-            {categories.map((category) => (
-                <option key={`category-list-item-${category._id}`}>
-                    {category.title}
-                </option>
-            ))}
-        </datalist>
+        <Datalist
+            id="category-list"
+            items={getRootCategories().map((category) => category.title)}
+        />
     )
 }

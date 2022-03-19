@@ -2,11 +2,11 @@ import { useMutation, useQuery } from '@apollo/client'
 
 import { Category } from 'src/types/model'
 import { Nullable } from 'src/types/common'
-import { GraphQuery } from 'src/client/constants/graph-query'
+import { GET_CATEGORIES, GraphQuery } from 'src/constants/graph-query'
 import { useGlobalOption } from './useGlobalOption'
 
 type GetCategoriesQueryParam = {
-    getCategories: Category[]
+    [GET_CATEGORIES]: Category[]
 }
 
 export const useCategory = () => {
@@ -14,6 +14,7 @@ export const useCategory = () => {
     const { data, error } = useQuery<GetCategoriesQueryParam>(
         GraphQuery.GET_CATEGORIES,
     )
+    const categories = data ? data.getCategories : []
 
     if (error) {
         setCallout(error.message)
@@ -30,11 +31,11 @@ export const useCategory = () => {
     })
 
     const getCategoryById = (categoryId: string): Nullable<Category> => {
-        if (!data || !data.getCategories) {
+        if (!categories.length) {
             return
         }
 
-        for (const category of data.getCategories) {
+        for (const category of categories) {
             if (category._id === categoryId) {
                 return category
             }
@@ -44,17 +45,33 @@ export const useCategory = () => {
     }
 
     const getCategoryByTitle = (title: string): Nullable<Category> => {
-        if (!data || !data.getCategories) {
+        if (!categories.length) {
             return
         }
 
-        for (const category of data.getCategories) {
+        for (const category of categories) {
             if (category.title === title) {
                 return category
             }
         }
 
         return
+    }
+
+    const getRootCategories = (): Category[] => {
+        if (!categories.length) {
+            return []
+        }
+
+        return categories.filter((category) => !category.parent)
+    }
+
+    const getSubCategories = (_id: string): Category[] => {
+        if (!categories.length) {
+            return []
+        }
+
+        return categories.filter((category) => category.parent === _id)
     }
 
     const isCategoryHidden = (categoryId: string): boolean => {
@@ -66,10 +83,12 @@ export const useCategory = () => {
     }
 
     return {
-        categories: data ? data.getCategories : [],
+        categories,
         getCategoryById,
         isCategoryHidden,
         updateCategory,
         getCategoryByTitle,
+        getRootCategories,
+        getSubCategories,
     }
 }

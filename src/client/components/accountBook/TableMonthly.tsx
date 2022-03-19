@@ -1,7 +1,7 @@
 import React from 'react'
 import { useAccountBookMatch, useItems } from 'src/client/hooks'
 import { TableHeader } from 'src/types/table'
-import { formatCurrency } from 'src/utils'
+import { formatCurrency } from 'src/utils/number'
 import { Loading } from '../Loading'
 
 export const TableMonthly = (): JSX.Element => {

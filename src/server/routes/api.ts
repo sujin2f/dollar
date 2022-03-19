@@ -1,6 +1,6 @@
 import express, { Request, Response, NextFunction } from 'express'
 import { graphqlHTTP } from 'express-graphql'
-import { buildSchema } from 'graphql'
+import { schema } from 'src/constants/graph-query'
 import { ErrorMessages } from 'src/server/constants/messages'
 
 import {
@@ -17,74 +17,6 @@ import {
 } from 'src/server/utils/mongo'
 
 const apiRouter = express.Router()
-const schema = buildSchema(`
-    type Query {
-        getUser: User
-        getCategories: [Category]
-        getItems(
-            year: Int!,
-            type: String!
-            month: Int,
-        ): [Item]
-        getRawItems(items: [RawItemInput]): [RawItem]
-    }
-    type Mutation {
-        setDarkMode(darkMode: Boolean!): Boolean
-        updateCategory(category: CategoryUpdate): Boolean
-        addItems(items: [RawItemInput]): String
-        addItem(item: RawItemInput): String
-        deleteItem(_id: String!): Boolean
-        updateItem(item: RawItemInput): Boolean
-    }
-    type Category {
-        _id: String
-        title: String
-        disabled: Boolean
-        color: String
-        children: [Category]
-    }
-    input CategoryUpdate {
-        _id: String
-        title: String
-        disabled: Boolean
-        color: String
-    }
-    type User {
-        _id: String
-        email: String
-        name: String
-        photo: String
-        darkMode: Boolean
-    }
-    type Item {
-        _id: String
-        date: String
-        title: String
-        debit: Float
-        credit: Float
-        category: Category
-    }
-    type RawItem {
-        _id: String
-        checked: Boolean
-        date: String
-        title: String
-        originTitle: String
-        debit: Float
-        credit: Float
-        category: String
-    }
-    input RawItemInput {
-        _id: String
-        checked: Boolean
-        date: String
-        title: String
-        originTitle: String
-        debit: Float
-        credit: Float
-        category: String
-    }
-`)
 
 const loggingMiddleware = (req: Request, res: Response, next: NextFunction) => {
     if (req.session.user) {

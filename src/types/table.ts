@@ -10,5 +10,6 @@ export enum TableHeader {
     Code = 'code',
     Balance = 'balance',
     Category = 'category',
+    SubCategory = 'sub category',
     Subtotal = 'subtotal',
 }

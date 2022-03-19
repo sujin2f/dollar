@@ -2,7 +2,7 @@ import React, { Fragment } from 'react'
 
 import { useCategory, useGlobalOption, useOverlay } from 'src/client/hooks'
 import { Column, Row, Button, Switch, ColorPicker } from 'src/client/components'
-import { splitItems } from 'src/utils'
+import { splitItems } from 'src/utils/array'
 import { BW } from 'src/constants/color'
 
 export const CategorySelector = (): JSX.Element => {
@@ -11,7 +11,6 @@ export const CategorySelector = (): JSX.Element => {
     const { closeModal, Overlay } = useOverlay()
 
     const items = splitItems(categories, 4)
-
     const cols = items.map((itemRow, index) => (
         <Column
             className="category-selector"

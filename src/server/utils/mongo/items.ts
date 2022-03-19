@@ -8,7 +8,7 @@ import {
     findOrCreatePreSelect,
 } from 'src/server/utils/mongo'
 import { Item, RawItem } from 'src/types/model'
-import { addZero, yyyyMmDdToDate } from 'src/utils'
+import { addZero, yyyyMmDdToDate } from 'src/utils/datetime'
 import { CategoryModel } from './categories'
 
 const itemSchema = new Schema({
@@ -45,7 +45,7 @@ export const addItem = async <T extends string | number>(
         (await mustGetCategoryByString(
             user,
             item.category,
-            item.parentCategory,
+            item.subCategory,
         ).catch((e) => {
             throw e
         }))
@@ -215,7 +215,7 @@ export const updateItem = async (
         (await mustGetCategoryByString(
             user,
             item.category,
-            item.parentCategory,
+            item.subCategory,
         ).catch((e) => {
             throw e
         }))

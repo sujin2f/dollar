@@ -2,7 +2,7 @@ import { useHistory } from 'react-router-dom'
 import { useMutation, useQuery } from '@apollo/client'
 
 import { User } from 'src/types/model'
-import { GraphQuery } from 'src/client/constants/graph-query'
+import { GraphQuery } from 'src/constants/graph-query'
 import { useGlobalOption } from './useGlobalOption'
 
 type GetUserQueryParam = {
@@ -25,7 +25,7 @@ export const useUser = () => {
         variables: {
             darkMode: false,
         },
-        refetchQueries: [GraphQuery.GET_USER, 'getUser'],
+        refetchQueries: [GraphQuery.GET_USER],
         onError: (e) => {
             setCallout(e.message)
         },

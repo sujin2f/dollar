@@ -35,7 +35,7 @@ describe('category.ts', () => {
         })
 
         it('Update', async () => {
-            let category = await mustGetCategoryByString(userId, 'child')
+            let category = await mustGetCategoryByString(userId, 'category')
             category.color = 'test'
             await updateCategory(
                 {
@@ -43,12 +43,12 @@ describe('category.ts', () => {
                 },
                 request,
             )
-            category = await mustGetCategoryByString(userId, 'child')
+            category = await mustGetCategoryByString(userId, 'category')
             expect(category.color).toEqual('test')
         })
 
         it('Update with Same info', async () => {
-            let category = await mustGetCategoryByString(userId, 'child')
+            let category = await mustGetCategoryByString(userId, 'category')
             const color = category.color
             await updateCategory(
                 {
@@ -56,7 +56,7 @@ describe('category.ts', () => {
                 },
                 request,
             )
-            category = await mustGetCategoryByString(userId, 'child')
+            category = await mustGetCategoryByString(userId, 'category')
             expect(category.color).toEqual(color)
         })
     })
@@ -66,38 +66,45 @@ describe('category.ts', () => {
             await mustGetCategoryByString(userId, 'bank')
             await mustGetCategoryByString(userId, 'money')
             await mustGetCategoryByString(userId, 'tax')
-            await mustGetCategoryByString(userId, 'note', 'bank')
+            await mustGetCategoryByString(userId, 'bank', 'note')
 
             const categories = await getCategories(undefined, request)
             const hasChildren = categories.filter((cat) => cat.title === 'bank')
-            expect(categories.length).toEqual(3)
+            expect(categories.length).toEqual(4)
             expect(hasChildren[0].children?.length).toBeTruthy()
         })
     })
 
     describe('mustGetCategoryByString()', () => {
         it('One Category', async () => {
-            const one = await mustGetCategoryByString(userId, 'one')
-            expect(one.title).toEqual('one')
+            const category = await mustGetCategoryByString(userId, 'category')
+            expect(category.title).toEqual('category')
         })
 
         it('One Existing Category', async () => {
-            const one = await mustGetCategoryByString(userId, 'one')
-            const another = await mustGetCategoryByString(userId, 'one')
-            expect(one._id.toString()).toEqual(another._id.toString())
-            expect(one.color).toEqual(another.color)
+            const category = await mustGetCategoryByString(userId, 'category')
+            const another = await mustGetCategoryByString(userId, 'category')
+            expect(category._id.toString()).toEqual(another._id.toString())
+            expect(category.color).toEqual(another.color)
         })
 
         it('🤬 Child exist and parent not, throw', async () => {
             await mustGetCategoryByString(userId, 'child')
-            await mustGetCategoryByString(userId, 'child', 'parent')
+            await mustGetCategoryByString(userId, 'parent', 'child')
                 .then(() => expect(false).toBeTruthy())
                 .catch(() => expect(true).toBeTruthy())
         })
 
-        it('🤬 Parent has a parent, throw', async () => {
-            await mustGetCategoryByString(userId, 'parent')
-            await mustGetCategoryByString(userId, 'child', 'parent')
+        it('🤬 An item is already a parent, and tries to make it as a child, throw', async () => {
+            await mustGetCategoryByString(userId, 'parentA', 'childA')
+            await mustGetCategoryByString(userId, 'parentB', 'childB')
+            await mustGetCategoryByString(userId, 'parentA', 'parentB')
+                .then(() => expect(false).toBeTruthy())
+                .catch(() => expect(true).toBeTruthy())
+        })
+
+        it('🤬 An item already has a parent, throw', async () => {
+            await mustGetCategoryByString(userId, 'parent', 'child')
             await mustGetCategoryByString(userId, 'another', 'child')
                 .then(() => expect(false).toBeTruthy())
                 .catch(() => expect(true).toBeTruthy())
@@ -106,21 +113,21 @@ describe('category.ts', () => {
         it('🤬 Child exist and relationship not, throw', async () => {
             await mustGetCategoryByString(userId, 'child')
             await mustGetCategoryByString(userId, 'parent')
-            await mustGetCategoryByString(userId, 'child', 'parent')
+            await mustGetCategoryByString(userId, 'parent', 'child')
                 .then(() => expect(false).toBeTruthy())
                 .catch(() => expect(true).toBeTruthy())
         })
 
         it('Child and parent exist and relationship, return', async () => {
             await mustGetCategoryByString(userId, 'parent')
-            await mustGetCategoryByString(userId, 'child', 'parent')
             const child = await mustGetCategoryByString(
                 userId,
-                'child',
                 'parent',
+                'child',
             )
             const parent = await mustGetCategoryByString(userId, 'parent')
-            expect(child.parent?._id.toString()).toEqual(parent._id.toString())
+
+            expect(child.parent?.toString()).toEqual(parent._id.toString())
             expect(
                 parent.children && parent.children[0]._id.toString(),
             ).toEqual(child._id.toString())
@@ -129,11 +136,11 @@ describe('category.ts', () => {
         it('Both do not exist', async () => {
             const child = await mustGetCategoryByString(
                 userId,
-                'child',
                 'parent',
+                'child',
             )
             const parent = await mustGetCategoryByString(userId, 'parent')
-            expect(child.parent?._id.toString()).toEqual(parent._id.toString())
+            expect(child.parent?.toString()).toEqual(parent._id.toString())
             expect(
                 parent.children && parent.children[0]._id.toString(),
             ).toEqual(child._id.toString())

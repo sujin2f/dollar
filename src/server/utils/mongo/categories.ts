@@ -46,38 +46,45 @@ export const CategoryModel = mongoose.model<Category>(
 export const mustGetCategoryByString = async (
     user: string,
     title: string,
-    parentTitle?: string,
+    subTitle?: string,
 ): Promise<Category> => {
-    if (!parentTitle) {
+    if (!subTitle) {
         return await mustGetCategory(user, title)
     }
 
-    const parent = await mayGetCategoryByString(user, parentTitle).catch(
+    const child = await mayGetCategoryByString(user, subTitle).catch(
         () => undefined,
     )
-    const child = await mayGetCategoryByString(user, title).catch(
+    const parent = await mayGetCategoryByString(user, title).catch(
         () => undefined,
     )
     const children = parent?.children?.map((cat) => cat._id.toString()) || []
     const parentId = parent?._id.toString() || 'parentId'
-    const childParentId = child?.parent?._id.toString() || 'childParentId'
+    const childParentId = child?.parent || 'childParentId'
 
-    // Parent has a parent, throw
+    // 🤬 A parent already has a parent, throw
     if (parent && parent.parent) {
-        throw new Error(ErrorMessages.FIND_CATEGORY_FAILED)
+        throw new Error(
+            '🤬 You tried to make category with a sub-category, but the category is already a sub-category of another category.',
+        )
     }
 
-    // Child exist and parent not, throw
+    // 🤬 Child exist and parent not, throw
     if (child && !parent) {
-        throw new Error(ErrorMessages.FIND_CATEGORY_FAILED)
+        throw new Error(
+            '🤬 You tried to make category with a sub-category. However, the sub-category does already exist, but a parent is not.',
+        )
     }
 
-    // Child exist and relationship not, throw
+    // 🤬 Both exist and relationship not, throw
     if (
         child &&
+        parent &&
         (childParentId !== parentId || !children.includes(child._id.toString()))
     ) {
-        throw new Error(ErrorMessages.FIND_CATEGORY_FAILED)
+        throw new Error(
+            '🤬 You tried to make category with a sub-category. However, they are already has their own relationship.',
+        )
     }
 
     // Child and parent exist and relationship, return
@@ -92,25 +99,27 @@ export const mustGetCategoryByString = async (
 
     // Parent exist and child not, create and relation
     if (!child && parent) {
-        return await mustGetCategory(user, title, parent)
+        const newChild = await mustGetCategory(user, subTitle)
+        await addChild(user, parent, newChild)
+        newChild.parent = parent._id
+        return newChild
     }
 
     // Both do not exist
-    const parentCategory = await mustGetCategory(user, parentTitle)
-    return await mustGetCategory(user, title, parentCategory)
+    const childCategory = await mustGetCategory(user, subTitle)
+    return await mustGetCategory(user, title, childCategory)
 }
 
 const mustGetCategory = async (
     user: string,
     title: string,
-    parent?: Category,
+    child?: Category,
 ): Promise<Category> => {
     const color = random(getEnumValues(Palette))
     const result = await CategoryModel.findOneAndUpdate(
         {
             user,
             title,
-            parent,
         },
         {
             $setOnInsert: { color },
@@ -125,18 +134,20 @@ const mustGetCategory = async (
             throw new Error(ErrorMessages.FIND_CATEGORIES_FAILED)
         })
 
-    if (parent) {
-        const newParent = await mustGetCategory(user, parent.title)
-        if (
-            !newParent.children ||
-            newParent.children.length === 0 ||
-            !newParent.children.includes(result)
-        ) {
-            await addChild(user, newParent, result)
-        }
+    if (!child) {
+        return result
     }
 
-    return result
+    const newChild = await mustGetCategory(user, child.title)
+    if (
+        !result.children ||
+        result.children.length === 0 ||
+        !result.children.includes(result)
+    ) {
+        await addChild(user, result, newChild)
+        newChild.parent = result._id
+    }
+    return newChild
 }
 
 type UpdateCategoryParam = {
@@ -166,11 +177,7 @@ export const getCategories = async (
     _: void,
     { session: { user } }: Request,
 ): Promise<Category[]> => {
-    return await CategoryModel.find({ user, parent: null })
-        .populate({ path: 'children', model: CategoryModel })
-        .catch(() => {
-            throw new Error(ErrorMessages.FIND_CATEGORIES_FAILED)
-        })
+    return await CategoryModel.find({ user }).catch(() => [])
 }
 
 const mayGetCategoryByString = async (
@@ -208,5 +215,18 @@ const addChild = async (
     ).catch(() => {
         throw new Error(ErrorMessages.UPDATE_CATEGORY_FAILED)
     })
+
+    await CategoryModel.updateOne(
+        {
+            _id: child._id,
+            user,
+        },
+        {
+            parent,
+        },
+    ).catch(() => {
+        throw new Error(ErrorMessages.UPDATE_CATEGORY_FAILED)
+    })
+
     return true
 }

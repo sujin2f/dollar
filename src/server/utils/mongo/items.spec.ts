@@ -37,8 +37,7 @@ describe('item.ts', () => {
         })
 
         it('🤬 Add Item /w wrong parent-child category', async () => {
-            await mustGetCategoryByString(userId, 'parent')
-            await mustGetCategoryByString(userId, 'child', 'parent')
+            await mustGetCategoryByString(userId, 'parent', 'child')
             await addItem(
                 {
                     item: {
@@ -49,8 +48,8 @@ describe('item.ts', () => {
                         originTitle: 'item',
                         debit: 10,
                         credit: 0,
-                        category: 'parent',
-                        parentCategory: 'child',
+                        category: 'child',
+                        subCategory: 'parent',
                     },
                 },
                 request,

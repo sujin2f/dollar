@@ -7,7 +7,7 @@ import {
     useItems,
 } from 'src/client/hooks'
 import { TableHeader } from 'src/types/table'
-import { formatCurrency } from 'src/utils'
+import { formatCurrency } from 'src/utils/number'
 import { Loading } from '../Loading'
 
 export const TableDaily = (): JSX.Element => {

@@ -2,7 +2,7 @@ import { useMutation, useQuery } from '@apollo/client'
 
 import { useHistory } from 'react-router-dom'
 import { Item, RawItem } from 'src/types/model'
-import { GraphQuery } from 'src/client/constants/graph-query'
+import { GraphQuery } from 'src/constants/graph-query'
 import { useGlobalOption } from './useGlobalOption'
 import { useCategory } from './useCategory'
 import { TableType } from 'src/constants/accountBook'
@@ -41,7 +41,7 @@ export const useItems = (year?: number, month?: number, type?: string) => {
         variables: {
             items: [] as RawItem[],
         },
-        refetchQueries: [GraphQuery.GET_ITEMS],
+        refetchQueries: [GraphQuery.GET_ITEMS, GraphQuery.GET_CATEGORIES],
         onError: (e) => {
             setCallout(e.message)
         },

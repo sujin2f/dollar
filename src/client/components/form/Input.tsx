@@ -5,6 +5,7 @@ import React, {
     RefObject,
     useRef,
 } from 'react'
+import { ObjectId } from 'mongodb'
 import { removeEmpty } from 'src/utils/object'
 
 type Props = {
@@ -40,7 +41,7 @@ export const Input = (props: Props): JSX.Element => {
     // eslint-disable-next-line react-hooks/rules-of-hooks
     const ref = reference || useRef<HTMLInputElement>(null)
 
-    const id = props.id || crypto.randomUUID()
+    const id = props.id || new ObjectId().toString()
     const type = props.type || 'text'
     const ariaDescribedby = helpText ? `${id}-help-text` : ''
     const labelClassNames = `form-label ${

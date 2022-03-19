@@ -24,7 +24,6 @@ jobs:
               uses: actions/setup-node@v2
               with:
                   node-version: ${{ matrix.node-version }}
-                  cache: 'npm'
-            - run: npm ci
-            - run: npm run prod:build
-            - run: npm test
+            - run: yarn
+            - run: yarn prod:build
+            - run: yarn test

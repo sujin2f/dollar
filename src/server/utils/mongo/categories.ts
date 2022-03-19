@@ -35,6 +35,71 @@ export const CategoryModel = mongoose.model<Category>(
     categorySchema,
 )
 
+/**
+ * Get or create a category by text
+ *
+ * @param {string} user User ID
+ * @param {string} title Title of the category
+ * @param {string} parentTitle (optional) Title of the parent category
+ * @returns {Promise<Category>} Category get or created
+ */
+export const mustGetCategoryByString = async (
+    user: string,
+    title: string,
+    parentTitle?: string,
+): Promise<Category> => {
+    if (!parentTitle) {
+        return await mustGetCategory(user, title)
+    }
+
+    const parent = await mayGetCategoryByString(user, parentTitle).catch(
+        () => undefined,
+    )
+    const child = await mayGetCategoryByString(user, title).catch(
+        () => undefined,
+    )
+    const children = parent?.children?.map((cat) => cat._id.toString()) || []
+    const parentId = parent?._id.toString() || 'parentId'
+    const childParentId = child?.parent?._id.toString() || 'childParentId'
+
+    // Parent has a parent, throw
+    if (parent && parent.parent) {
+        throw new Error(ErrorMessages.FIND_CATEGORY_FAILED)
+    }
+
+    // Child exist and parent not, throw
+    if (child && !parent) {
+        throw new Error(ErrorMessages.FIND_CATEGORY_FAILED)
+    }
+
+    // Child exist and relationship not, throw
+    if (
+        child &&
+        (childParentId !== parentId || !children.includes(child._id.toString()))
+    ) {
+        throw new Error(ErrorMessages.FIND_CATEGORY_FAILED)
+    }
+
+    // Child and parent exist and relationship, return
+    if (
+        child &&
+        parent &&
+        childParentId === parentId &&
+        children.includes(child._id.toString())
+    ) {
+        return child
+    }
+
+    // Parent exist and child not, create and relation
+    if (!child && parent) {
+        return await mustGetCategory(user, title, parent)
+    }
+
+    // Both do not exist
+    const parentCategory = await mustGetCategory(user, parentTitle)
+    return await mustGetCategory(user, title, parentCategory)
+}
+
 const mustGetCategory = async (
     user: string,
     title: string,
@@ -144,57 +209,4 @@ const addChild = async (
         throw new Error(ErrorMessages.UPDATE_CATEGORY_FAILED)
     })
     return true
-}
-
-export const getCategoryByString = async (
-    user: string,
-    title: string,
-    parentText?: string,
-): Promise<Category> => {
-    if (!parentText) {
-        return await mustGetCategory(user, title)
-    }
-
-    const parent = await mayGetCategoryByString(user, parentText).catch(
-        () => undefined,
-    )
-    const child = await mayGetCategoryByString(user, title).catch(
-        () => undefined,
-    )
-    const children = parent?.children?.map((cat) => cat._id.toString()) || []
-    const parentId = parent?._id.toString() || 'parentId'
-    const childParentId = child?.parent?._id.toString() || 'childParentId'
-
-    // child exist and parent not, throw
-    if (child && !parent) {
-        throw new Error(ErrorMessages.FIND_CATEGORY_FAILED)
-    }
-
-    // child and parent exist and relationship not, throw
-    if (
-        child &&
-        parent &&
-        (childParentId !== parentId || !children.includes(child._id.toString()))
-    ) {
-        throw new Error(ErrorMessages.FIND_CATEGORY_FAILED)
-    }
-
-    // child and parent exist and relationship, return
-    if (
-        child &&
-        parent &&
-        childParentId === parentId &&
-        children.includes(child._id.toString())
-    ) {
-        return child
-    }
-
-    // parent exist and child not, create and relation
-    if (!child && parent) {
-        return await mustGetCategory(user, title, parent)
-    }
-
-    // both do not exist
-    const parentCategory = await mustGetCategory(user, parentText)
-    return await mustGetCategory(user, title, parentCategory)
 }

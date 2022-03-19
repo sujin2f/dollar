@@ -4,11 +4,11 @@ import { PipelineStage } from 'mongoose'
 import { TableType } from 'src/constants/accountBook'
 import { ErrorMessages } from 'src/server/constants/messages'
 import {
-    getCategoryByString,
+    mustGetCategoryByString,
     findOrCreatePreSelect,
 } from 'src/server/utils/mongo'
 import { Item, RawItem } from 'src/types/model'
-import { addZero } from 'src/utils'
+import { addZero, yyyyMmDdToDate } from 'src/utils'
 import { CategoryModel } from './categories'
 
 const itemSchema = new Schema({
@@ -31,10 +31,77 @@ const itemSchema = new Schema({
 
 export const ItemModel = mongoose.model<Item>('item', itemSchema)
 
+type AddItemParam = {
+    item: RawItem
+}
+export const addItem = async <T extends string | number>(
+    { item }: AddItemParam,
+    { session: { user } }: Request,
+    preSelect?: boolean,
+    returnType?: T,
+): Promise<T> => {
+    const category =
+        item.category &&
+        (await mustGetCategoryByString(
+            user,
+            item.category,
+            item.parentCategory,
+        ).catch((e) => {
+            throw e
+        }))
+
+    if (category && preSelect) {
+        await findOrCreatePreSelect(item.originTitle, category, user)
+    }
+
+    item._id = undefined
+    const newItem = { ...item }
+    delete newItem._id
+    const itemModel = new ItemModel({
+        ...newItem,
+        user,
+        category,
+    })
+    await itemModel.save().catch((e) => {
+        throw new Error(ErrorMessages.CREATE_ITEM_FAILED)
+    })
+
+    // Redirection
+    const date = yyyyMmDdToDate(item.date)
+    const year = date.getFullYear()
+    const month = date.getMonth() + 1
+
+    if (!returnType || typeof returnType === 'string') {
+        return `/app/${TableType.Daily}/${year}/${month}` as T
+    }
+
+    return new Date(item.date).getTime() as T
+}
+
+type AddItemsParam = {
+    items: RawItem[]
+}
+export const addItems = async (
+    { items }: AddItemsParam,
+    request: Request,
+): Promise<string> => {
+    const dates: number[] = []
+    for (const item of items) {
+        dates.push(await addItem({ item }, request, true, 123))
+    }
+    dates.sort((a, b) => a - b)
+
+    // Redirection
+    const date = new Date(dates.pop() || 0)
+    const year = date.getFullYear()
+    const month = date.getMonth() + 1
+    return `/app/${TableType.Daily}/${year}/${month}`
+}
+
 type GetItemsParam = {
     year: number
     month: number
-    type: string
+    type: TableType
 }
 export const getItems = async (
     { year, month, type }: GetItemsParam,
@@ -69,7 +136,16 @@ export const getItems = async (
         {
             $addFields: {
                 idx: {
-                    $concat: [{ $toString: '$category' }, '-', '$month'],
+                    $concat: [
+                        {
+                            $ifNull: [
+                                { $toString: '$category' },
+                                'no-category',
+                            ],
+                        },
+                        '-',
+                        '$month',
+                    ],
                 },
             },
         },
@@ -80,7 +156,7 @@ export const getItems = async (
             $match: {
                 date: {
                     $gte: `${year}-01-01`,
-                    $lte: `${year}-12-24`,
+                    $lte: `${year}-12-31`,
                 },
             },
         })
@@ -112,78 +188,6 @@ export const getItems = async (
     })
 }
 
-type AddItemsParam = {
-    items: RawItem[]
-}
-export const addItems = async (
-    { items }: AddItemsParam,
-    { session: { user } }: Request,
-): Promise<string> => {
-    let recentDate = new Date('1977-01-02')
-    for (const item of items) {
-        const category = item.category
-            ? await getCategoryByString(user, item.category).catch(() => {
-                  throw new Error(ErrorMessages.FIND_CATEGORIES_FAILED)
-              })
-            : undefined
-
-        if (category) {
-            await findOrCreatePreSelect(item.originTitle, category, user)
-        }
-
-        const itemModel = new ItemModel({
-            ...item,
-            user,
-            category: category ? category._id : undefined,
-        })
-        await itemModel.save().catch(() => {
-            throw new Error(ErrorMessages.CREATE_ITEM_FAILED)
-        })
-
-        // Redirection
-        const itemDate = new Date(item.date)
-        if (recentDate.getTime() < itemDate.getTime()) {
-            recentDate = itemDate
-        }
-    }
-
-    const date = new Date(recentDate)
-    const redirection = `/app/${TableType.Daily}/${date.getUTCFullYear()}/${
-        date.getUTCMonth() + 1
-    }`
-    return redirection
-}
-
-type AddItemParam = {
-    item: RawItem
-}
-export const addItem = async (
-    { item }: AddItemParam,
-    { session: { user } }: Request,
-): Promise<string> => {
-    const category = item.category
-        ? await getCategoryByString(user, item.category).catch(() => {
-              throw new Error(ErrorMessages.FIND_CATEGORIES_FAILED)
-          })
-        : undefined
-
-    const itemModel = new ItemModel({
-        ...item,
-        user,
-        category: category ? category._id : undefined,
-    })
-    await itemModel.save().catch(() => {
-        throw new Error(ErrorMessages.CREATE_ITEM_FAILED)
-    })
-
-    // Redirection
-    const date = new Date(item.date)
-    const redirection = `/app/${TableType.Daily}/${date.getUTCFullYear()}/${
-        date.getUTCMonth() + 1
-    }`
-    return redirection
-}
-
 type DeleteItemParam = {
     _id: string
 }
@@ -206,11 +210,15 @@ export const updateItem = async (
     { item }: UpdateItemParam,
     { session: { user } }: Request,
 ): Promise<boolean> => {
-    const category = item.category
-        ? await getCategoryByString(user, item.category).catch(() => {
-              throw new Error(ErrorMessages.FIND_CATEGORIES_FAILED)
-          })
-        : undefined
+    const category =
+        item.category &&
+        (await mustGetCategoryByString(
+            user,
+            item.category,
+            item.parentCategory,
+        ).catch((e) => {
+            throw e
+        }))
 
     return await ItemModel.updateOne(
         {
@@ -219,7 +227,7 @@ export const updateItem = async (
         },
         {
             ...item,
-            category: category ? category._id : undefined,
+            category,
         },
     )
         .then(() => true)

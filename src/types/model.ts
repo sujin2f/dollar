@@ -15,7 +15,8 @@ export type RawItem = {
     originTitle: string
     debit: number
     credit: number
-    category: string
+    category?: string
+    parentCategory?: string
 }
 
 export type Category = {

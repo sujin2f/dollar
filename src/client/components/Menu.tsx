@@ -5,7 +5,7 @@ import { useGlobalOption, useUser } from 'src/client/hooks'
 import { Loading } from '.'
 
 export const Menu = (): JSX.Element => {
-    const { loading, user, setDarkMode } = useUser()
+    const { loading, user, setUser } = useUser()
     const { menuOpen, setMenuOpen } = useGlobalOption()
 
     if (loading || !user) {
@@ -42,9 +42,14 @@ export const Menu = (): JSX.Element => {
                     to="#"
                     className="menu__item"
                     onClick={() =>
-                        setDarkMode({
+                        setUser({
                             variables: {
-                                darkMode: !user.darkMode,
+                                user: {
+                                    _id: user._id,
+                                    name: user.name,
+                                    email: user.email,
+                                    darkMode: !user.darkMode,
+                                },
                             },
                         })
                     }

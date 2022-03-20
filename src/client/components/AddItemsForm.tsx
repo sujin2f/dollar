@@ -6,7 +6,7 @@ import React, {
     Fragment,
 } from 'react'
 import { RawItem } from 'src/types/model'
-import { rawTextToRawItem } from 'src/client/utils/item'
+import { rawTextToRawItem, getRawItemMeta } from 'src/client/utils/item'
 import { Button } from './form/Button'
 
 type Props = {
@@ -20,7 +20,7 @@ export const AddItemsForm = (props: Props): JSX.Element => {
         e.preventDefault()
         const dateFormat = dateFormatField.current?.value || ''
         const text = rawTextField.current?.value || ''
-        props.changeInput(rawTextToRawItem(text, dateFormat))
+        props.changeInput(rawTextToRawItem(text, getRawItemMeta(text)))
     }
 
     return (

@@ -9,9 +9,9 @@ module.exports = {
     collectCoverage: true,
     collectCoverageFrom: [
         '<rootDir>/src/utils/**/*.{ts,tsx}',
+        '<rootDir>/src/client/utils/**/*.{ts,tsx}',
         '<rootDir>/src/server/utils/**/*.{ts,tsx}',
-        '!<rootDir>/src/**/__tests__/*',
-        '!<rootDir>/src/client/**/*.{ts,tsx}',
+        '<rootDir>/src/server/routes/api.ts',
         '!<rootDir>/src/**/*.spec.{ts,tsx}',
         '!<rootDir>/src/**/*.d.{ts,tsx}',
     ],

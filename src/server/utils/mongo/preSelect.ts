@@ -1,6 +1,6 @@
 import { Request } from 'express'
 import mongoose, { Schema } from 'mongoose'
-import { GetRawItemsParam } from 'src/constants/graph-query'
+import { RawItemsParam } from 'src/constants/graph-query'
 import { PreSelect, Category, RawItem } from 'src/types/model'
 import { deepCopy } from 'src/utils/array'
 import { toMongoSearchString } from 'src/utils/string'
@@ -70,7 +70,7 @@ export const findOrCreatePreSelect = async (
 }
 
 export const getRawItems = async (
-    { rawItems }: GetRawItemsParam,
+    { rawItems }: RawItemsParam,
     { session: { user } }: Request,
 ): Promise<RawItem[]> => {
     const items = deepCopy(rawItems)

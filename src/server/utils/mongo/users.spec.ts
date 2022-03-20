@@ -3,7 +3,7 @@
 import { Request } from 'express'
 import { ObjectId } from 'mongodb'
 import { connect, close, clear } from 'src/jest/mongo'
-import { getOrAddUser, setDarkMode, getUserByEmail, getUser } from './users'
+import { getOrAddUser, setUser, getUserByEmail, getUser } from './users'
 
 describe('users.ts', () => {
     const userId = new ObjectId().toString()
@@ -27,17 +27,23 @@ describe('users.ts', () => {
         })
     })
 
-    describe('setDarkMode()', () => {
+    describe('setUser()', () => {
         it('Success', async () => {
             const user = await getOrAddUser('Sujin', 'sujin.2f@gmail.com')
-            const darkMode = await setDarkMode({ darkMode: true }, {
-                session: { user: user._id },
-            } as Request)
+            const darkMode = await setUser(
+                { user: { ...user, darkMode: true } },
+                {
+                    session: { user: user._id },
+                } as Request,
+            )
             expect(darkMode).toEqual(true)
         })
 
         it('🤬 Fail', async () => {
-            await setDarkMode({ darkMode: true }, request)
+            await setUser(
+                { user: { _id: '', name: '', email: '', darkMode: true } },
+                request,
+            )
                 .then(() => expect(false).toBeTruthy())
                 .catch(() => expect(true).toBeTruthy())
         })

@@ -1,10 +1,10 @@
 /* istanbul ignore file */
 export { mongoConnect } from './connect'
 export { getItems, addItems, deleteItem, updateItem, addItem } from './items'
-export { getUser, setDarkMode, getOrAddUser } from './users'
+export { getUser, setUser, getOrAddUser } from './users'
 export {
-    getCategories,
+    getCategories as categories,
     updateCategory,
     mustGetCategoryByString,
 } from './categories'
-export { getRawItems, findOrCreatePreSelect } from './preSelect'
+export { getRawItems as rawItems, findOrCreatePreSelect } from './preSelect'

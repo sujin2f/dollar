@@ -1,5 +1,6 @@
 import { Request } from 'express'
 import mongoose, { Schema } from 'mongoose'
+import { UserParam } from 'src/constants/graph-query'
 import { ErrorMessages } from 'src/server/constants/messages'
 import { User } from 'src/types/model'
 
@@ -62,11 +63,8 @@ export const getOrAddUser = async (
     return result as User
 }
 
-type SetDarkModeParam = {
-    darkMode: boolean
-}
-export const setDarkMode = async (
-    { darkMode }: SetDarkModeParam,
+export const setUser = async (
+    { user: { darkMode } }: UserParam,
     { session: { user } }: Request,
 ): Promise<boolean> => {
     await UserModel.updateOne({ _id: user }, { darkMode }).catch(
@@ -74,5 +72,5 @@ export const setDarkMode = async (
             throw new Error(ErrorMessages.SOMETHING_WENT_WRONG)
         },
     )
-    return darkMode
+    return darkMode || false
 }

@@ -2,19 +2,13 @@ import { useMutation, useQuery } from '@apollo/client'
 
 import { Category } from 'src/types/model'
 import { Nullable } from 'src/types/common'
-import { GET_CATEGORIES, GraphQuery } from 'src/constants/graph-query'
+import { CategoriesParam, Fields, GraphQuery } from 'src/constants/graph-query'
 import { useGlobalOption } from './useGlobalOption'
-
-type GetCategoriesQueryParam = {
-    [GET_CATEGORIES]: Category[]
-}
 
 export const useCategory = () => {
     const { setCallout } = useGlobalOption()
-    const { data, error } = useQuery<GetCategoriesQueryParam>(
-        GraphQuery.GET_CATEGORIES,
-    )
-    const categories = data ? data.getCategories : []
+    const { data, error } = useQuery<CategoriesParam>(GraphQuery.GET_CATEGORIES)
+    const categories = data ? data[Fields.CATEGORIES] : []
 
     if (error) {
         setCallout(error.message)

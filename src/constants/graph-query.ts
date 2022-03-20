@@ -1,32 +1,43 @@
 import { gql } from '@apollo/client'
 import { buildSchema } from 'graphql'
-import { RawItem } from 'src/types/model'
+import { Category, RawItem, User } from 'src/types/model'
 
-export const GET_USER = 'getUser'
-export const SET_DARK_MODE = 'setDarkMode'
-export const GET_CATEGORIES = 'getCategories'
 export const UPDATE_CATEGORY = 'updateCategory'
 export const GET_ITEMS = 'getItems'
 export const ADD_ITEM = 'addItem'
 export const ADD_ITEMS = 'addItems'
 export const DELETE_ITEM = 'deleteItem'
 export const UPDATE_ITEM = 'updateItem'
-export const GET_RAW_ITEMS = 'rawItems'
 
-export type GetRawItemsParam = {
-    [GET_RAW_ITEMS]: RawItem[]
+export enum Fields {
+    USER = 'user',
+    RAW_ITEMS = 'rawItems',
+    CATEGORIES = 'categories',
 }
 
 export enum Types {
+    USER = 'User',
     CATEGORY = 'Category',
     RAW_ITEM = 'RawItem',
     ITEM = 'Item',
 }
 
+export type UserParam = {
+    [Fields.USER]: User
+}
+
+export type CategoriesParam = {
+    [Fields.CATEGORIES]: Category[]
+}
+
+export type RawItemsParam = {
+    [Fields.RAW_ITEMS]: RawItem[]
+}
+
 export const GraphQuery = {
     GET_USER: gql`
         query {
-            ${GET_USER} {
+            ${Fields.USER} {
                 name
                 email
                 photo
@@ -34,14 +45,14 @@ export const GraphQuery = {
             }
         }
     `,
-    SET_DARK_MODE: gql`
-        mutation ${SET_DARK_MODE}($darkMode: Boolean!) {
-            ${SET_DARK_MODE}(darkMode: $darkMode)
+    SET_USER: gql`
+        mutation ${Fields.USER}($${Fields.USER}: Input${Types.USER}!) {
+            ${Fields.USER}(${Fields.USER}: $${Fields.USER})
         }
     `,
     GET_CATEGORIES: gql`
         query {
-            ${GET_CATEGORIES} {
+            ${Fields.CATEGORIES} {
                 _id
                 title
                 disabled
@@ -98,8 +109,8 @@ export const GraphQuery = {
         }
     `,
     GET_RAW_ITEMS: gql`
-        query ${GET_RAW_ITEMS}($items: [Input${Types.RAW_ITEM}]) {
-            ${GET_RAW_ITEMS}(items: $items) {
+        query ${Fields.RAW_ITEMS}($items: [Input${Types.RAW_ITEM}]) {
+            ${Fields.RAW_ITEMS}(${Fields.RAW_ITEMS}: $items) {
                 checked
                 date
                 title
@@ -119,19 +130,49 @@ export const GraphQuery = {
     `,
 }
 
+const categoryNodes = `
+    _id: String
+    title: String
+    disabled: Boolean
+    color: String
+    parent: String
+`
+
+const userNodes = `
+    _id: String
+    email: String
+    name: String
+    photo: String
+    darkMode: Boolean
+`
+
+const rawItemNodes = `
+    _id: String
+    checked: Boolean
+    date: String
+    title: String
+    originTitle: String
+    debit: Float
+    credit: Float
+    category: String
+    subCategory: String
+`
+
 export const schema = buildSchema(`
     type Query {
-        ${GET_USER}: User
-        ${GET_CATEGORIES}: [${Types.CATEGORY}]
+        ${Fields.USER}: ${Types.USER}
+        ${Fields.CATEGORIES}: [${Types.CATEGORY}]
         ${GET_ITEMS}(
             year: Int!,
             type: String!
             month: Int,
         ): [Item]
-        ${GET_RAW_ITEMS}(items: [Input${Types.RAW_ITEM}]): [${Types.RAW_ITEM}]
+        ${Fields.RAW_ITEMS}(
+            ${Fields.RAW_ITEMS}: [Input${Types.RAW_ITEM}]
+        ): [${Types.RAW_ITEM}]
     }
     type Mutation {
-        ${SET_DARK_MODE}(darkMode: Boolean!): Boolean
+        ${Fields.USER}(user: Input${Types.USER}!): Boolean
         ${UPDATE_CATEGORY}(category: Input${Types.CATEGORY}): Boolean
         ${ADD_ITEMS}(items: [Input${Types.RAW_ITEM}]): String
         ${ADD_ITEM}(item: Input${Types.RAW_ITEM}): String
@@ -139,25 +180,17 @@ export const schema = buildSchema(`
         ${UPDATE_ITEM}(item: Input${Types.RAW_ITEM}): Boolean
     }
     type ${Types.CATEGORY} {
-        _id: String
-        title: String
-        disabled: Boolean
-        color: String
+        ${categoryNodes}
         children: [Category]
-        parent: String
     }
     input Input${Types.CATEGORY} {
-        _id: String
-        title: String
-        disabled: Boolean
-        color: String
+        ${categoryNodes}
     }
-    type User {
-        _id: String
-        email: String
-        name: String
-        photo: String
-        darkMode: Boolean
+    type ${Types.USER} {
+        ${userNodes}
+    }
+    input Input${Types.USER} {
+        ${userNodes}
     }
     type ${Types.ITEM} {
         _id: String
@@ -168,25 +201,9 @@ export const schema = buildSchema(`
         category: Category
     }
     type ${Types.RAW_ITEM} {
-        _id: String
-        checked: Boolean
-        date: String
-        title: String
-        originTitle: String
-        debit: Float
-        credit: Float
-        category: Category
-        subCategory: Category
+        ${rawItemNodes}
     }
     input Input${Types.RAW_ITEM} {
-        _id: String
-        checked: Boolean
-        date: String
-        title: String
-        originTitle: String
-        debit: Float
-        credit: Float
-        category: String
-        subCategory: String
+        ${rawItemNodes}
     }
 `)

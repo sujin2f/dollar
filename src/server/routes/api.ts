@@ -1,17 +1,17 @@
 import express, { Request, Response, NextFunction } from 'express'
 import { graphqlHTTP } from 'express-graphql'
-import { schema } from 'src/constants/graph-query'
+import { schema, UserParam } from 'src/constants/graph-query'
 import { ErrorMessages } from 'src/server/constants/messages'
 
 import {
+    setUser,
     getUser,
-    getCategories,
+    categories,
     updateCategory,
     getItems,
-    getRawItems,
+    rawItems,
     addItems,
     addItem,
-    setDarkMode,
     deleteItem,
     updateItem,
 } from 'src/server/utils/mongo'
@@ -30,17 +30,25 @@ const loggingMiddleware = (req: Request, res: Response, next: NextFunction) => {
 }
 apiRouter.use(loggingMiddleware)
 
+const isMutation = (res: any) => {
+    return res.path.typename === 'Mutation'
+}
+
 apiRouter.use(
     '/',
     graphqlHTTP({
         schema,
         rootValue: {
-            getUser,
-            setDarkMode,
-            getCategories,
+            user: async (param: UserParam, req: Request, res: Response) => {
+                if (isMutation(res)) {
+                    return await setUser(param, req)
+                }
+                return await getUser(undefined, req)
+            },
+            categories,
             updateCategory,
             getItems,
-            getRawItems,
+            rawItems,
             addItems,
             addItem,
             deleteItem,

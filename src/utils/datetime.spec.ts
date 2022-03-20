@@ -26,7 +26,7 @@ describe('datetime.ts', () => {
 
             expect(today.getFullYear()).toEqual(date.getFullYear())
             expect(today.getMonth()).toEqual(date.getMonth())
-            expect(today.getDate()).toEqual(date.getDate())
+            expect(today.getUTCDate()).toEqual(date.getUTCDate())
         })
     })
 

@@ -73,6 +73,11 @@ describe('category.ts', () => {
             expect(categories.length).toEqual(4)
             expect(hasChildren[0].children?.length).toBeTruthy()
         })
+
+        it('Get Empty', async () => {
+            const categories = await getCategories(undefined, request)
+            expect(categories).toEqual([])
+        })
     })
 
     describe('mustGetCategoryByString()', () => {
@@ -118,14 +123,23 @@ describe('category.ts', () => {
                 .catch(() => expect(true).toBeTruthy())
         })
 
+        it('🤬 A parent already has a parent, throw', async () => {
+            await mustGetCategoryByString(userId, 'ancestor')
+            await mustGetCategoryByString(userId, 'ancestor', 'parent')
+            await mustGetCategoryByString(userId, 'parent', 'child')
+                .then(() => expect(false).toBeTruthy())
+                .catch(() => expect(true).toBeTruthy())
+        })
+
         it('Child and parent exist and relationship, return', async () => {
             await mustGetCategoryByString(userId, 'parent')
+            await mustGetCategoryByString(userId, 'parent', 'child')
+            const parent = await mustGetCategoryByString(userId, 'parent')
             const child = await mustGetCategoryByString(
                 userId,
                 'parent',
                 'child',
             )
-            const parent = await mustGetCategoryByString(userId, 'parent')
 
             expect(child.parent?.toString()).toEqual(parent._id.toString())
             expect(

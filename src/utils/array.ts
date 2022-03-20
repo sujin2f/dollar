@@ -1,5 +1,5 @@
-export const deepCopy = (items: any) => {
-    return items.map((item: any) => {
+export const deepCopy = <T>(items: T[]): T[] => {
+    return items.map((item: T) => {
         if (Array.isArray(item)) {
             return deepCopy(item)
         }
@@ -9,7 +9,7 @@ export const deepCopy = (items: any) => {
         }
 
         return item
-    })
+    }) as T[]
 }
 
 export const splitItems = <T>(arr: T[], numOfRows: number): T[][] => {

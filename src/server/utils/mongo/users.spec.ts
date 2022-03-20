@@ -27,12 +27,20 @@ describe('users.ts', () => {
         })
     })
 
-    it('setDarkMode()', async () => {
-        const user = await getOrAddUser('Sujin', 'sujin.2f@gmail.com')
-        const darkMode = await setDarkMode({ darkMode: true }, {
-            session: { user: user._id },
-        } as Request)
-        expect(darkMode).toEqual(true)
+    describe('setDarkMode()', () => {
+        it('Success', async () => {
+            const user = await getOrAddUser('Sujin', 'sujin.2f@gmail.com')
+            const darkMode = await setDarkMode({ darkMode: true }, {
+                session: { user: user._id },
+            } as Request)
+            expect(darkMode).toEqual(true)
+        })
+
+        it('🤬 Fail', async () => {
+            await setDarkMode({ darkMode: true }, request)
+                .then(() => expect(false).toBeTruthy())
+                .catch(() => expect(true).toBeTruthy())
+        })
     })
 
     describe('getUserByEmail()', () => {

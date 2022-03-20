@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 import fetch from 'cross-fetch'
 import { ApolloClient, InMemoryCache, HttpLink } from '@apollo/client'
 

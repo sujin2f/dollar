@@ -69,13 +69,10 @@ export const setDarkMode = async (
     { darkMode }: SetDarkModeParam,
     { session: { user } }: Request,
 ): Promise<boolean> => {
-    const result = await UserModel.updateOne({ _id: user }, { darkMode }).catch(
-        () => {
+    await UserModel.updateOne({ _id: user }, { darkMode }).catch(
+        /* istanbul ignore next */ () => {
             throw new Error(ErrorMessages.SOMETHING_WENT_WRONG)
         },
     )
-    if (result.modifiedCount) {
-        return darkMode
-    }
-    throw new Error(ErrorMessages.SOMETHING_WENT_WRONG)
+    return darkMode
 }

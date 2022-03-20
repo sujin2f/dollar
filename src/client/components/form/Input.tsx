@@ -5,8 +5,8 @@ import React, {
     RefObject,
     useRef,
 } from 'react'
-import { ObjectId } from 'mongodb'
 import { removeEmpty } from 'src/utils/object'
+import { generateUUID } from 'src/utils/string'
 
 type Props = {
     label?: string
@@ -41,7 +41,7 @@ export const Input = (props: Props): JSX.Element => {
     // eslint-disable-next-line react-hooks/rules-of-hooks
     const ref = reference || useRef<HTMLInputElement>(null)
 
-    const id = props.id || new ObjectId().toString()
+    const id = props.id || generateUUID()
     const type = props.type || 'text'
     const ariaDescribedby = helpText ? `${id}-help-text` : ''
     const labelClassNames = `form-label ${

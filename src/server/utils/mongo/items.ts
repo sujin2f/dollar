@@ -62,9 +62,11 @@ export const addItem = async <T extends string | number>(
         user,
         category,
     })
-    await itemModel.save().catch((e) => {
-        throw new Error(ErrorMessages.CREATE_ITEM_FAILED)
-    })
+    await itemModel.save().catch(
+        /* istanbul ignore next */ () => {
+            throw new Error(ErrorMessages.CREATE_ITEM_FAILED)
+        },
+    )
 
     // Redirection
     const date = yyyyMmDdToDate(item.date)
@@ -117,9 +119,11 @@ export const getItems = async (
         })
             .sort({ date: -1 })
             .populate({ path: 'category', model: CategoryModel })
-            .catch(() => {
-                throw new Error(ErrorMessages.FIND_ITEM_FAILED)
-            })
+            .catch(
+                /* istanbul ignore next */ () => {
+                    throw new Error(ErrorMessages.FIND_ITEM_FAILED)
+                },
+            )
     }
 
     const stage: PipelineStage[] = [
@@ -183,9 +187,11 @@ export const getItems = async (
         },
     )
 
-    return await ItemModel.aggregate(stage).catch(() => {
-        throw new Error(ErrorMessages.FIND_ITEM_FAILED)
-    })
+    return await ItemModel.aggregate(stage).catch(
+        /* istanbul ignore next */ () => {
+            throw new Error(ErrorMessages.FIND_ITEM_FAILED)
+        },
+    )
 }
 
 type DeleteItemParam = {
@@ -200,7 +206,7 @@ export const deleteItem = async (
         user,
     })
         .then(() => true)
-        .catch(() => false)
+        .catch(/* istanbul ignore next */ () => false)
 }
 
 type UpdateItemParam = {
@@ -216,9 +222,11 @@ export const updateItem = async (
             user,
             item.category,
             item.subCategory,
-        ).catch((e) => {
-            throw e
-        }))
+        ).catch(
+            /* istanbul ignore next */ (e) => {
+                throw e
+            },
+        ))
 
     return await ItemModel.updateOne(
         {
@@ -231,5 +239,5 @@ export const updateItem = async (
         },
     )
         .then(() => true)
-        .catch(() => false)
+        .catch(/* istanbul ignore next */ () => false)
 }

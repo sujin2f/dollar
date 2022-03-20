@@ -1,5 +1,6 @@
 import { gql } from '@apollo/client'
 import { buildSchema } from 'graphql'
+import { RawItem } from 'src/types/model'
 
 export const GET_USER = 'getUser'
 export const SET_DARK_MODE = 'setDarkMode'
@@ -10,7 +11,11 @@ export const ADD_ITEM = 'addItem'
 export const ADD_ITEMS = 'addItems'
 export const DELETE_ITEM = 'deleteItem'
 export const UPDATE_ITEM = 'updateItem'
-export const GET_RAW_ITEMS = 'GetRawItems'
+export const GET_RAW_ITEMS = 'rawItems'
+
+export type GetRawItemsParam = {
+    [GET_RAW_ITEMS]: RawItem[]
+}
 
 export enum Types {
     CATEGORY = 'Category',
@@ -101,8 +106,14 @@ export const GraphQuery = {
                 originTitle
                 debit
                 credit
-                category
-                subCategory
+                category {
+                    _id
+                    title
+                }
+                subCategory {
+                    _id
+                    title
+                }
             }
         }
     `,
@@ -165,6 +176,7 @@ export const schema = buildSchema(`
         debit: Float
         credit: Float
         category: Category
+        subCategory: Category
     }
     input Input${Types.RAW_ITEM} {
         _id: String

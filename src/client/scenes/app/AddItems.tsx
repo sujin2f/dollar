@@ -5,9 +5,9 @@ import { RawItem } from 'src/types/model'
 
 export const AddItems = (): JSX.Element => {
     const [items, changeInput] = useState<RawItem[]>([])
-    const { rawItem } = useRawItem(items)
+    const { rawItems } = useRawItem(items)
 
-    const hasProcessed = rawItem.length !== 0
+    const hasProcessed = rawItems.length !== 0
 
     return (
         <Fragment>
@@ -22,7 +22,7 @@ export const AddItems = (): JSX.Element => {
                 <Row>
                     <Column>
                         <AddItemsTable
-                            items={rawItem}
+                            items={rawItems}
                             changeInput={changeInput}
                         />
                     </Column>

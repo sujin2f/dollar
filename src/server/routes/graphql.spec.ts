@@ -3,7 +3,7 @@
 import request from 'supertest'
 import express, { Application } from 'express'
 import { connect, close, clear } from 'src/jest/mongo'
-import { apiRouter } from './api'
+import { graphqlRouter } from './graphql'
 import { getOrAddUser } from '../utils/mongo/users'
 import { Session } from 'express-session'
 
@@ -19,7 +19,7 @@ describe('api.ts', () => {
             req.session.user = userId
             next()
         })
-        app.use('/', apiRouter)
+        app.use('/', graphqlRouter)
     })
     beforeEach(async () => {
         await clear()

@@ -2,20 +2,11 @@ import { useMutation, useQuery } from '@apollo/client'
 
 import { useHistory } from 'react-router-dom'
 import { Item, RawItem } from 'src/types/model'
-import { GraphQuery } from 'src/constants/graph-query'
+import { GraphQuery, ItemParam, ItemsParam } from 'src/constants/graph-query'
 import { useGlobalOption } from './useGlobalOption'
 import { useCategory } from './useCategory'
 import { TableType } from 'src/constants/accountBook'
 
-type GetItemsReturn = {
-    getItems: Item[]
-}
-type AddItemsReturn = {
-    addItems: string
-}
-type AddItemReturn = {
-    addItem: string
-}
 export const useItems = (year?: number, month?: number, type?: string) => {
     const { getCategoryById, isCategoryHidden } = useCategory()
     const { setCallout, closeModal } = useGlobalOption()
@@ -24,7 +15,7 @@ export const useItems = (year?: number, month?: number, type?: string) => {
     const variables =
         type === TableType.Daily ? { year, month, type } : { year, type }
 
-    const { loading, error, data } = useQuery<GetItemsReturn>(
+    const { loading, error, data } = useQuery<ItemsParam>(
         GraphQuery.GET_ITEMS,
         {
             variables,
@@ -37,36 +28,38 @@ export const useItems = (year?: number, month?: number, type?: string) => {
         history.push('/')
     }
 
-    const [addItems] = useMutation<AddItemsReturn>(GraphQuery.ADD_ITEMS, {
+    const [addItems] = useMutation<ItemsParam>(GraphQuery.ADD_ITEMS, {
         variables: {
-            items: [] as RawItem[],
+            rawItems: [] as RawItem[],
         },
         refetchQueries: [GraphQuery.GET_ITEMS, GraphQuery.GET_CATEGORIES],
         onError: (e) => {
             setCallout(e.message)
         },
-        onCompleted: ({ addItems: redirection }) => {
-            history.push(redirection)
+        onCompleted: ({ items: redirection }) => {
+            history.push(redirection as unknown as string)
         },
     })
 
-    const [addItem] = useMutation<AddItemReturn>(GraphQuery.ADD_ITEM, {
+    const [addItem] = useMutation<ItemParam>(GraphQuery.MUTATE_ITEM, {
         variables: {
-            item: {} as RawItem,
+            rawItem: {} as RawItem,
+            type: 'add',
         },
         refetchQueries: [GraphQuery.GET_ITEMS],
         onError: (e) => {
             setCallout(e.message)
         },
-        onCompleted: ({ addItem: redirection }) => {
-            history.push(redirection)
+        onCompleted: ({ rawItem: redirection }) => {
+            history.push(redirection as unknown as string)
             closeModal()
         },
     })
 
-    const [updateItem] = useMutation(GraphQuery.UPDATE_ITEM, {
+    const [updateItem] = useMutation<ItemParam>(GraphQuery.MUTATE_ITEM, {
         variables: {
-            item: {} as RawItem,
+            rawItem: {} as RawItem,
+            type: 'update',
         },
         refetchQueries: [GraphQuery.GET_ITEMS],
         onError: (e) => {
@@ -77,15 +70,27 @@ export const useItems = (year?: number, month?: number, type?: string) => {
         },
     })
 
-    const [deleteItem] = useMutation(GraphQuery.DELETE_ITEM, {
+    const [deleteItem] = useMutation<ItemParam>(GraphQuery.MUTATE_ITEM, {
         variables: {
-            _id: '',
+            rawItem: {} as RawItem,
+            type: 'delete',
         },
         refetchQueries: [GraphQuery.GET_ITEMS],
         onError: (e) => {
             setCallout(e.message)
         },
     })
+
+    const items: Item[] =
+        data?.items && type !== TableType.Daily
+            ? data.items.map(
+                  (item) =>
+                      ({
+                          ...item,
+                          category: getCategoryById(item.title),
+                      } as Item),
+              )
+            : data?.items || []
 
     const itemsToTableData = () => {
         let totalDebit = 0
@@ -121,14 +126,6 @@ export const useItems = (year?: number, month?: number, type?: string) => {
 
         return { items: rows, totalCredit, totalDebit }
     }
-
-    const items =
-        data?.getItems && type !== TableType.Daily
-            ? (data.getItems.map((item) => ({
-                  ...item,
-                  category: getCategoryById(item.title),
-              })) as Item[])
-            : data?.getItems || []
 
     return {
         loading,

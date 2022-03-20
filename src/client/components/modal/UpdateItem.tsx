@@ -44,7 +44,7 @@ export const UpdateItem = (): JSX.Element => {
         if (!validate()) {
             return
         }
-        const item = {
+        const rawItem = {
             _id: currentItem?._id,
             date: date.current?.value,
             title: title.current?.value,
@@ -55,7 +55,8 @@ export const UpdateItem = (): JSX.Element => {
 
         updateItem({
             variables: {
-                item,
+                rawItem,
+                type: 'update',
             },
         })
     }

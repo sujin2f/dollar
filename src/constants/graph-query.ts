@@ -1,18 +1,16 @@
 import { gql } from '@apollo/client'
 import { buildSchema } from 'graphql'
-import { Category, RawItem, User } from 'src/types/model'
-
-export const UPDATE_CATEGORY = 'updateCategory'
-export const GET_ITEMS = 'getItems'
-export const ADD_ITEM = 'addItem'
-export const ADD_ITEMS = 'addItems'
-export const DELETE_ITEM = 'deleteItem'
-export const UPDATE_ITEM = 'updateItem'
+import { Category, Item, RawItem, User } from 'src/types/model'
+import { TableType } from './accountBook'
 
 export enum Fields {
     USER = 'user',
     RAW_ITEMS = 'rawItems',
+    RAW_ITEM = 'rawItem',
     CATEGORIES = 'categories',
+    CATEGORY = 'category',
+    ITEMS = 'items',
+    ITEM = 'item',
 }
 
 export enum Types {
@@ -32,6 +30,23 @@ export type CategoriesParam = {
 
 export type RawItemsParam = {
     [Fields.RAW_ITEMS]: RawItem[]
+}
+
+export type CategoryParam = {
+    [Fields.CATEGORY]: Category
+}
+
+export type ItemsParam = {
+    [Fields.ITEMS]: Item[]
+    [Fields.RAW_ITEMS]: RawItem[]
+    year: number
+    month: number
+    type: TableType
+}
+
+export type ItemParam = {
+    [Fields.RAW_ITEM]: RawItem
+    type?: string
 }
 
 export const GraphQuery = {
@@ -68,13 +83,13 @@ export const GraphQuery = {
         }
     `,
     UPDATE_CATEGORY: gql`
-        mutation ${UPDATE_CATEGORY}($category: Input${Types.CATEGORY}) {
-            ${UPDATE_CATEGORY}(category: $category)
+        mutation ${Fields.CATEGORY}($${Fields.CATEGORY}: Input${Types.CATEGORY}) {
+            ${Fields.CATEGORY}(${Fields.CATEGORY}: $${Fields.CATEGORY})
         }
     `,
     GET_ITEMS: gql`
-        query ${GET_ITEMS}($year: Int!, $type: String!, $month: Int) {
-            ${GET_ITEMS}(year: $year, month: $month, type: $type) {
+        query ${Fields.ITEMS}($year: Int!, $type: String!, $month: Int) {
+            ${Fields.ITEMS}(year: $year, month: $month, type: $type) {
                 _id
                 date
                 title
@@ -88,29 +103,25 @@ export const GraphQuery = {
             }
         }
     `,
-    ADD_ITEM: gql`
-        mutation ${ADD_ITEM}($item: Input${Types.RAW_ITEM}) {
-            ${ADD_ITEM}(item: $item)
-        }
-    `,
     ADD_ITEMS: gql`
-        mutation ${ADD_ITEMS}($items: [Input${Types.RAW_ITEM}]) {
-            ${ADD_ITEMS}(items: $items)
+        mutation ${Fields.ITEMS}($${Fields.RAW_ITEMS}: [Input${Types.RAW_ITEM}]) {
+            ${Fields.ITEMS}(${Fields.RAW_ITEMS}: $${Fields.RAW_ITEMS})
         }
     `,
-    DELETE_ITEM: gql`
-        mutation ${DELETE_ITEM}($_id: String!) {
-            ${DELETE_ITEM}(_id: $_id)
-        }
-    `,
-    UPDATE_ITEM: gql`
-        mutation ${UPDATE_ITEM}($item: Input${Types.RAW_ITEM}!) {
-            ${UPDATE_ITEM}(item: $item)
+    MUTATE_ITEM: gql`
+        mutation ${Fields.ITEM}(
+            $${Fields.RAW_ITEM}: Input${Types.RAW_ITEM}!,
+            $type: String
+        ) {
+            ${Fields.ITEM}(
+                ${Fields.RAW_ITEM}: $${Fields.RAW_ITEM},
+                type: $type
+            )
         }
     `,
     GET_RAW_ITEMS: gql`
-        query ${Fields.RAW_ITEMS}($items: [Input${Types.RAW_ITEM}]) {
-            ${Fields.RAW_ITEMS}(${Fields.RAW_ITEMS}: $items) {
+        query ${Fields.RAW_ITEMS}($${Fields.RAW_ITEMS}: [Input${Types.RAW_ITEM}]) {
+            ${Fields.RAW_ITEMS}(${Fields.RAW_ITEMS}: $${Fields.RAW_ITEMS}) {
                 checked
                 date
                 title
@@ -158,30 +169,40 @@ const rawItemNodes = `
     subCategory: String
 `
 
+const itemNode = `
+    _id: String
+    date: String
+    title: String
+    debit: Float
+    credit: Float
+    category: ${Types.CATEGORY}
+`
+
 export const schema = buildSchema(`
     type Query {
         ${Fields.USER}: ${Types.USER}
         ${Fields.CATEGORIES}: [${Types.CATEGORY}]
-        ${GET_ITEMS}(
+        ${Fields.ITEMS}(
             year: Int!,
             type: String!
             month: Int,
-        ): [Item]
+        ): [${Types.ITEM}]
         ${Fields.RAW_ITEMS}(
             ${Fields.RAW_ITEMS}: [Input${Types.RAW_ITEM}]
         ): [${Types.RAW_ITEM}]
     }
     type Mutation {
         ${Fields.USER}(user: Input${Types.USER}!): Boolean
-        ${UPDATE_CATEGORY}(category: Input${Types.CATEGORY}): Boolean
-        ${ADD_ITEMS}(items: [Input${Types.RAW_ITEM}]): String
-        ${ADD_ITEM}(item: Input${Types.RAW_ITEM}): String
-        ${DELETE_ITEM}(_id: String!): Boolean
-        ${UPDATE_ITEM}(item: Input${Types.RAW_ITEM}): Boolean
+        ${Fields.CATEGORY}(${Fields.CATEGORY}: Input${Types.CATEGORY}): Boolean
+        ${Fields.ITEMS}(${Fields.RAW_ITEMS}: [Input${Types.RAW_ITEM}]): String
+        ${Fields.ITEM}(
+            ${Fields.RAW_ITEM}: Input${Types.RAW_ITEM},
+            type: String
+        ): String
     }
     type ${Types.CATEGORY} {
         ${categoryNodes}
-        children: [Category]
+        children: [${Types.CATEGORY}]
     }
     input Input${Types.CATEGORY} {
         ${categoryNodes}
@@ -193,12 +214,7 @@ export const schema = buildSchema(`
         ${userNodes}
     }
     type ${Types.ITEM} {
-        _id: String
-        date: String
-        title: String
-        debit: Float
-        credit: Float
-        category: Category
+        ${itemNode}
     }
     type ${Types.RAW_ITEM} {
         ${rawItemNodes}

@@ -1,6 +1,7 @@
 import { Request } from 'express'
 import mongoose, { Schema } from 'mongoose'
 import { Palette } from 'src/constants/color'
+import { CategoryParam } from 'src/constants/graph-query'
 import { ErrorMessages } from 'src/server/constants/messages'
 import { Category } from 'src/types/model'
 import { random } from 'src/utils/array'
@@ -150,11 +151,8 @@ const mustGetCategory = async (
     return newChild
 }
 
-type UpdateCategoryParam = {
-    category: Category
-}
 export const updateCategory = async (
-    { category: { _id, title, disabled, color } }: UpdateCategoryParam,
+    { category: { _id, title, disabled, color } }: CategoryParam,
     { session: { user } }: Request,
 ): Promise<boolean> => {
     await CategoryModel.updateOne(

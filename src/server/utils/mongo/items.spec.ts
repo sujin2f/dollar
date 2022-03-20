@@ -8,6 +8,7 @@ import { TableType } from 'src/constants/accountBook'
 import { CategoryModel, mustGetCategoryByString } from './categories'
 import { PreSelectModel } from './preSelect'
 import { addItem, addItems, deleteItem, getItems, updateItem } from './items'
+import { ItemsParam } from 'src/constants/graph-query'
 
 describe('item.ts', () => {
     const userId = new ObjectId().toString()
@@ -21,7 +22,7 @@ describe('item.ts', () => {
         it('Add Item /w category', async () => {
             const redirection = await addItem(
                 {
-                    item: {
+                    rawItem: {
                         checked: true,
                         date: '1977-01-02',
                         title: 'item',
@@ -40,7 +41,7 @@ describe('item.ts', () => {
             await mustGetCategoryByString(userId, 'parent', 'child')
             await addItem(
                 {
-                    item: {
+                    rawItem: {
                         _id: '',
                         checked: true,
                         date: '1977-01-02',
@@ -62,7 +63,7 @@ describe('item.ts', () => {
     it('addItems()', async () => {
         const redirection = await addItems(
             {
-                items: [
+                rawItems: [
                     {
                         checked: true,
                         date: '1977-01-02',
@@ -82,7 +83,7 @@ describe('item.ts', () => {
                         category: 'category',
                     },
                 ],
-            },
+            } as ItemsParam,
             request,
         )
         expect(redirection).toEqual('/app/daily/2082/1')
@@ -106,7 +107,7 @@ describe('item.ts', () => {
         beforeEach(async () => {
             await addItems(
                 {
-                    items: [
+                    rawItems: [
                         {
                             checked: true,
                             date: '1977-01-02',
@@ -148,14 +149,14 @@ describe('item.ts', () => {
                             credit: 0,
                         },
                     ],
-                },
+                } as ItemsParam,
                 request,
             )
         })
 
         it('Daily', async () => {
             const items = await getItems(
-                { year: 1977, month: 1, type: TableType.Daily },
+                { year: 1977, month: 1, type: TableType.Daily } as ItemsParam,
                 request,
             )
 
@@ -164,7 +165,7 @@ describe('item.ts', () => {
 
         it('Monthly', async () => {
             const items = await getItems(
-                { year: 1977, month: 1, type: TableType.Monthly },
+                { year: 1977, month: 1, type: TableType.Monthly } as ItemsParam,
                 request,
             )
 
@@ -177,7 +178,7 @@ describe('item.ts', () => {
 
         it('Annual', async () => {
             const items = await getItems(
-                { year: 1977, month: 1, type: TableType.Annual },
+                { year: 1977, month: 1, type: TableType.Annual } as ItemsParam,
                 request,
             )
 
@@ -190,28 +191,32 @@ describe('item.ts', () => {
     })
 
     it('deleteItem()', async () => {
+        const rawItem = {
+            _id: '',
+            checked: true,
+            date: '1977-01-02',
+            title: 'item',
+            originTitle: 'item',
+            debit: 10,
+            credit: 0,
+            category: 'category',
+        }
         await addItem(
             {
-                item: {
-                    _id: '',
-                    checked: true,
-                    date: '1977-01-02',
-                    title: 'item',
-                    originTitle: 'item',
-                    debit: 10,
-                    credit: 0,
-                    category: 'category',
-                },
+                rawItem,
             },
             request,
         )
         let items = await getItems(
-            { year: 1977, month: 1, type: TableType.Daily },
+            { year: 1977, month: 1, type: TableType.Daily } as ItemsParam,
             request,
         )
-        const del = await deleteItem({ _id: items[0]._id }, request)
+        const del = await deleteItem(
+            { rawItem: { ...rawItem, _id: items[0]._id } },
+            request,
+        )
         items = await getItems(
-            { year: 1977, month: 1, type: TableType.Daily },
+            { year: 1977, month: 1, type: TableType.Daily } as ItemsParam,
             request,
         )
 
@@ -220,40 +225,40 @@ describe('item.ts', () => {
     })
 
     it('updateItem()', async () => {
+        const rawItem = {
+            checked: true,
+            date: '1977-01-02',
+            title: 'item',
+            originTitle: 'item',
+            debit: 10,
+            credit: 0,
+            category: 'category',
+        }
         await addItem(
             {
-                item: {
-                    checked: true,
-                    date: '1977-01-02',
-                    title: 'item',
-                    originTitle: 'item',
-                    debit: 10,
-                    credit: 0,
-                    category: 'category',
-                },
+                rawItem,
             },
             request,
         )
         let items = await getItems(
-            { year: 1977, month: 1, type: TableType.Daily },
+            { year: 1977, month: 1, type: TableType.Daily } as ItemsParam,
             request,
         )
         const update = await updateItem(
             {
-                item: {
+                rawItem: {
+                    ...rawItem,
                     _id: items[0]._id,
                     date: '1977-01-03',
                     title: 'item 2',
                     originTitle: 'item',
                     debit: 100,
-                    credit: 0,
-                    category: 'category',
                 },
             },
             request,
         )
         items = await getItems(
-            { year: 1977, month: 1, type: TableType.Daily },
+            { year: 1977, month: 1, type: TableType.Daily } as ItemsParam,
             request,
         )
 

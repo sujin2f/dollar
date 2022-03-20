@@ -2,6 +2,7 @@
 
 import { Request } from 'express'
 import { ObjectId } from 'mongodb'
+import { ItemsParam } from 'src/constants/graph-query'
 import { connect, close, clear } from 'src/jest/mongo'
 import { RawItem } from 'src/types/model'
 import { addItem, addItems } from './items'
@@ -19,7 +20,7 @@ describe('category.ts', () => {
         it('Uncheck duplication', async () => {
             await addItem(
                 {
-                    item: {
+                    rawItem: {
                         checked: true,
                         date: '1977-01-02',
                         title: 'item',
@@ -51,7 +52,7 @@ describe('category.ts', () => {
         it('Select category', async () => {
             await addItems(
                 {
-                    items: [
+                    rawItems: [
                         {
                             checked: true,
                             date: '1977-01-02',
@@ -62,7 +63,7 @@ describe('category.ts', () => {
                             category: 'category',
                         },
                     ],
-                },
+                } as ItemsParam,
                 request,
             )
             const items = await getRawItems(

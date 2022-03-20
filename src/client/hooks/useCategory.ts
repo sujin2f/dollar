@@ -68,7 +68,11 @@ export const useCategory = () => {
         return categories.filter((category) => category.parent === _id)
     }
 
-    const isCategoryHidden = (categoryId: string): boolean => {
+    const isCategoryHidden = (categoryId?: string): boolean => {
+        if (!categories.length || !categoryId) {
+            return false
+        }
+
         const category = getCategoryById(categoryId)
         if (category && category.disabled) {
             return true

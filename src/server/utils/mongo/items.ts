@@ -2,12 +2,13 @@ import { Request } from 'express'
 import mongoose, { Schema } from 'mongoose'
 import { PipelineStage } from 'mongoose'
 import { TableType } from 'src/constants/accountBook'
+import { ItemParam, ItemsParam } from 'src/constants/graph-query'
 import { ErrorMessages } from 'src/server/constants/messages'
 import {
     mustGetCategoryByString,
     findOrCreatePreSelect,
 } from 'src/server/utils/mongo'
-import { Item, RawItem } from 'src/types/model'
+import { Item } from 'src/types/model'
 import { addZero, yyyyMmDdToDate } from 'src/utils/datetime'
 import { CategoryModel } from './categories'
 
@@ -31,45 +32,42 @@ const itemSchema = new Schema({
 
 export const ItemModel = mongoose.model<Item>('item', itemSchema)
 
-type AddItemParam = {
-    item: RawItem
-}
 export const addItem = async <T extends string | number>(
-    { item }: AddItemParam,
+    { rawItem }: ItemParam,
     { session: { user } }: Request,
     preSelect?: boolean,
     returnType?: T,
 ): Promise<T> => {
     const category =
-        item.category &&
+        rawItem.category &&
         (await mustGetCategoryByString(
             user,
-            item.category,
-            item.subCategory,
+            rawItem.category,
+            rawItem.subCategory,
         ).catch((e) => {
             throw e
         }))
 
     if (category && preSelect) {
-        await findOrCreatePreSelect(item.originTitle, category, user)
+        await findOrCreatePreSelect(rawItem.originTitle, category, user)
     }
 
-    item._id = undefined
-    const newItem = { ...item }
+    rawItem._id = undefined
+    const newItem = { ...rawItem }
     delete newItem._id
     const itemModel = new ItemModel({
         ...newItem,
         user,
-        category,
-    })
+        category: category || undefined,
+    } as Item)
     await itemModel.save().catch(
         /* istanbul ignore next */ () => {
-            throw new Error(ErrorMessages.CREATE_ITEM_FAILED)
+            throw new Error('🤬 Cannot create an item.')
         },
     )
 
     // Redirection
-    const date = yyyyMmDdToDate(item.date)
+    const date = yyyyMmDdToDate(rawItem.date)
     const year = date.getFullYear()
     const month = date.getMonth() + 1
 
@@ -77,19 +75,16 @@ export const addItem = async <T extends string | number>(
         return `/app/${TableType.Daily}/${year}/${month}` as T
     }
 
-    return new Date(item.date).getTime() as T
+    return new Date(rawItem.date).getTime() as T
 }
 
-type AddItemsParam = {
-    items: RawItem[]
-}
 export const addItems = async (
-    { items }: AddItemsParam,
+    { rawItems }: ItemsParam,
     request: Request,
 ): Promise<string> => {
     const dates: number[] = []
-    for (const item of items) {
-        dates.push(await addItem({ item }, request, true, 123))
+    for (const rawItem of rawItems) {
+        dates.push(await addItem({ rawItem }, request, true, 123))
     }
     dates.sort((a, b) => a - b)
 
@@ -100,13 +95,8 @@ export const addItems = async (
     return `/app/${TableType.Daily}/${year}/${month}`
 }
 
-type GetItemsParam = {
-    year: number
-    month: number
-    type: TableType
-}
 export const getItems = async (
-    { year, month, type }: GetItemsParam,
+    { year, month, type }: ItemsParam,
     { session: { user } }: Request,
 ): Promise<Item[]> => {
     if (type === TableType.Daily) {
@@ -194,34 +184,28 @@ export const getItems = async (
     )
 }
 
-type DeleteItemParam = {
-    _id: string
-}
 export const deleteItem = async (
-    { _id }: DeleteItemParam,
+    { rawItem }: ItemParam,
     { session: { user } }: Request,
 ): Promise<boolean> => {
     return await ItemModel.deleteOne({
-        _id,
+        _id: rawItem._id,
         user,
     })
         .then(() => true)
         .catch(/* istanbul ignore next */ () => false)
 }
 
-type UpdateItemParam = {
-    item: RawItem
-}
 export const updateItem = async (
-    { item }: UpdateItemParam,
+    { rawItem }: ItemParam,
     { session: { user } }: Request,
 ): Promise<boolean> => {
     const category =
-        item.category &&
+        rawItem.category &&
         (await mustGetCategoryByString(
             user,
-            item.category,
-            item.subCategory,
+            rawItem.category,
+            rawItem.subCategory,
         ).catch(
             /* istanbul ignore next */ (e) => {
                 throw e
@@ -230,14 +214,18 @@ export const updateItem = async (
 
     return await ItemModel.updateOne(
         {
-            _id: item._id,
+            _id: rawItem._id,
             user,
         },
         {
-            ...item,
-            category,
+            ...rawItem,
+            category: category || undefined,
         },
     )
         .then(() => true)
-        .catch(/* istanbul ignore next */ () => false)
+        .catch(
+            /* istanbul ignore next */ (e) => {
+                throw e
+            },
+        )
 }

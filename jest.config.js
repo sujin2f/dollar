@@ -11,7 +11,7 @@ module.exports = {
         '<rootDir>/src/utils/**/*.{ts,tsx}',
         '<rootDir>/src/client/utils/**/*.{ts,tsx}',
         '<rootDir>/src/server/utils/**/*.{ts,tsx}',
-        '<rootDir>/src/server/routes/api.ts',
+        '<rootDir>/src/server/routes/graphql.ts',
         '!<rootDir>/src/**/*.spec.{ts,tsx}',
         '!<rootDir>/src/**/*.d.{ts,tsx}',
     ],

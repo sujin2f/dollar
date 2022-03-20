@@ -54,7 +54,7 @@ export const AddItem = (): JSX.Element => {
         if (!validate()) {
             return
         }
-        const item = {
+        const rawItem = {
             checked: true,
             originTitle: title.current?.value,
             date: date.current?.value,
@@ -67,7 +67,8 @@ export const AddItem = (): JSX.Element => {
 
         addItem({
             variables: {
-                item,
+                rawItem,
+                type: 'add',
             },
         })
     }

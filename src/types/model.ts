@@ -40,3 +40,14 @@ export type User = {
     photo?: string
     darkMode?: boolean
 }
+
+export const itemToRawItem = (item: Item) => {
+    return {
+        _id: item._id,
+        date: item.date,
+        title: item.title,
+        debit: item.debit,
+        credit: item.credit,
+        category: item.category?.title || '',
+    } as RawItem
+}

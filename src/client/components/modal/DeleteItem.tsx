@@ -1,5 +1,6 @@
 import React, { Fragment } from 'react'
 import { useGlobalOption, useItems } from 'src/client/hooks'
+import { itemToRawItem } from 'src/types/model'
 import { Button } from '../form/Button'
 
 export const DeleteItem = (): JSX.Element => {
@@ -7,9 +8,13 @@ export const DeleteItem = (): JSX.Element => {
     const { deleteItem } = useItems()
 
     const onClick = () => {
+        if (!item) {
+            return
+        }
         deleteItem({
             variables: {
-                _id: item!._id,
+                rawItem: itemToRawItem(item),
+                type: 'delete',
             },
         })
         closeModal()

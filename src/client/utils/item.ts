@@ -6,7 +6,7 @@ import { currencyToNumber } from 'src/utils/string'
 export const getRawItemMeta = (rawText: string) => {
     const result = {
         separate: '\t',
-        columns: {} as Record<TableHeader, [number, string]>,
+        columns: {} as Record<string, [number, string]>,
         dateFormat: '',
     }
 
@@ -35,15 +35,19 @@ export const getRawItemMeta = (rawText: string) => {
         if (Object.keys(TableHeader).includes(trimmed)) {
             const resultKey = TableHeader[trimmed as keyof typeof TableHeader]
             result.columns[resultKey] = [index, trimmed]
+        } else {
+            result.columns[trimmed] = [index, trimmed]
         }
     })
 
     return result
 }
 
+export type RawItemMeta = ReturnType<typeof getRawItemMeta>
+
 export const rawTextToRawItem = (
     rawText: string,
-    meta: ReturnType<typeof getRawItemMeta>,
+    meta: RawItemMeta,
 ): RawItem[] => {
     const separated = rawText.split('\n').map((row) => row.split(meta.separate))
     separated.shift()
@@ -57,8 +61,12 @@ export const rawTextToRawItem = (
         .map((row) => {
             let date = row[meta.columns.date[0]]
             const title = row[meta.columns.title[0]]
-            const debit = currencyToNumber(row[meta.columns.debit[0]])
-            const credit = currencyToNumber(row[meta.columns.credit[0]])
+            const debit = meta.columns.debit
+                ? currencyToNumber(row[meta.columns.debit[0]])
+                : 0
+            const credit = meta.columns.credit
+                ? currencyToNumber(row[meta.columns.credit[0]])
+                : 0
             switch (meta.dateFormat) {
                 case 'DD/MM/YYYY':
                     const d = date.split('/')

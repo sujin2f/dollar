@@ -1,5 +1,5 @@
 import React, { Fragment, useState } from 'react'
-import { AddItemsForm, AddItemsTable, Column, Row } from 'src/client/components'
+import { AddItemsForm, AddItemsTable } from 'src/client/components'
 import { useRawItem } from 'src/client/hooks'
 import { RawItem } from 'src/types/model'
 
@@ -11,22 +11,9 @@ export const AddItems = (): JSX.Element => {
 
     return (
         <Fragment>
-            {!hasProcessed && (
-                <Row>
-                    <Column>
-                        <AddItemsForm changeInput={changeInput} />
-                    </Column>
-                </Row>
-            )}
+            {!hasProcessed && <AddItemsForm changeInput={changeInput} />}
             {hasProcessed && (
-                <Row>
-                    <Column>
-                        <AddItemsTable
-                            items={rawItems}
-                            changeInput={changeInput}
-                        />
-                    </Column>
-                </Row>
+                <AddItemsTable items={rawItems} changeInput={changeInput} />
             )}
         </Fragment>
     )

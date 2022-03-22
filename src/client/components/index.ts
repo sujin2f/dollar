@@ -8,6 +8,7 @@ export { Input } from './form/Input'
 export { Switch } from './form/Switch'
 export { ColorPicker } from './form/ColorPicker'
 export { Datalist } from './form/Datalist'
+export { Select } from './form/Select'
 
 export { Loading } from './Loading'
 export { Menu } from './Menu'

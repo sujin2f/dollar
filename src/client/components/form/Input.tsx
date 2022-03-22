@@ -22,6 +22,7 @@ type Props = {
     onEnterKeyDown?: () => void
     onChange?: (e?: ChangeEvent) => void
     autoFocus?: boolean
+    value?: string
 }
 export const Input = (props: Props): JSX.Element => {
     const {
@@ -34,6 +35,7 @@ export const Input = (props: Props): JSX.Element => {
         inlineLabel,
         list,
         autoFocus,
+        value,
         onEnterKeyDown,
         onChange,
     } = props
@@ -60,6 +62,7 @@ export const Input = (props: Props): JSX.Element => {
         className,
         list,
         autoFocus,
+        value,
     })
 
     const onKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {

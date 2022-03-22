@@ -49,6 +49,7 @@ Mar 7, 2022, PR, SHERBOURNE VARI, $32.30, , $36,508.67`
             expect(result).toEqual({
                 separate: '\t',
                 columns: {
+                    'Posting Date': [1, 'Posting Date'],
                     date: [0, 'Transaction Date'],
                     title: [2, 'Description'],
                     debit: [3, 'Amount'],

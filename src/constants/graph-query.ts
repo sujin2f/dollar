@@ -128,14 +128,8 @@ export const GraphQuery = {
                 originTitle
                 debit
                 credit
-                category {
-                    _id
-                    title
-                }
-                subCategory {
-                    _id
-                    title
-                }
+                category
+                subCategory
             }
         }
     `,

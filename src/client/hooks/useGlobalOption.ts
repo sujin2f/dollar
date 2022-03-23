@@ -30,6 +30,7 @@ export const useGlobalOption = () => {
 
     const setMenuOpen = (option: boolean) => {
         closeModal()
+        document.addEventListener('keydown', keyCloseModal)
         dispatch(setStoreMenuOpen(option))
     }
 
@@ -82,15 +83,15 @@ export const useGlobalOption = () => {
     }
 
     return {
-        menuOpen,
-        deleteItem,
-        updateItem,
-        addItem,
-        setMenuOpen,
-        setDeleteModal,
-        setUpdateModal,
-        setAddModal,
         closeModal,
+        menuOpen,
+        setMenuOpen,
+        deleteItem,
+        setDeleteModal,
+        updateItem,
+        setUpdateModal,
+        addItem,
+        setAddModal,
         callOutMessage,
         setCallout,
         closeCallout,

@@ -69,7 +69,7 @@ Mar 7, 2022, PR, SHERBOURNE VARI, $32.30, , $36,508.67`
     })
 
     describe('getRawItemMeta()', () => {
-        it('Tab, ', () => {
+        it('Tab', () => {
             const testData = `Transaction Date	Code	Description	Debit	Credit	Balance
 Balance Forward			$36,540.97
 Mar 7, 2022	PR	SHERBOURNE VARI	$32.30		$36,508.67
@@ -85,7 +85,7 @@ Mar 18, 2022	DN	PAY/PAY			$38,549.36`
             expect(result[3].debit).toEqual(43.63)
         })
 
-        it('Date Format, ', () => {
+        it('Date Format', () => {
             const testData = `Transaction Date	Code	Description	Debit	Credit	Balance
 Balance Forward			$36,540.97
 10/03/2022	PR	SHERBOURNE VARI	$32.30		$36,508.67
@@ -99,6 +99,11 @@ Balance Forward			$36,540.97
             expect(result[1].debit).toEqual(32.3)
             expect(result[2].debit).toEqual(43.63)
             expect(result[3].credit).toEqual(2132.77)
+        })
+
+        it('🤬 No Data', () => {
+            const result = rawTextToRawItem('', getRawItemMeta(''))
+            expect(result.length).toEqual(0)
         })
     })
 })

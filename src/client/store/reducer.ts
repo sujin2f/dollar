@@ -51,6 +51,7 @@ export const reducer = (state: State = initialState, action: Action): State => {
         case CLOSE_MODAL: {
             return {
                 ...state,
+                menuOpen: false,
                 modal: {
                     updateItem: undefined,
                     deleteItem: undefined,
@@ -80,6 +81,7 @@ export const reducer = (state: State = initialState, action: Action): State => {
             }
         }
 
+        /* istanbul ignore next */
         default: {
             return state
         }

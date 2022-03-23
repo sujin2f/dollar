@@ -10,6 +10,8 @@ module.exports = {
     collectCoverageFrom: [
         '<rootDir>/src/utils/**/*.{ts,tsx}',
         '<rootDir>/src/client/utils/**/*.{ts,tsx}',
+        '<rootDir>/src/client/hooks/**/*.{ts,tsx}',
+        '<rootDir>/src/client/store/**/*.{ts,tsx}',
         '<rootDir>/src/server/utils/**/*.{ts,tsx}',
         '<rootDir>/src/server/routes/graphql.ts',
         '!<rootDir>/src/**/*.spec.{ts,tsx}',

@@ -82,9 +82,9 @@ export const useCategory = () => {
 
     return {
         categories,
-        getCategoryById,
-        isCategoryHidden,
         updateCategory,
+        isCategoryHidden,
+        getCategoryById,
         getCategoryByTitle,
         getRootCategories,
         getSubCategories,

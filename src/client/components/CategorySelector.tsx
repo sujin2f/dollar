@@ -26,12 +26,12 @@ export const CategorySelector = (): JSX.Element => {
                     <Switch
                         id={`category-selector-${category._id}`}
                         checked={!category.disabled}
-                        onChange={() => {
+                        onChange={(checked: boolean) => {
                             updateCategory({
                                 variables: {
                                     category: {
                                         _id: category._id,
-                                        disabled: !category.disabled,
+                                        disabled: !checked,
                                     },
                                 },
                             })

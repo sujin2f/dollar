@@ -4,8 +4,8 @@
 // yarn test src/client/components/form/Select.spec.ts
 
 import '@testing-library/jest-dom'
-import React from 'react'
-import { render } from '@testing-library/react'
+import React, { Fragment, useState } from 'react'
+import { render, act, screen, fireEvent } from '@testing-library/react'
 import { Select } from './Select'
 
 describe('Select.ts', () => {
@@ -63,5 +63,33 @@ describe('Select.ts', () => {
         expect(document.body.innerHTML).toMatch(
             '<div><label for="select" class="form-label form-label--required">Label</label><select id="select" disabled="" required="" aria-describedby="select-help-text"><option value="">Please Select</option><option value="option1" selected="">Value 1</option><option value="option2">Value 2</option></select><p class="help-text" id="select-help-text">helpText</p></div>',
         )
+    })
+
+    it('OnChange', async () => {
+        const Component = (): JSX.Element => {
+            const [selected, ChangeSelected] = useState('')
+            const onChange = (value: string) => {
+                ChangeSelected(value)
+            }
+            return (
+                <Fragment>
+                    <Select
+                        options={options}
+                        onChange={onChange}
+                        id="select"
+                        data-testid="select"
+                    />
+                    <div data-testid="selected">{selected}</div>
+                </Fragment>
+            )
+        }
+        const result = render(<Component />)
+        const select = result.container.querySelector('#select')
+        fireEvent.change(select!, { target: { value: 'option1' } })
+
+        await act(
+            async () => await new Promise((resolve) => setTimeout(resolve, 0)),
+        )
+        expect(screen.getByTestId('selected')).toHaveTextContent('option1')
     })
 })

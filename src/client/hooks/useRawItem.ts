@@ -4,7 +4,7 @@ import { RawItemsParam, Fields, GraphQuery } from 'src/constants/graph-query'
 import { useGlobalOption } from './useGlobalOption'
 
 export const useRawItem = (rawItems: RawItem[]) => {
-    const { setCallout } = useGlobalOption()
+    const { openCallout } = useGlobalOption()
     const { data, error } = useQuery<RawItemsParam>(GraphQuery.GET_RAW_ITEMS, {
         variables: { rawItems },
         skip: !rawItems || !rawItems.length,
@@ -12,7 +12,7 @@ export const useRawItem = (rawItems: RawItem[]) => {
     const items = data ? data[Fields.RAW_ITEMS] : []
 
     if (error) {
-        setCallout(error.message)
+        openCallout(error.message)
     }
 
     return { rawItems: items }

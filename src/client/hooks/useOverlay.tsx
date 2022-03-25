@@ -7,14 +7,14 @@ import React, {
 import { useGlobalOption } from './useGlobalOption'
 
 export const useOverlay = () => {
-    const { closeModal } = useGlobalOption()
+    const { closeComponents } = useGlobalOption()
     const overlayRef = useRef<HTMLDivElement>(null)
 
     const mayCloseComponent = (e: MouseEvent) => {
         if (e.target !== overlayRef.current) {
             return
         }
-        closeModal()
+        closeComponents()
     }
 
     type Props = PropsWithChildren<{
@@ -35,5 +35,5 @@ export const useOverlay = () => {
         )
     }
 
-    return { overlayRef, mayCloseComponent, closeModal, Overlay }
+    return { overlayRef, mayCloseComponent, Overlay }
 }

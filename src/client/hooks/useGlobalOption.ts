@@ -2,21 +2,28 @@ import { useContext } from 'react'
 
 import { ContextType, Context } from 'src/client/store'
 import {
-    setMenuOpen as setStoreMenuOpen,
-    setDeleteModal as setStoreDeleteModal,
-    setUpdateModal as setStoreUpdateModal,
-    closeModal as closeStoreModal,
-    setCallOut as setStoreCallOut,
-    setAddModal as setStoreAddItemModal,
-    setCategorySelector as setStoreCategorySelector,
+    setMenuOpen,
+    setDeleteModal,
+    setUpdateModal,
+    closeModal,
+    setCallOut,
+    setAddModal,
+    setCategorySelector,
+    setCategoryEditor,
 } from 'src/client/store/actions'
-import { Item } from 'src/types/model'
+import { Category, Item } from 'src/types/model'
 
 export const useGlobalOption = () => {
     const [
         {
             menuOpen,
-            modal: { deleteItem, updateItem, addItem, categorySelector },
+            modal: {
+                deleteItemOpened,
+                updateItemOpened,
+                addItemOpened,
+                categorySelectorOpened,
+                categoryEditorOpened,
+            },
             callout: { message: callOutMessage, timeout },
         },
         dispatch,
@@ -24,43 +31,43 @@ export const useGlobalOption = () => {
 
     const keyCloseModal = (e: KeyboardEvent) => {
         if (e.key === 'Escape') {
-            closeModal()
+            closeComponents()
         }
     }
 
-    const setMenuOpen = (option: boolean) => {
-        closeModal()
+    const openComponent = () => {
+        closeComponents()
         document.addEventListener('keydown', keyCloseModal)
-        dispatch(setStoreMenuOpen(option))
     }
 
-    const setDeleteModal = (item: Item) => {
-        closeModal()
-        document.addEventListener('keydown', keyCloseModal)
-        dispatch(setStoreDeleteModal(item))
+    const openMenu = () => {
+        openComponent()
+        dispatch(setMenuOpen(true))
     }
 
-    const setUpdateModal = (item: Item) => {
-        closeModal()
-        document.addEventListener('keydown', keyCloseModal)
-        dispatch(setStoreUpdateModal(item))
+    const openDeleteModal = (item: Item) => {
+        openComponent()
+        dispatch(setDeleteModal(item))
     }
 
-    const setAddModal = () => {
-        closeModal()
-        document.addEventListener('keydown', keyCloseModal)
-        dispatch(setStoreAddItemModal(true))
+    const openUpdateModal = (item: Item) => {
+        openComponent()
+        dispatch(setUpdateModal(item))
     }
 
-    const setCategorySelector = () => {
-        closeModal()
-        document.addEventListener('keydown', keyCloseModal)
-        dispatch(setStoreCategorySelector(true))
+    const openAddModal = () => {
+        openComponent()
+        dispatch(setAddModal(true))
     }
 
-    const closeModal = () => {
+    const openCategorySelector = () => {
+        openComponent()
+        dispatch(setCategorySelector(true))
+    }
+
+    const closeComponents = () => {
         document.removeEventListener('keydown', keyCloseModal)
-        dispatch(closeStoreModal())
+        dispatch(closeModal())
     }
 
     const createTimeout = () =>
@@ -72,30 +79,43 @@ export const useGlobalOption = () => {
         if (timeout) {
             clearTimeout(timeout)
         }
-        dispatch(setStoreCallOut())
+        dispatch(setCallOut())
     }
 
-    const setCallout = (message: string) => {
+    const openCallout = (message: string) => {
         if (timeout) {
             clearTimeout(timeout)
         }
-        dispatch(setStoreCallOut(message, createTimeout()))
+        dispatch(setCallOut(message, createTimeout()))
+    }
+
+    const openCategoryEditor = (category: Category) => {
+        openComponent()
+        dispatch(setCategoryEditor(category))
+    }
+
+    const closeCategoryEditor = () => {
+        closeComponents()
+        openCategorySelector()
     }
 
     return {
-        closeModal,
+        closeComponents,
         menuOpen,
-        setMenuOpen,
-        deleteItem,
-        setDeleteModal,
-        updateItem,
-        setUpdateModal,
-        addItem,
-        setAddModal,
+        openMenu,
+        deleteItemOpened,
+        openDeleteModal,
+        updateItemOpened,
+        openUpdateModal,
+        addItemOpened,
+        openAddModal,
         callOutMessage,
-        setCallout,
+        openCallout,
         closeCallout,
-        categorySelector,
-        setCategorySelector,
+        categorySelectorOpened,
+        openCategorySelector,
+        categoryEditorOpened,
+        openCategoryEditor,
+        closeCategoryEditor,
     }
 }

@@ -6,7 +6,7 @@ import { Loading } from '.'
 
 export const Menu = (): JSX.Element => {
     const { loading, user, setUser } = useUser()
-    const { menuOpen, setMenuOpen } = useGlobalOption()
+    const { menuOpen, closeComponents } = useGlobalOption()
 
     if (loading || !user) {
         return <Loading />
@@ -19,7 +19,7 @@ export const Menu = (): JSX.Element => {
     const darkModeButtonText = user.darkMode ? 'Light mode' : 'Dark mode'
 
     return (
-        <div onClick={() => setMenuOpen(false)}>
+        <div onClick={() => closeComponents()}>
             <nav className="menu">
                 <div className="greeting__container">
                     {user.photo && (

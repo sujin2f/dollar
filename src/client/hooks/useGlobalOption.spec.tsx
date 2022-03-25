@@ -20,17 +20,14 @@ describe('useGlobalOption.ts', () => {
 
     it('menuOpen and escape key', async () => {
         Component = (): JSX.Element => {
-            const { menuOpen, setMenuOpen } = useGlobalOption()
+            const { menuOpen, openMenu } = useGlobalOption()
 
             return (
                 <div>
                     <div data-testid="indicator">
                         {menuOpen ? 'true' : 'false'}
                     </div>
-                    <button
-                        onClick={() => setMenuOpen(true)}
-                        data-testid="trigger"
-                    />
+                    <button onClick={() => openMenu()} data-testid="trigger" />
                 </div>
             )
         }
@@ -45,16 +42,16 @@ describe('useGlobalOption.ts', () => {
 
     it('deleteItem', async () => {
         Component = (): JSX.Element => {
-            const { deleteItem, setDeleteModal } = useGlobalOption()
+            const { deleteItemOpened, openDeleteModal } = useGlobalOption()
 
             return (
                 <div>
                     <div data-testid="indicator">
-                        {deleteItem ? deleteItem.title : 'false'}
+                        {deleteItemOpened ? deleteItemOpened.title : 'false'}
                     </div>
                     <button
                         onClick={() =>
-                            setDeleteModal({
+                            openDeleteModal({
                                 title: 'title',
                             } as Item)
                         }
@@ -72,28 +69,32 @@ describe('useGlobalOption.ts', () => {
 
     it('deleteItem & close another modal', async () => {
         Component = (): JSX.Element => {
-            const { deleteItem, updateItem, setDeleteModal, setUpdateModal } =
-                useGlobalOption()
+            const {
+                deleteItemOpened,
+                updateItemOpened,
+                openDeleteModal,
+                openUpdateModal,
+            } = useGlobalOption()
 
             return (
                 <div>
                     <div data-testid="indicator">
-                        {deleteItem ? deleteItem.title : 'false'}
+                        {deleteItemOpened ? deleteItemOpened.title : 'false'}
                     </div>
                     <button
                         onClick={() =>
-                            setDeleteModal({
+                            openDeleteModal({
                                 title: 'title',
                             } as Item)
                         }
                         data-testid="trigger"
                     />
                     <div data-testid="indicator2">
-                        {updateItem ? updateItem.title : 'false'}
+                        {updateItemOpened ? updateItemOpened.title : 'false'}
                     </div>
                     <button
                         onClick={() =>
-                            setUpdateModal({
+                            openUpdateModal({
                                 title: 'title',
                             } as Item)
                         }
@@ -114,15 +115,15 @@ describe('useGlobalOption.ts', () => {
 
     it('addItem', async () => {
         Component = (): JSX.Element => {
-            const { addItem, setAddModal } = useGlobalOption()
+            const { addItemOpened, openAddModal } = useGlobalOption()
 
             return (
                 <div>
                     <div data-testid="indicator">
-                        {addItem ? 'true' : 'false'}
+                        {addItemOpened ? 'true' : 'false'}
                     </div>
                     <button
-                        onClick={() => setAddModal()}
+                        onClick={() => openAddModal()}
                         data-testid="trigger"
                     />
                 </div>
@@ -137,7 +138,7 @@ describe('useGlobalOption.ts', () => {
 
     it('callOutMessage', async () => {
         Component = (): JSX.Element => {
-            const { callOutMessage, setCallout, closeCallout } =
+            const { callOutMessage, openCallout, closeCallout } =
                 useGlobalOption()
 
             return (
@@ -146,7 +147,7 @@ describe('useGlobalOption.ts', () => {
                         {callOutMessage || 'false'}
                     </div>
                     <button
-                        onClick={() => setCallout('CALL OUT')}
+                        onClick={() => openCallout('CALL OUT')}
                         data-testid="trigger"
                     />
                     <button
@@ -167,15 +168,16 @@ describe('useGlobalOption.ts', () => {
 
     it('categorySelector', async () => {
         Component = (): JSX.Element => {
-            const { categorySelector, setCategorySelector } = useGlobalOption()
+            const { categorySelectorOpened, openCategorySelector } =
+                useGlobalOption()
 
             return (
                 <div>
                     <div data-testid="indicator">
-                        {categorySelector ? 'true' : 'false'}
+                        {categorySelectorOpened ? 'true' : 'false'}
                     </div>
                     <button
-                        onClick={() => setCategorySelector()}
+                        onClick={() => openCategorySelector()}
                         data-testid="trigger"
                     />
                 </div>

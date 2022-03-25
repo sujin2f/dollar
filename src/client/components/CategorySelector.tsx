@@ -1,21 +1,22 @@
 import React, { Fragment } from 'react'
 
 import { useCategory, useGlobalOption, useOverlay } from 'src/client/hooks'
-import { Column, Row, Button, Switch, ColorPicker } from 'src/client/components'
+import { Column, Row, Button, Switch, Icon } from 'src/client/components'
 import { splitItems } from 'src/utils/array'
 import { BW } from 'src/constants/color'
 
 export const CategorySelector = (): JSX.Element => {
     const { categories, updateCategory } = useCategory()
-    const { categorySelector } = useGlobalOption()
-    const { closeModal, Overlay } = useOverlay()
+    const { categorySelectorOpened, openCategoryEditor, closeComponents } =
+        useGlobalOption()
+    const { Overlay } = useOverlay()
 
     const items = splitItems(categories, 4)
     const cols = items.map((itemRow, index) => (
         <Column
             className="category-selector"
             small={3}
-            key={`category-selector-itemRow-${index}`}
+            key={`category-selector-column-${index}`}
         >
             {itemRow.map((category) => (
                 <div
@@ -42,20 +43,16 @@ export const CategorySelector = (): JSX.Element => {
                                 : category.color || BW.BLACK,
                         }}
                     />
-                    <ColorPicker
-                        color={category.color || BW.BLACK}
-                        onChange={(color) => {
-                            updateCategory({
-                                variables: {
-                                    category: {
-                                        _id: category._id,
-                                        color,
-                                    },
-                                },
-                            })
-                        }}
-                        label={category.title}
-                    />
+                    <div
+                        className="category-selector__label"
+                        onClick={() => openCategoryEditor(category)}
+                    >
+                        {category.title}
+                        <Icon
+                            icon="widget"
+                            className="category-selector__label__icon"
+                        />
+                    </div>
                 </div>
             ))}
         </Column>
@@ -63,7 +60,7 @@ export const CategorySelector = (): JSX.Element => {
 
     return (
         <Fragment>
-            {categorySelector && (
+            {categorySelectorOpened && (
                 <Overlay className="category-selector__wrapper">
                     <Row>{cols}</Row>
 
@@ -71,7 +68,7 @@ export const CategorySelector = (): JSX.Element => {
                         <Column>
                             <Button
                                 className="secondary"
-                                onClick={() => closeModal()}
+                                onClick={() => closeComponents()}
                                 title="Close"
                                 autoFocus
                             />

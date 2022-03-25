@@ -7,7 +7,7 @@ import { Button } from '../form/Button'
 
 export const UpdateItem = (): JSX.Element => {
     const { updateItem } = useItems()
-    const { updateItem: currentItem } = useGlobalOption()
+    const { updateItemOpened: currentItem } = useGlobalOption()
     const [dateError, setDateError] = useState<string>('')
     const [titleError, setTitleError] = useState<string>('')
     const [amountError, setAmountError] = useState<string>('')

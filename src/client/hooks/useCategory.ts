@@ -6,12 +6,12 @@ import { CategoriesParam, Fields, GraphQuery } from 'src/constants/graph-query'
 import { useGlobalOption } from './useGlobalOption'
 
 export const useCategory = () => {
-    const { setCallout } = useGlobalOption()
+    const { openCallout } = useGlobalOption()
     const { data, error } = useQuery<CategoriesParam>(GraphQuery.GET_CATEGORIES)
     const categories = data ? data[Fields.CATEGORIES] : []
 
     if (error) {
-        setCallout(error.message)
+        openCallout(error.message)
     }
 
     const [updateCategory] = useMutation(GraphQuery.UPDATE_CATEGORY, {
@@ -20,7 +20,7 @@ export const useCategory = () => {
         },
         refetchQueries: [GraphQuery.GET_CATEGORIES],
         onError: (e) => {
-            setCallout(e.message)
+            openCallout(e.message)
         },
     })
 

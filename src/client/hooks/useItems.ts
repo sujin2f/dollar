@@ -9,7 +9,7 @@ import { TableType } from 'src/constants/accountBook'
 
 export const useItems = (year?: number, month?: number, type?: string) => {
     const { getCategoryById, isCategoryHidden } = useCategory()
-    const { setCallout, closeModal } = useGlobalOption()
+    const { openCallout, closeComponents } = useGlobalOption()
     const history = useHistory()
 
     const variables =
@@ -24,7 +24,7 @@ export const useItems = (year?: number, month?: number, type?: string) => {
     )
 
     if (error) {
-        setCallout(error.message)
+        openCallout(error.message)
         history.push('/')
     }
 
@@ -34,7 +34,7 @@ export const useItems = (year?: number, month?: number, type?: string) => {
         },
         refetchQueries: [GraphQuery.GET_ITEMS, GraphQuery.GET_CATEGORIES],
         onError: (e) => {
-            setCallout(e.message)
+            openCallout(e.message)
         },
         onCompleted: ({ items: redirection }) => {
             history.push(redirection as unknown as string)
@@ -48,11 +48,11 @@ export const useItems = (year?: number, month?: number, type?: string) => {
         },
         refetchQueries: [GraphQuery.GET_ITEMS],
         onError: (e) => {
-            setCallout(e.message)
+            openCallout(e.message)
         },
         onCompleted: ({ rawItem: redirection }) => {
             history.push(redirection as unknown as string)
-            closeModal()
+            closeComponents()
         },
     })
 
@@ -63,10 +63,10 @@ export const useItems = (year?: number, month?: number, type?: string) => {
         },
         refetchQueries: [GraphQuery.GET_ITEMS],
         onError: (e) => {
-            setCallout(e.message)
+            openCallout(e.message)
         },
         onCompleted: () => {
-            closeModal()
+            closeComponents()
         },
     })
 
@@ -77,7 +77,7 @@ export const useItems = (year?: number, month?: number, type?: string) => {
         },
         refetchQueries: [GraphQuery.GET_ITEMS],
         onError: (e) => {
-            setCallout(e.message)
+            openCallout(e.message)
         },
     })
 

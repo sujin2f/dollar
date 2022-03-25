@@ -4,7 +4,7 @@ import { itemToRawItem } from 'src/types/model'
 import { Button } from '../form/Button'
 
 export const DeleteItem = (): JSX.Element => {
-    const { deleteItem: item, closeModal } = useGlobalOption()
+    const { deleteItemOpened: item, closeComponents } = useGlobalOption()
     const { deleteItem } = useItems()
 
     const onClick = () => {
@@ -17,7 +17,7 @@ export const DeleteItem = (): JSX.Element => {
                 type: 'delete',
             },
         })
-        closeModal()
+        closeComponents()
     }
 
     return (

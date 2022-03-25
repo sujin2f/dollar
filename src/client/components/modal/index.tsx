@@ -1,10 +1,15 @@
-import React, { PropsWithChildren } from 'react'
+import React, { PropsWithChildren, FormEvent } from 'react'
 
-import { useOverlay } from 'src/client/hooks'
+import { useOverlay, useGlobalOption } from 'src/client/hooks'
 import { CloseButton, Button } from 'src/client/components'
 
-export const Modal = (props: PropsWithChildren<{}>): JSX.Element => {
-    const { closeModal, Overlay } = useOverlay()
+type Props = {
+    closeModal?: (e?: FormEvent<Element>) => void
+}
+export const Modal = (props: PropsWithChildren<Props>): JSX.Element => {
+    const { Overlay } = useOverlay()
+    const { closeComponents } = useGlobalOption()
+    const closeModal = props.closeModal ? props.closeModal : closeComponents
 
     return (
         <Overlay className="reveal-overlay" style={{ display: 'block' }}>

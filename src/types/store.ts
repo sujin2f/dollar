@@ -1,5 +1,5 @@
 import { Nullable } from './common'
-import { Item } from './model'
+import { Category, Item } from './model'
 
 export type Action = {
     type: string
@@ -7,15 +7,17 @@ export type Action = {
     message: string
     timeout: NodeJS.Timeout
     bool: boolean
+    category: Category
 }
 
 export type State = {
     menuOpen: boolean
     modal: {
-        deleteItem: Nullable<Item>
-        updateItem: Nullable<Item>
-        addItem: boolean
-        categorySelector: boolean
+        deleteItemOpened: Nullable<Item>
+        updateItemOpened: Nullable<Item>
+        addItemOpened: boolean
+        categorySelectorOpened: boolean
+        categoryEditorOpened: Nullable<Category>
     }
     callout: {
         message: Nullable<string>
@@ -26,10 +28,11 @@ export type State = {
 export const initialState: State = {
     menuOpen: false,
     modal: {
-        deleteItem: undefined,
-        updateItem: undefined,
-        addItem: false,
-        categorySelector: false,
+        deleteItemOpened: undefined,
+        updateItemOpened: undefined,
+        addItemOpened: false,
+        categorySelectorOpened: false,
+        categoryEditorOpened: undefined,
     },
     callout: {
         message: undefined,

@@ -18,18 +18,18 @@ export const ColorPicker = (props: Props): JSX.Element => {
     }
 
     return (
-        <div>
-            <div
-                onClick={() => changeActivated(!activated)}
-                className="color-picker__swatch"
-                style={styleColor}
-            />
+        <div className="color-picker">
             <div
                 className="color-picker__label"
                 onClick={() => changeActivated(!activated)}
             >
                 {label}
             </div>
+            <div
+                onClick={() => changeActivated(!activated)}
+                className="color-picker__swatch"
+                style={styleColor}
+            />
             {activated ? (
                 <div className="color-picker__popover">
                     <div

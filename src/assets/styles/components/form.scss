@@ -19,8 +19,14 @@
     border-color: map-get($foundation-palette, 'primary');
 }
 
+.color-picker {
+    display: flex;
+    margin-bottom: 1rem;
+}
+
 .color-picker__swatch {
-    display: none;
+    width: 3rem;
+    height: 1.4rem;
 }
 
 .color-picker__popover {
@@ -37,5 +43,11 @@
 }
 
 .color-picker__label {
+    text-transform: capitalize;
+    font-size: 0.9rem;
+    color: #0a0a0a;
+    font-weight: normal;
+    line-height: 1.8;
+    margin-right: 0.3rem;
     cursor: pointer;
 }

@@ -9,13 +9,20 @@ import {
     DeleteItemModal,
     UpdateItemModal,
     AddItemModal,
+    CategoryEditorModal,
 } from 'src/client/components'
 
 import { useUser, useGlobalOption } from 'src/client/hooks'
 
 import 'src/assets/styles/style.scss'
 export const Wrapper = (prop: PropsWithChildren<{}>): JSX.Element => {
-    const { deleteItem, updateItem, addItem } = useGlobalOption()
+    const {
+        deleteItemOpened,
+        updateItemOpened,
+        addItemOpened,
+        categoryEditorOpened,
+        closeCategoryEditor,
+    } = useGlobalOption()
     const { loading, user } = useUser()
 
     if (loading || !user) {
@@ -27,23 +34,30 @@ export const Wrapper = (prop: PropsWithChildren<{}>): JSX.Element => {
     return (
         <div className={`wrapper ${classDarkMode}`}>
             {/* Delete Modal */}
-            {deleteItem && (
+            {deleteItemOpened && (
                 <Modal>
                     <DeleteItemModal />
                 </Modal>
             )}
 
             {/* Update Modal */}
-            {updateItem && (
+            {updateItemOpened && (
                 <Modal>
                     <UpdateItemModal />
                 </Modal>
             )}
 
             {/* Add Modal */}
-            {addItem && (
+            {addItemOpened && (
                 <Modal>
                     <AddItemModal />
+                </Modal>
+            )}
+
+            {/* Category Editor Modal */}
+            {categoryEditorOpened && (
+                <Modal closeModal={closeCategoryEditor}>
+                    <CategoryEditorModal />
                 </Modal>
             )}
 

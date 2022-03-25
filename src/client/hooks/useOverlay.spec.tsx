@@ -20,22 +20,26 @@ describe('useOverlay.ts', () => {
 
     it('menuOpen and escape key', async () => {
         Component = (): JSX.Element => {
-            const { closeModal, Overlay } = useOverlay()
-            const { categorySelector, setCategorySelector } = useGlobalOption()
+            const { Overlay } = useOverlay()
+            const {
+                categorySelectorOpened,
+                openCategorySelector,
+                closeComponents,
+            } = useGlobalOption()
 
             return (
                 <Fragment>
-                    {categorySelector && (
+                    {categorySelectorOpened && (
                         <Overlay>
                             <div data-testid="overlay" />
                             <button
-                                onClick={() => closeModal()}
+                                onClick={() => closeComponents()}
                                 data-testid="close"
                             />
                         </Overlay>
                     )}
                     <button
-                        onClick={() => setCategorySelector()}
+                        onClick={() => openCategorySelector()}
                         data-testid="open"
                     />
                 </Fragment>

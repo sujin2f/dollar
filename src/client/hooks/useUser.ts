@@ -6,12 +6,12 @@ import { useGlobalOption } from './useGlobalOption'
 import { User } from 'src/types/model'
 
 export const useUser = () => {
-    const { setCallout } = useGlobalOption()
+    const { openCallout } = useGlobalOption()
     const history = useHistory()
     const { loading, error, data } = useQuery<UserParam>(GraphQuery.GET_USER)
 
     if (error) {
-        setCallout(error.message)
+        openCallout(error.message)
         history.push('/')
     }
 
@@ -21,7 +21,7 @@ export const useUser = () => {
         },
         refetchQueries: [GraphQuery.GET_USER],
         onError: (e) => {
-            setCallout(e.message)
+            openCallout(e.message)
         },
     })
 

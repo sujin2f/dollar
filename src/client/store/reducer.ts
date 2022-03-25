@@ -7,6 +7,7 @@ import {
     SET_CALLOUT,
     SET_ADD_MODAL,
     SET_CATEGORY_SELECTOR,
+    SET_CATEGORY_EDITOR,
 } from './type'
 
 export const reducer = (state: State = initialState, action: Action): State => {
@@ -23,7 +24,7 @@ export const reducer = (state: State = initialState, action: Action): State => {
                 ...state,
                 modal: {
                     ...state.modal,
-                    deleteItem: action.item,
+                    deleteItemOpened: action.item,
                 },
             }
         }
@@ -33,7 +34,7 @@ export const reducer = (state: State = initialState, action: Action): State => {
                 ...state,
                 modal: {
                     ...state.modal,
-                    updateItem: action.item,
+                    updateItemOpened: action.item,
                 },
             }
         }
@@ -43,7 +44,7 @@ export const reducer = (state: State = initialState, action: Action): State => {
                 ...state,
                 modal: {
                     ...state.modal,
-                    addItem: action.bool,
+                    addItemOpened: action.bool,
                 },
             }
         }
@@ -52,12 +53,7 @@ export const reducer = (state: State = initialState, action: Action): State => {
             return {
                 ...state,
                 menuOpen: false,
-                modal: {
-                    updateItem: undefined,
-                    deleteItem: undefined,
-                    addItem: false,
-                    categorySelector: false,
-                },
+                modal: initialState.modal,
             }
         }
 
@@ -76,7 +72,17 @@ export const reducer = (state: State = initialState, action: Action): State => {
                 ...state,
                 modal: {
                     ...state.modal,
-                    categorySelector: action.bool,
+                    categorySelectorOpened: action.bool,
+                },
+            }
+        }
+
+        case SET_CATEGORY_EDITOR: {
+            return {
+                ...state,
+                modal: {
+                    ...state.modal,
+                    categoryEditorOpened: action.category,
                 },
             }
         }

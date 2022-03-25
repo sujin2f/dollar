@@ -19,9 +19,9 @@ describe('Select.ts', () => {
         const Component = (): JSX.Element => (
             <Select options={options} id="select" />
         )
-        render(<Component />)
-        expect(document.body.innerHTML).toMatch(
-            '<div><select id="select" aria-describedby=""><option value="">Please Select</option><option value="option1">Value 1</option><option value="option2">Value 2</option></select></div>',
+        const result = render(<Component />)
+        expect(result.container.innerHTML).toMatch(
+            '<select id="select" aria-describedby=""><option value="">Please Select</option><option value="option1">Value 1</option><option value="option2">Value 2</option></select>',
         )
     })
 
@@ -40,9 +40,9 @@ describe('Select.ts', () => {
         const Component = (): JSX.Element => (
             <Select options={optionsGroup} id="select" />
         )
-        render(<Component />)
-        expect(document.body.innerHTML).toMatch(
-            '<div><select id="select" aria-describedby=""><option value="">Please Select</option><optgroup label="BMW"><option value="z3">Z3</option><option value="z4">Z4</option></optgroup><optgroup label="Smart"><option value="forTwo">For Two</option><option value="forFour">For Four</option></optgroup></select></div>',
+        const result = render(<Component />)
+        expect(result.container.innerHTML).toMatch(
+            '<select id="select" aria-describedby=""><option value="">Please Select</option><optgroup label="BMW"><option value="z3">Z3</option><option value="z4">Z4</option></optgroup><optgroup label="Smart"><option value="forTwo">For Two</option><option value="forFour">For Four</option></optgroup></select>',
         )
     })
 
@@ -59,9 +59,9 @@ describe('Select.ts', () => {
                 helpText="helpText"
             />
         )
-        render(<Component />)
-        expect(document.body.innerHTML).toMatch(
-            '<div><label for="select" class="form-label form-label--required">Label</label><select id="select" disabled="" required="" aria-describedby="select-help-text"><option value="">Please Select</option><option value="option1" selected="">Value 1</option><option value="option2">Value 2</option></select><p class="help-text" id="select-help-text">helpText</p></div>',
+        const result = render(<Component />)
+        expect(result.container.innerHTML).toMatch(
+            '<label for="select" class="form-label form-label--required">Label</label><select id="select" disabled="" required="" aria-describedby="select-help-text"><option value="">Please Select</option><option value="option1" selected="">Value 1</option><option value="option2">Value 2</option></select><p class="help-text" id="select-help-text">helpText</p>',
         )
     })
 

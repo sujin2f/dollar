@@ -150,7 +150,7 @@ describe('useItems.ts', () => {
         expect(screen.getByTestId('item-id-1')).toHaveTextContent('item-1')
     })
 
-    it.only('itemsToTableData', async () => {
+    it('itemsToTableData', async () => {
         Component = (): JSX.Element => {
             const { itemsToTableData } = useItems(1977, 1, 'monthly')
             const items = itemsToTableData()

@@ -17,7 +17,7 @@ describe('Switch.ts', () => {
         )
     })
 
-    it.only('onChange', async () => {
+    it('onChange', async () => {
         const Component = (): JSX.Element => {
             const [checked, ChangeChecked] = useState(false)
             const onChange = (value: boolean) => {

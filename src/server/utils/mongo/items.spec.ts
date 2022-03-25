@@ -224,46 +224,93 @@ describe('item.ts', () => {
         expect(del).toBeTruthy()
     })
 
-    it('updateItem()', async () => {
-        const rawItem = {
-            checked: true,
-            date: '1977-01-02',
-            title: 'item',
-            originTitle: 'item',
-            debit: 10,
-            credit: 0,
-            category: 'category',
-        }
-        await addItem(
-            {
-                rawItem,
-            },
-            request,
-        )
-        let items = await getItems(
-            { year: 1977, month: 1, type: TableType.Daily } as ItemsParam,
-            request,
-        )
-        const update = await updateItem(
-            {
-                rawItem: {
-                    ...rawItem,
-                    _id: items[0]._id,
-                    date: '1977-01-03',
-                    title: 'item 2',
-                    originTitle: 'item',
-                    debit: 100,
+    describe('updateItem()', () => {
+        it('w/ Category', async () => {
+            const rawItem = {
+                checked: true,
+                date: '1977-01-02',
+                title: 'item',
+                originTitle: 'item',
+                debit: 10,
+                credit: 0,
+                category: 'category',
+            }
+            await addItem(
+                {
+                    rawItem,
                 },
-            },
-            request,
-        )
-        items = await getItems(
-            { year: 1977, month: 1, type: TableType.Daily } as ItemsParam,
-            request,
-        )
+                request,
+            )
+            let items = await getItems(
+                { year: 1977, month: 1, type: TableType.Daily } as ItemsParam,
+                request,
+            )
+            const update = await updateItem(
+                {
+                    rawItem: {
+                        ...rawItem,
+                        _id: items[0]._id,
+                        date: '1977-01-03',
+                        title: 'item 2',
+                        originTitle: 'item',
+                        debit: 100,
+                    },
+                },
+                request,
+            )
+            items = await getItems(
+                { year: 1977, month: 1, type: TableType.Daily } as ItemsParam,
+                request,
+            )
 
-        expect(items[0].date).toEqual('1977-01-03')
-        expect(items[0].title).toEqual('item 2')
-        expect(update).toBeTruthy()
+            expect(items[0].date).toEqual('1977-01-03')
+            expect(items[0].title).toEqual('item 2')
+            expect(update).toBeTruthy()
+        })
+
+        it('w/o Category', async () => {
+            const rawItem = {
+                checked: true,
+                date: '1977-01-02',
+                title: 'item',
+                originTitle: 'item',
+                debit: 10,
+                credit: 0,
+                category: 'category',
+            }
+            await addItem(
+                {
+                    rawItem,
+                },
+                request,
+            )
+            let items = await getItems(
+                { year: 1977, month: 1, type: TableType.Daily } as ItemsParam,
+                request,
+            )
+            const update = await updateItem(
+                {
+                    rawItem: {
+                        ...rawItem,
+                        _id: items[0]._id,
+                        date: '1977-01-03',
+                        title: 'item 2',
+                        originTitle: 'item',
+                        debit: 100,
+                        category: '',
+                    },
+                },
+                request,
+            )
+            items = await getItems(
+                { year: 1977, month: 1, type: TableType.Daily } as ItemsParam,
+                request,
+            )
+
+            expect(items[0].date).toEqual('1977-01-03')
+            expect(items[0].title).toEqual('item 2')
+            expect(items[0].category || null).toBeFalsy()
+            expect(update).toBeTruthy()
+        })
     })
 })

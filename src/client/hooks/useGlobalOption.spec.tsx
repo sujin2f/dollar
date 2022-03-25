@@ -166,6 +166,10 @@ describe('useGlobalOption.ts', () => {
             expect(screen.getByTestId('indicator')).toHaveTextContent(
                 'CALL OUT',
             )
+            await act(
+                async () =>
+                    await new Promise((resolve) => setTimeout(resolve, 0)),
+            )
             fireEvent.click(screen.getByTestId('trigger2'))
             expect(screen.getByTestId('indicator')).toHaveTextContent('false')
 

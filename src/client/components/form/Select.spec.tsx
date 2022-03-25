@@ -73,12 +73,7 @@ describe('Select.ts', () => {
             }
             return (
                 <Fragment>
-                    <Select
-                        options={options}
-                        onChange={onChange}
-                        id="select"
-                        data-testid="select"
-                    />
+                    <Select options={options} onChange={onChange} id="select" />
                     <div data-testid="selected">{selected}</div>
                 </Fragment>
             )

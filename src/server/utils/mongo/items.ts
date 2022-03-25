@@ -212,15 +212,16 @@ export const updateItem = async (
             },
         ))
 
+    const updateSet = category
+        ? { ...rawItem, category }
+        : [{ $set: { ...rawItem } }, { $unset: ['category'] }]
+
     return await ItemModel.updateOne(
         {
             _id: rawItem._id,
             user,
         },
-        {
-            ...rawItem,
-            category: category || undefined,
-        },
+        updateSet,
     )
         .then(() => true)
         .catch(

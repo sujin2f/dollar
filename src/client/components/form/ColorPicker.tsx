@@ -1,12 +1,10 @@
 import React, { CSSProperties, useState } from 'react'
 import { SwatchesPicker } from 'react-color'
 
-import { Fn } from 'src/types/common'
-
 type Props = {
-    color: string
+    color?: string
     label?: string
-    onChange: Fn<[string], void>
+    onChange?: (value: string) => void
 }
 
 export const ColorPicker = (props: Props): JSX.Element => {
@@ -38,10 +36,14 @@ export const ColorPicker = (props: Props): JSX.Element => {
                     />
                     <SwatchesPicker
                         color={color}
-                        onChangeComplete={(value) => {
-                            changeActivated(false)
-                            onChange(value.hex)
-                        }}
+                        onChangeComplete={
+                            /* istanbul ignore next */ (value) => {
+                                changeActivated(false)
+                                if (onChange) {
+                                    onChange(value.hex)
+                                }
+                            }
+                        }
                     />
                 </div>
             ) : null}

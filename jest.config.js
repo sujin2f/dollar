@@ -12,6 +12,7 @@ module.exports = {
         '<rootDir>/src/client/utils/**/*.{ts,tsx}',
         '<rootDir>/src/client/hooks/**/*.{ts,tsx}',
         '<rootDir>/src/client/store/**/*.{ts,tsx}',
+        '<rootDir>/src/client/components/form/**/*.{ts,tsx}',
         '<rootDir>/src/server/utils/**/*.{ts,tsx}',
         '<rootDir>/src/server/routes/graphql.ts',
         '!<rootDir>/src/**/*.spec.{ts,tsx}',

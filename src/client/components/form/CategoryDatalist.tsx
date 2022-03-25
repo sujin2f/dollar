@@ -8,7 +8,7 @@ export const CategoryDatalist = (): JSX.Element => {
     return (
         <Datalist
             id="category-list"
-            items={getRootCategories().map((category) => category.title)}
+            values={getRootCategories().map((category) => category.title)}
         />
     )
 }

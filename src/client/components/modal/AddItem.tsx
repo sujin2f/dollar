@@ -119,7 +119,7 @@ export const AddItem = (): JSX.Element => {
                 />
                 <Datalist
                     id="category-list"
-                    items={getRootCategories().map(
+                    values={getRootCategories().map(
                         (category) => category.title,
                     )}
                 />
@@ -129,7 +129,7 @@ export const AddItem = (): JSX.Element => {
                     list="sub-category-list"
                     onEnterKeyDown={onSubmit}
                 />
-                <Datalist id="sub-category-list" items={subcategories} />
+                <Datalist id="sub-category-list" values={subcategories} />
             </form>
             <Button type="submit" title="Add Item" onClick={onSubmit} />
         </Fragment>

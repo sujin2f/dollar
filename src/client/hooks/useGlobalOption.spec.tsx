@@ -5,10 +5,10 @@
 
 import '@testing-library/jest-dom'
 import React from 'react'
-import { render, fireEvent, screen } from '@testing-library/react'
+import { render, fireEvent, screen, act } from '@testing-library/react'
 import { useGlobalOption } from './useGlobalOption'
 import { Store } from 'src/client/store'
-import { Item } from 'src/types/model'
+import { Category, Item } from 'src/types/model'
 
 describe('useGlobalOption.ts', () => {
     let Component: () => JSX.Element
@@ -136,34 +136,47 @@ describe('useGlobalOption.ts', () => {
         expect(screen.getByTestId('indicator')).toHaveTextContent('true')
     })
 
-    it('callOutMessage', async () => {
-        Component = (): JSX.Element => {
-            const { callOutMessage, openCallout, closeCallout } =
-                useGlobalOption()
+    describe('callOutMessage', () => {
+        jest.setTimeout(6000)
+        it('callOutMessage', async () => {
+            Component = (): JSX.Element => {
+                const { callOutMessage, openCallout, closeCallout } =
+                    useGlobalOption()
 
-            return (
-                <div>
-                    <div data-testid="indicator">
-                        {callOutMessage || 'false'}
+                return (
+                    <div>
+                        <div data-testid="indicator">
+                            {callOutMessage || 'false'}
+                        </div>
+                        <button
+                            onClick={() => openCallout('CALL OUT')}
+                            data-testid="trigger"
+                        />
+                        <button
+                            onClick={() => closeCallout()}
+                            data-testid="trigger2"
+                        />
                     </div>
-                    <button
-                        onClick={() => openCallout('CALL OUT')}
-                        data-testid="trigger"
-                    />
-                    <button
-                        onClick={() => closeCallout()}
-                        data-testid="trigger2"
-                    />
-                </div>
-            )
-        }
-        render(<Wrapper />)
+                )
+            }
+            render(<Wrapper />)
 
-        expect(screen.getByTestId('indicator')).toHaveTextContent('false')
-        fireEvent.click(screen.getByTestId('trigger'))
-        expect(screen.getByTestId('indicator')).toHaveTextContent('CALL OUT')
-        fireEvent.click(screen.getByTestId('trigger2'))
-        expect(screen.getByTestId('indicator')).toHaveTextContent('false')
+            expect(screen.getByTestId('indicator')).toHaveTextContent('false')
+            fireEvent.click(screen.getByTestId('trigger'))
+            expect(screen.getByTestId('indicator')).toHaveTextContent(
+                'CALL OUT',
+            )
+            fireEvent.click(screen.getByTestId('trigger2'))
+            expect(screen.getByTestId('indicator')).toHaveTextContent('false')
+
+            // Timeout
+            fireEvent.click(screen.getByTestId('trigger'))
+            await act(
+                async () =>
+                    await new Promise((resolve) => setTimeout(resolve, 5500)),
+            )
+            expect(screen.getByTestId('indicator')).toHaveTextContent('false')
+        })
     })
 
     it('categorySelector', async () => {
@@ -188,5 +201,38 @@ describe('useGlobalOption.ts', () => {
         expect(screen.getByTestId('indicator')).toHaveTextContent('false')
         fireEvent.click(screen.getByTestId('trigger'))
         expect(screen.getByTestId('indicator')).toHaveTextContent('true')
+    })
+
+    it('categoryEditor', () => {
+        Component = (): JSX.Element => {
+            const {
+                categoryEditorOpened,
+                openCategoryEditor,
+                closeCategoryEditor,
+            } = useGlobalOption()
+
+            return (
+                <div>
+                    <div data-testid="indicator">
+                        {categoryEditorOpened ? 'true' : 'false'}
+                    </div>
+                    <button
+                        onClick={() => openCategoryEditor({} as Category)}
+                        data-testid="trigger"
+                    />
+                    <button
+                        onClick={() => closeCategoryEditor()}
+                        data-testid="trigger-close"
+                    />
+                </div>
+            )
+        }
+        render(<Wrapper />)
+
+        expect(screen.getByTestId('indicator')).toHaveTextContent('false')
+        fireEvent.click(screen.getByTestId('trigger'))
+        expect(screen.getByTestId('indicator')).toHaveTextContent('true')
+        fireEvent.click(screen.getByTestId('trigger-close'))
+        expect(screen.getByTestId('indicator')).toHaveTextContent('false')
     })
 })

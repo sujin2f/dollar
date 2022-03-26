@@ -152,19 +152,33 @@ const mustGetCategory = async (
 }
 
 export const updateCategory = async (
-    { category: { _id, title, disabled, color } }: CategoryParam,
+    { category: { _id, title, disabled, color, parent } }: CategoryParam,
     { session: { user } }: Request,
 ): Promise<boolean> => {
+    // TODO Link
+    const updateSet = parent
+        ? {
+              title,
+              disabled,
+              color,
+              parent,
+          }
+        : [
+              {
+                  $set: {
+                      title,
+                      disabled,
+                      color,
+                  },
+              },
+              { $unset: ['parent'] },
+          ]
     await CategoryModel.updateOne(
         {
             _id,
             user,
         },
-        {
-            title,
-            disabled,
-            color,
-        },
+        updateSet,
     ).catch(() => {
         throw new Error(ErrorMessages.UPDATE_CATEGORY_FAILED)
     })
@@ -175,9 +189,9 @@ export const getCategories = async (
     _: void,
     { session: { user } }: Request,
 ): Promise<Category[]> => {
-    return await CategoryModel.find({ user }).catch(
-        /* istanbul ignore next */ () => [],
-    )
+    return await CategoryModel.find({ user })
+        .populate({ path: 'children', model: CategoryModel })
+        .catch(/* istanbul ignore next */ () => [])
 }
 
 const mayGetCategoryByString = async (
@@ -204,6 +218,7 @@ const addChild = async (
     parent: Category,
     child: Category,
 ): Promise<boolean> => {
+    // TODO Unlink
     await CategoryModel.updateOne(
         {
             _id: parent._id,

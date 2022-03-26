@@ -1,6 +1,6 @@
 import React from 'react'
 import { useCategory } from 'src/client/hooks'
-import { Datalist } from 'src/client/components/form/Datalist'
+import { Datalist } from 'src/common/components/forms/Datalist'
 
 export const CategoryDatalist = (): JSX.Element => {
     const { getRootCategories } = useCategory()

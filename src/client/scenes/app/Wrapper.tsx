@@ -5,12 +5,12 @@ import {
     Loading,
     CategorySelector,
     Callout,
-    Modal,
     DeleteItemModal,
     UpdateItemModal,
     AddItemModal,
     CategoryEditorModal,
 } from 'src/client/components'
+import { Modal } from 'src/common/components/containers/Modal'
 
 import { useUser, useGlobalOption } from 'src/client/hooks'
 
@@ -21,7 +21,10 @@ export const Wrapper = (prop: PropsWithChildren<{}>): JSX.Element => {
         updateItemOpened,
         addItemOpened,
         categoryEditorOpened,
+        callOutMessage,
+        closeCallout,
         closeCategoryEditor,
+        closeComponents,
     } = useGlobalOption()
     const { loading, user } = useUser()
 
@@ -35,33 +38,29 @@ export const Wrapper = (prop: PropsWithChildren<{}>): JSX.Element => {
         <div className={`wrapper ${classDarkMode}`}>
             {/* Delete Modal */}
             {deleteItemOpened && (
-                <Modal>
+                <Modal closeModal={closeComponents}>
                     <DeleteItemModal />
                 </Modal>
             )}
-
             {/* Update Modal */}
             {updateItemOpened && (
-                <Modal>
+                <Modal closeModal={closeComponents}>
                     <UpdateItemModal />
                 </Modal>
             )}
-
             {/* Add Modal */}
             {addItemOpened && (
-                <Modal>
+                <Modal closeModal={closeComponents}>
                     <AddItemModal />
                 </Modal>
             )}
-
             {/* Category Editor Modal */}
             {categoryEditorOpened && (
                 <Modal closeModal={closeCategoryEditor}>
                     <CategoryEditorModal />
                 </Modal>
             )}
-
-            <Callout />
+            <Callout message={callOutMessage || ''} onClick={closeCallout} />
             <AppHeader />
             <CategorySelector />
             <Menu />

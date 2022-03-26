@@ -1,7 +1,7 @@
 import React, {
     Dispatch,
     SetStateAction,
-    FormEvent,
+    MouseEvent,
     useRef,
     Fragment,
     ChangeEvent,
@@ -13,8 +13,12 @@ import {
     getRawItemMeta,
     RawItemMeta,
 } from 'src/client/utils/item'
-import { Column, Row, Button, Select, Input } from 'src/client/components'
+import { Column } from 'src/common/components/layout/Column'
+import { Row } from 'src/common/components/layout/Row'
+import { Input } from 'src/common/components/forms/Input'
+import { Select } from 'src/common/components/forms/Select'
 import { TableHeader } from 'src/types/table'
+import { Button } from 'src/common/components/forms/Button'
 
 type Props = {
     changeInput: Dispatch<SetStateAction<RawItem[]>>
@@ -28,15 +32,25 @@ export const AddItemsForm = (props: Props): JSX.Element => {
 
     // References
     const rawTextField = useRef<HTMLTextAreaElement>(null)
-    const dateFormatField = useRef<HTMLSelectElement>(null)
+
     // States
     const [meta, changeMeta] = useState<RawItemMeta>(defaultMeta)
     const [fieldOptions, changeFieldOptions] = useState<Record<string, string>>(
         {},
     )
 
-    const onSubmit = (e: FormEvent) => {
-        e.preventDefault()
+    // Field Values
+    const [dateFormat, changeDateFormat] = useState<string>(meta.dateFormat)
+    const [separator, changeSeparator] = useState<string>(meta.separate)
+    const [date, changeDate] = useState<string>()
+    const [title, changeTitle] = useState<string>()
+    const [debit, changeDebit] = useState<string>()
+    const [credit, changeCredit] = useState<string>()
+
+    const onSubmit = (e?: MouseEvent) => {
+        if (e) {
+            e.preventDefault()
+        }
         const text = rawTextField.current?.value || ''
         props.changeInput(rawTextToRawItem(text, meta))
     }
@@ -49,28 +63,32 @@ export const AddItemsForm = (props: Props): JSX.Element => {
                 ...arr,
                 [col[0]]: col[1],
             }),
-            { '': 'Please Select' },
+            {},
         )
+
+        changeDateFormat(changedMeta.dateFormat)
+        changeSeparator(changedMeta.separate)
+        changeDate(
+            changedMeta.columns.date && changedMeta.columns.date[0].toString(),
+        )
+        changeTitle(
+            changedMeta.columns.title &&
+                changedMeta.columns.title[0].toString(),
+        )
+        changeDebit(
+            changedMeta.columns.debit &&
+                changedMeta.columns.debit[0].toString(),
+        )
+        changeCredit(
+            changedMeta.columns.credit &&
+                changedMeta.columns.credit[0].toString(),
+        )
+
         changeMeta(changedMeta)
-        changeFieldOptions(options)
-    }
-
-    const onChangeOption = (field: string, select: string) => {
-        const target = Object.keys(meta.columns)
-            .filter((key) => key === select)
-            .map((key) => meta.columns[key])
-            .pop()
-
-        if (target) {
-            const newMeta = {
-                ...meta,
-                columns: {
-                    ...meta.columns,
-                    [field]: target,
-                },
-            }
-            changeMeta(newMeta)
-        }
+        changeFieldOptions({
+            '': 'Please Select',
+            ...options,
+        })
     }
 
     return (
@@ -82,29 +100,24 @@ export const AddItemsForm = (props: Props): JSX.Element => {
                             '': 'Auto Detect',
                             'DD/MM/YYYY': 'DD/MM/YYYY',
                         }}
-                        ref={dateFormatField}
                         label="Date Format"
                         id="date-format"
-                        value={meta.dateFormat}
-                        onChange={(select) =>
-                            onChangeOption('date-format', select)
-                        }
+                        value={dateFormat}
+                        onChange={(value) => {
+                            changeDateFormat(value)
+                        }}
                     />
                 </Column>
                 <Column small={6}>
                     <Input
                         label="Separator"
-                        value={meta.separate}
                         required
-                        onChange={(e) =>
-                            onChangeOption(
-                                'separator',
-                                (e &&
-                                    (e.currentTarget as HTMLInputElement)
-                                        .value) ||
-                                    '',
+                        value={separator}
+                        onChange={(e) => {
+                            changeSeparator(
+                                (e?.target as HTMLInputElement).value,
                             )
-                        }
+                        }}
                     />
                 </Column>
             </Row>
@@ -112,41 +125,41 @@ export const AddItemsForm = (props: Props): JSX.Element => {
                 <Column small={3}>
                     <Select
                         options={fieldOptions}
-                        ref={dateFormatField}
                         label="Date Field"
-                        id="date-filed"
-                        value={meta.columns.date && meta.columns.date[1]}
-                        onChange={(e) => onChangeOption('date', e)}
+                        value={date}
+                        onChange={(value) => {
+                            changeDate(value)
+                        }}
                     />
                 </Column>
                 <Column small={3}>
                     <Select
                         options={fieldOptions}
-                        ref={dateFormatField}
                         label="Title Field"
-                        id="title-field"
-                        value={meta.columns.title && meta.columns.title[1]}
-                        onChange={(e) => onChangeOption('title', e)}
+                        value={title}
+                        onChange={(value) => {
+                            changeTitle(value)
+                        }}
                     />
                 </Column>
                 <Column small={3}>
                     <Select
                         options={fieldOptions}
-                        ref={dateFormatField}
                         label="Debit Field"
-                        id="debit-field"
-                        value={meta.columns.debit && meta.columns.debit[1]}
-                        onChange={(e) => onChangeOption('debit', e)}
+                        value={debit}
+                        onChange={(value) => {
+                            changeDebit(value)
+                        }}
                     />
                 </Column>
                 <Column small={3}>
                     <Select
                         options={fieldOptions}
-                        ref={dateFormatField}
                         label="Credit Field"
-                        id="credit-field"
-                        value={meta.columns.credit && meta.columns.credit[1]}
-                        onChange={(e) => onChangeOption('credit', e)}
+                        value={credit}
+                        onChange={(value) => {
+                            changeCredit(value)
+                        }}
                     />
                 </Column>
             </Row>

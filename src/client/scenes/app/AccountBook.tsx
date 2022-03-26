@@ -5,11 +5,11 @@ import {
     AccountBookTableMonthly,
     AccountBookTypeSelector,
     CategoryGraph,
-    Row,
-    Column,
 } from 'src/client/components'
 import { useAccountBookMatch } from 'src/client/hooks'
 import { TableType } from 'src/constants/accountBook'
+import { Column } from 'src/common/components/layout/Column'
+import { Row } from 'src/common/components/layout/Row'
 
 export const AccountBook = (): JSX.Element => {
     const { type: typeMatch } = useAccountBookMatch()

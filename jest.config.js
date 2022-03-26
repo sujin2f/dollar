@@ -8,11 +8,11 @@ module.exports = {
     },
     collectCoverage: true,
     collectCoverageFrom: [
+        '<rootDir>/src/common/**/*.{ts,tsx}',
         '<rootDir>/src/utils/**/*.{ts,tsx}',
         '<rootDir>/src/client/utils/**/*.{ts,tsx}',
         '<rootDir>/src/client/hooks/**/*.{ts,tsx}',
         '<rootDir>/src/client/store/**/*.{ts,tsx}',
-        '<rootDir>/src/client/components/form/**/*.{ts,tsx}',
         '<rootDir>/src/server/utils/**/*.{ts,tsx}',
         '<rootDir>/src/server/routes/graphql.ts',
         '!<rootDir>/src/**/*.spec.{ts,tsx}',

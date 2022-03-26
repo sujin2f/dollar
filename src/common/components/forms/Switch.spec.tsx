@@ -12,9 +12,12 @@ describe('Switch.ts', () => {
     it('Basic', async () => {
         const Component = (): JSX.Element => <Switch id="switch" />
         const result = render(<Component />)
-        expect(result.container.innerHTML).toMatch(
-            '<input class="switch-input" id="switch" type="checkbox"><label class="switch-paddle" for="switch"><span class="show-for-sr"><span class="hidden"></span></span></label>',
-        )
+
+        const switchInput = result.container.querySelector('#switch')
+        const switchPaddle = result.container.querySelector('.switch-paddle')
+
+        expect(switchInput).toBeTruthy()
+        expect(switchPaddle).toBeTruthy()
     })
 
     it('onChange', async () => {
@@ -33,13 +36,14 @@ describe('Switch.ts', () => {
             )
         }
         const result = render(<Component />)
-        expect(screen.getByTestId('checked')).toHaveTextContent('false')
+        const switchInput = result.container.querySelector('#switch')
+        const isChecked = screen.getByTestId('checked')
+        expect(isChecked).toHaveTextContent('false')
 
-        const select = result.container.querySelector('#switch')
-        fireEvent.click(select!)
+        fireEvent.click(switchInput!)
         await act(
             async () => await new Promise((resolve) => setTimeout(resolve, 10)),
         )
-        expect(screen.getByTestId('checked')).toHaveTextContent('true')
+        expect(isChecked).toHaveTextContent('true')
     })
 })

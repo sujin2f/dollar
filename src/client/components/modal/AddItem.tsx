@@ -1,9 +1,11 @@
 import React, { Fragment, useRef, useState, ChangeEvent } from 'react'
-import { Button, Datalist, Input } from 'src/client/components'
+import { Input } from 'src/common/components/forms/Input'
+import { Datalist } from 'src/common/components/forms/Datalist'
 import { useCategory, useItems } from 'src/client/hooks'
 import { RawItem } from 'src/types/model'
 import { TableHeader } from 'src/types/table'
 import { formatDate } from 'src/utils/datetime'
+import { Button } from 'src/common/components/forms/Button'
 
 export const AddItem = (): JSX.Element => {
     const { addItem } = useItems()

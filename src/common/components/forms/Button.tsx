@@ -1,10 +1,10 @@
-import React, { FormEvent } from 'react'
+import React, { MouseEvent } from 'react'
 import { removeEmpty } from 'src/utils/object'
 
 type Props = {
     title?: string
     className?: string
-    onClick?: (e: FormEvent) => void
+    onClick?: (e?: MouseEvent) => void
     autoFocus?: boolean
     icon?: string
     type?: 'button' | 'submit' | 'reset' | undefined

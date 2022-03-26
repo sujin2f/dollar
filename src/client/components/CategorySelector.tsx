@@ -1,15 +1,19 @@
 import React, { Fragment } from 'react'
 
-import { useCategory, useGlobalOption, useOverlay } from 'src/client/hooks'
-import { Column, Row, Button, Switch, Icon } from 'src/client/components'
+import { useCategory, useGlobalOption } from 'src/client/hooks'
+import { Icon } from 'src/client/components'
+import { Switch } from 'src/common/components/forms/Switch'
 import { splitItems } from 'src/utils/array'
 import { BW } from 'src/constants/color'
+import { Button } from 'src/common/components/forms/Button'
+import { Column } from 'src/common/components/layout/Column'
+import { Row } from 'src/common/components/layout/Row'
+import { Overlay } from 'src/common/components/containers/Overlay'
 
 export const CategorySelector = (): JSX.Element => {
     const { categories, updateCategory } = useCategory()
     const { categorySelectorOpened, openCategoryEditor, closeComponents } =
         useGlobalOption()
-    const { Overlay } = useOverlay()
 
     const items = splitItems(categories, 4)
     const cols = items.map((itemRow, index) => (
@@ -61,7 +65,10 @@ export const CategorySelector = (): JSX.Element => {
     return (
         <Fragment>
             {categorySelectorOpened && (
-                <Overlay className="category-selector__wrapper">
+                <Overlay
+                    className="category-selector__wrapper"
+                    onClick={closeComponents}
+                >
                     <Row>{cols}</Row>
 
                     <Row>

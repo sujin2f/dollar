@@ -13,7 +13,7 @@ describe('ColorPicker.ts', () => {
         const Component = (): JSX.Element => <ColorPicker />
         const result = render(<Component />)
         expect(result.container.innerHTML).toMatch(
-            '<div class="color-picker"><div class="color-picker__label"></div><div class="color-picker__swatch"></div></div>',
+            '<div class="color-picker"><input type="hidden" value=""><div class="color-picker__label"></div><div class="color-picker__swatch"></div></div>',
         )
     })
 
@@ -23,7 +23,7 @@ describe('ColorPicker.ts', () => {
         )
         const result = render(<Component />)
         expect(result.container.innerHTML).toMatch(
-            '<div class="color-picker"><div class="color-picker__label">Label</div><div class="color-picker__swatch" style="background: rgb(18, 52, 86);"></div></div>',
+            '<div class="color-picker"><input type="hidden" value="#123456"><div class="color-picker__label">Label</div><div class="color-picker__swatch" style="background: rgb(18, 52, 86);"></div></div>',
         )
 
         let click = result.container.querySelector('.color-picker__label')

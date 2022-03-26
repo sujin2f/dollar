@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react'
 import { useGlobalOption, useItems } from 'src/client/hooks'
 import { itemToRawItem } from 'src/types/model'
-import { Button } from '../form/Button'
+import { Button } from 'src/common/components/forms/Button'
 
 export const DeleteItem = (): JSX.Element => {
     const { deleteItemOpened: item, closeComponents } = useGlobalOption()

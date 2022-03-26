@@ -1,6 +1,7 @@
 import React from 'react'
 import { useGlobalOption } from 'src/client/hooks'
-import { Button, Hamburger } from 'src/client/components'
+import { Hamburger } from 'src/client/components'
+import { Button } from 'src/common/components/forms/Button'
 
 export const AppHeader = (): JSX.Element => {
     const {

@@ -4,7 +4,9 @@ import { useItems } from 'src/client/hooks'
 import { RawItem } from 'src/types/model'
 import { TableHeader } from 'src/types/table'
 import { deepCopy } from 'src/utils/array'
-import { CategoryDatalist, Column, Row } from 'src/client/components'
+import { CategoryDatalist } from 'src/client/components'
+import { Column } from 'src/common/components/layout/Column'
+import { Row } from 'src/common/components/layout/Row'
 
 type Props = {
     items: RawItem[]

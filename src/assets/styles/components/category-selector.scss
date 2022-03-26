@@ -1,6 +1,8 @@
 .category-selector__wrapper {
     background-color: $white;
     padding: 1rem 0 0;
+    position: static;
+    display: block;
 }
 
 .category-selector {
@@ -15,6 +17,10 @@
     .switch-paddle {
         transform: scale(0.7);
     }
+}
+
+.category-selector__item--child {
+    margin-left: 1em;
 }
 
 .category-selector__label__icon {

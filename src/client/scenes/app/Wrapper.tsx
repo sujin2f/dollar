@@ -4,14 +4,13 @@ import {
     Menu,
     Loading,
     CategorySelector,
-    Callout,
     DeleteItemModal,
     UpdateItemModal,
     AddItemModal,
     CategoryEditorModal,
 } from 'src/client/components'
 import { Modal } from 'src/common/components/containers/Modal'
-
+import { Callout } from 'src/common/components/containers/Callout'
 import { useUser, useGlobalOption } from 'src/client/hooks'
 
 import 'src/assets/styles/style.scss'

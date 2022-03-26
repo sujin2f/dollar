@@ -1,4 +1,3 @@
-export { Callout } from 'src/common/components/containers/Callout'
 export { Icon } from 'src/common/components/containers/Icon'
 
 export { Loading } from './Loading'
@@ -6,6 +5,7 @@ export { Menu } from './Menu'
 export { PublicHeader } from './PublicHeader'
 export { AppHeader } from './AppHeader'
 export { CategorySelector } from './CategorySelector'
+export { CategorySelectorItem } from './CategorySelectorItem'
 export { Hamburger } from './Hamburger'
 
 export { AddItemsForm } from './AddItemsForm'

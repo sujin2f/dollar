@@ -4,18 +4,27 @@ import {
     Menu,
     Loading,
     CategorySelector,
-    Callout,
-    Modal,
     DeleteItemModal,
     UpdateItemModal,
     AddItemModal,
+    CategoryEditorModal,
 } from 'src/client/components'
-
+import { Modal } from 'src/common/components/containers/Modal'
+import { Callout } from 'src/common/components/containers/Callout'
 import { useUser, useGlobalOption } from 'src/client/hooks'
 
 import 'src/assets/styles/style.scss'
 export const Wrapper = (prop: PropsWithChildren<{}>): JSX.Element => {
-    const { deleteItem, updateItem, addItem } = useGlobalOption()
+    const {
+        deleteItemOpened,
+        updateItemOpened,
+        addItemOpened,
+        categoryEditorOpened,
+        callOutMessage,
+        closeCallout,
+        closeCategoryEditor,
+        closeComponents,
+    } = useGlobalOption()
     const { loading, user } = useUser()
 
     if (loading || !user) {
@@ -27,27 +36,30 @@ export const Wrapper = (prop: PropsWithChildren<{}>): JSX.Element => {
     return (
         <div className={`wrapper ${classDarkMode}`}>
             {/* Delete Modal */}
-            {deleteItem && (
-                <Modal>
+            {deleteItemOpened && (
+                <Modal closeModal={closeComponents}>
                     <DeleteItemModal />
                 </Modal>
             )}
-
             {/* Update Modal */}
-            {updateItem && (
-                <Modal>
+            {updateItemOpened && (
+                <Modal closeModal={closeComponents}>
                     <UpdateItemModal />
                 </Modal>
             )}
-
             {/* Add Modal */}
-            {addItem && (
-                <Modal>
+            {addItemOpened && (
+                <Modal closeModal={closeComponents}>
                     <AddItemModal />
                 </Modal>
             )}
-
-            <Callout />
+            {/* Category Editor Modal */}
+            {categoryEditorOpened && (
+                <Modal closeModal={closeCategoryEditor}>
+                    <CategoryEditorModal />
+                </Modal>
+            )}
+            <Callout message={callOutMessage || ''} onClick={closeCallout} />
             <AppHeader />
             <CategorySelector />
             <Menu />

@@ -17,14 +17,8 @@ if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'stage') {
 import { ErrorMessages } from 'src/server/constants/messages'
 import { mongoConnect } from 'src/server/utils/mongo'
 
-import { authRouter, staticRouter, apiRouter } from 'src/server/routes'
+import { authRouter, staticRouter, graphqlRouter } from 'src/server/routes'
 /* eslint-enable import/first */
-
-declare module 'express-session' {
-    interface Session {
-        user?: string
-    }
-}
 
 const app: Application = express()
 const server = http.createServer(app)
@@ -82,7 +76,7 @@ app.use(sessionMiddleware)
  * Router
  */
 app.use('/auth', authRouter)
-app.use('/api', apiRouter)
+app.use('/graphql', graphqlRouter)
 app.use('/', staticRouter)
 
 // start the Express server

@@ -1,20 +1,26 @@
-import React, { Fragment, useRef, useState } from 'react'
-import { Button, CategoryDatalist, Input } from 'src/client/components'
-import { useItems } from 'src/client/hooks'
+import React, { Fragment, useRef, useState, ChangeEvent } from 'react'
+import { Input } from 'src/common/components/forms/Input'
+import { Datalist } from 'src/common/components/forms/Datalist'
+import { useCategory, useItems } from 'src/client/hooks'
 import { RawItem } from 'src/types/model'
 import { TableHeader } from 'src/types/table'
-import { formatDate } from 'src/utils'
+import { formatDate } from 'src/utils/datetime'
+import { Button } from 'src/common/components/forms/Button'
 
 export const AddItem = (): JSX.Element => {
     const { addItem } = useItems()
+    const { getSubCategories, getRootCategories, getCategoryByTitle } =
+        useCategory()
     const [dateError, setDateError] = useState<string>('')
     const [titleError, setTitleError] = useState<string>('')
     const [amountError, setAmountError] = useState<string>('')
+    const [subcategories, setSubcategories] = useState<string[]>([])
     const date = useRef<HTMLInputElement>(null)
     const title = useRef<HTMLInputElement>(null)
     const debit = useRef<HTMLInputElement>(null)
     const credit = useRef<HTMLInputElement>(null)
     const categoryRef = useRef<HTMLInputElement>(null)
+    const subCategoryRef = useRef<HTMLInputElement>(null)
 
     const validate = () => {
         let validated = true
@@ -38,11 +44,19 @@ export const AddItem = (): JSX.Element => {
         return validated
     }
 
+    const onCategoryChange = (e?: ChangeEvent) => {
+        const category = getCategoryByTitle(categoryRef.current?.value || '')
+        if (!category) {
+            return
+        }
+        setSubcategories(getSubCategories(category._id).map((cat) => cat.title))
+    }
+
     const onSubmit = () => {
         if (!validate()) {
             return
         }
-        const item = {
+        const rawItem = {
             checked: true,
             originTitle: title.current?.value,
             date: date.current?.value,
@@ -50,11 +64,13 @@ export const AddItem = (): JSX.Element => {
             debit: parseFloat(debit.current?.value || ''),
             credit: parseFloat(credit.current?.value || ''),
             category: categoryRef.current?.value || '',
+            subCategory: subCategoryRef.current?.value || '',
         } as RawItem
 
         addItem({
             variables: {
-                item,
+                rawItem,
+                type: 'add',
             },
         })
     }
@@ -101,8 +117,21 @@ export const AddItem = (): JSX.Element => {
                     reference={categoryRef}
                     list="category-list"
                     onEnterKeyDown={onSubmit}
+                    onChange={(e) => onCategoryChange(e)}
                 />
-                <CategoryDatalist />
+                <Datalist
+                    id="category-list"
+                    values={getRootCategories().map(
+                        (category) => category.title,
+                    )}
+                />
+                <Input
+                    label={TableHeader.SubCategory as string}
+                    reference={subCategoryRef}
+                    list="sub-category-list"
+                    onEnterKeyDown={onSubmit}
+                />
+                <Datalist id="sub-category-list" values={subcategories} />
             </form>
             <Button type="submit" title="Add Item" onClick={onSubmit} />
         </Fragment>

@@ -1,7 +1,7 @@
-import React, { FormEvent } from 'react'
+import React, { MouseEvent } from 'react'
 
 type Props = {
-    onClick: (e: FormEvent) => void
+    onClick?: (e?: MouseEvent) => void
 }
 
 export const CloseButton = (props: Props): JSX.Element => {

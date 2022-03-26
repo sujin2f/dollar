@@ -1,15 +1,11 @@
 import { Request } from 'express'
 import mongoose, { Schema } from 'mongoose'
-import { ErrorMessages } from 'src/server/constants/messages'
+import { RawItemsParam } from 'src/constants/graph-query'
 import { PreSelect, Category, RawItem } from 'src/types/model'
+import { deepCopy } from 'src/utils/array'
+import { toMongoSearchString } from 'src/utils/string'
 import { CategoryModel } from './categories'
 import { ItemModel } from './items'
-
-declare module 'express-session' {
-    interface Session {
-        user?: string
-    }
-}
 
 const preSelectSchema = new Schema({
     title: String,
@@ -34,88 +30,60 @@ export const PreSelectModel = mongoose.model<PreSelect>(
 export const findOrCreatePreSelect = async (
     keyword: string,
     category: Category,
-    userId?: string,
+    user: string,
 ): Promise<boolean> => {
-    if (!userId) {
-        throw new Error(ErrorMessages.AUTHENTICATION_FAILED)
-    }
-
-    const title = keyword
-        .replace(/[^a-zA-Z]/g, ' ')
-        .toLowerCase()
-        .split(' ')
-        .filter((v) => v)
-    const unique = [...new Set(title)]
+    const $search = toMongoSearchString(keyword)
 
     return await PreSelectModel.findOne({
-        user: userId,
+        user,
         category: category._id,
-        $text: { $search: unique.join(' ') },
+        $text: { $search },
     })
         .populate({ path: 'category', model: CategoryModel })
         .then(async (preSelect) => {
             if (!preSelect) {
                 const preSelectModel = new PreSelectModel({
-                    user: userId,
+                    user,
                     category: category._id,
-                    title: unique.join(' '),
+                    title: $search,
                 })
-                await preSelectModel.save().catch((e: Error) => {
-                    throw new Error(
-                        `${ErrorMessages.CREATE_PRE_SELECT_FAILED}: ${e.message}`,
-                    )
-                })
+                await preSelectModel
+                    .save()
+                    .catch(/* istanbul ignore next */ () => false)
 
                 return true
             }
 
-            const newTitle = `${preSelect.title} ${unique.join(' ')}`
-                .split(' ')
-                .filter((v) => v)
-            const newUnique = [...new Set(newTitle)]
+            const title = toMongoSearchString(`${preSelect.title} ${$search}`)
             await PreSelectModel.updateOne(
                 {
                     _id: preSelect._id,
                 },
                 {
-                    title: newUnique.join(' '),
+                    title,
                 },
-            ).catch((e: Error) => {
-                throw new Error(
-                    `${ErrorMessages.UPDATE_PRE_SELECT_FAILED}: ${e.message}`,
-                )
-            })
+            ).catch(/* istanbul ignore next */ () => false)
 
             return true
         })
-        .catch((e: Error) => {
-            throw new Error(`findOrCreatePreSelect: ${e.message}`)
-        })
+        .catch(/* istanbul ignore next */ () => false)
 }
 
-type GetRawItemsParam = {
-    items: RawItem[]
-}
 export const getRawItems = async (
-    param: GetRawItemsParam,
-    req: Request,
+    { rawItems }: RawItemsParam,
+    { session: { user } }: Request,
 ): Promise<RawItem[]> => {
-    const items = param.items
-    for (const [index, item] of param.items.entries()) {
+    const items = deepCopy(rawItems)
+    for (const [index, item] of rawItems.entries()) {
         /**
          * Change category from pre-select
          */
-        const title = item.originTitle
-            .replace(/[^a-zA-Z]/g, ' ')
-            .toLowerCase()
-            .split(' ')
-            .filter((v) => v)
-        const unique = [...new Set(title)]
+        const $search = toMongoSearchString(item.originTitle)
 
         await PreSelectModel.findOne(
             {
-                user: req.session.user,
-                $text: { $search: unique.join(' ') },
+                user,
+                $text: { $search },
             },
             { score: { $meta: 'textScore' } },
         )
@@ -127,15 +95,17 @@ export const getRawItems = async (
                 }
                 items[index].category = response.category.title
             })
-            .catch(() => {
-                return
-            })
+            .catch(
+                /* istanbul ignore next */ () => {
+                    return
+                },
+            )
 
         /**
          * Uncheck duplication
          */
         await ItemModel.findOne({
-            user: req.session.user,
+            user,
             title: item.originTitle,
             date: item.date,
         })
@@ -145,9 +115,11 @@ export const getRawItems = async (
                 }
                 items[index].checked = false
             })
-            .catch(() => {
-                return
-            })
+            .catch(
+                /* istanbul ignore next */ () => {
+                    return
+                },
+            )
     }
     return items
 }

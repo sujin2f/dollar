@@ -1,4 +1,4 @@
-import { Item } from 'src/types/model'
+import { Category, Item } from 'src/types/model'
 import { Action } from 'src/types/store'
 import {
     SET_MENU_OPEN,
@@ -7,12 +7,14 @@ import {
     SET_ADD_MODAL,
     CLOSE_MODAL,
     SET_CALLOUT,
+    SET_CATEGORY_SELECTOR,
+    SET_CATEGORY_EDITOR,
 } from './type'
 
-export const setMenuOpen = (menuOpen: boolean): Partial<Action> => {
+export const setMenuOpen = (bool: boolean): Partial<Action> => {
     return {
         type: SET_MENU_OPEN,
-        menuOpen,
+        bool,
     }
 }
 
@@ -30,10 +32,17 @@ export const setUpdateModal = (item: Item): Partial<Action> => {
     }
 }
 
-export const setAddModal = (addItem: boolean): Partial<Action> => {
+export const setAddModal = (bool: boolean): Partial<Action> => {
     return {
         type: SET_ADD_MODAL,
-        addItem,
+        bool,
+    }
+}
+
+export const setCategorySelector = (bool: boolean): Partial<Action> => {
+    return {
+        type: SET_CATEGORY_SELECTOR,
+        bool,
     }
 }
 
@@ -48,5 +57,12 @@ export const setCallOut = (message?: string, timeout?: NodeJS.Timeout) => {
         type: SET_CALLOUT,
         message,
         timeout,
+    }
+}
+
+export const setCategoryEditor = (category: Category): Partial<Action> => {
+    return {
+        type: SET_CATEGORY_EDITOR,
+        category,
     }
 }

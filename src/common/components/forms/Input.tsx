@@ -1,5 +1,12 @@
-import React, { Fragment, KeyboardEvent, RefObject, useRef } from 'react'
+import React, {
+    ChangeEvent,
+    Fragment,
+    KeyboardEvent,
+    RefObject,
+    useRef,
+} from 'react'
 import { removeEmpty } from 'src/utils/object'
+import { generateUUID } from 'src/utils/string'
 
 type Props = {
     label?: string
@@ -13,7 +20,9 @@ type Props = {
     inlineLabel?: string
     list?: string
     onEnterKeyDown?: () => void
+    onChange?: (e?: ChangeEvent) => void
     autoFocus?: boolean
+    value?: string
 }
 export const Input = (props: Props): JSX.Element => {
     const {
@@ -26,13 +35,15 @@ export const Input = (props: Props): JSX.Element => {
         inlineLabel,
         list,
         autoFocus,
+        value,
         onEnterKeyDown,
+        onChange,
     } = props
 
     // eslint-disable-next-line react-hooks/rules-of-hooks
     const ref = reference || useRef<HTMLInputElement>(null)
 
-    const id = props.id || crypto.randomUUID()
+    const id = props.id || generateUUID()
     const type = props.type || 'text'
     const ariaDescribedby = helpText ? `${id}-help-text` : ''
     const labelClassNames = `form-label ${
@@ -51,9 +62,10 @@ export const Input = (props: Props): JSX.Element => {
         className,
         list,
         autoFocus,
+        value,
     })
 
-    const onKeyDown = (e: KeyboardEvent) => {
+    const onKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter' && onEnterKeyDown) {
             onEnterKeyDown()
         }
@@ -61,7 +73,7 @@ export const Input = (props: Props): JSX.Element => {
 
     const inputComponent = (
         <Fragment>
-            <input {...inputProps} onKeyDown={onKeyDown} />
+            <input {...inputProps} onKeyDown={onKeyDown} onChange={onChange} />
             {helpText && (
                 <p className="help-text" id={ariaDescribedby}>
                     {helpText}

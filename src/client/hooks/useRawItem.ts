@@ -1,24 +1,19 @@
 import { useQuery } from '@apollo/client'
 import { RawItem } from 'src/types/model'
-import { GraphQuery } from 'src/client/const/graph-query'
+import { RawItemsParam, Fields, GraphQuery } from 'src/constants/graph-query'
 import { useGlobalOption } from './useGlobalOption'
 
-type GetRawItemsQueryParam = {
-    getRawItems: RawItem[]
-}
-
-export const useRawItem = (items: RawItem[]) => {
-    const { setCallout } = useGlobalOption()
-    const { data, error } = useQuery<GetRawItemsQueryParam>(
-        GraphQuery.GET_RAW_ITEMS,
-        {
-            variables: { items },
-        },
-    )
+export const useRawItem = (rawItems: RawItem[]) => {
+    const { openCallout } = useGlobalOption()
+    const { data, error } = useQuery<RawItemsParam>(GraphQuery.GET_RAW_ITEMS, {
+        variables: { rawItems },
+        skip: !rawItems || !rawItems.length,
+    })
+    const items = data ? data[Fields.RAW_ITEMS] : []
 
     if (error) {
-        setCallout(error.message)
+        openCallout(error.message)
     }
 
-    return { rawItem: data ? data.getRawItems : [] }
+    return { rawItems: items }
 }

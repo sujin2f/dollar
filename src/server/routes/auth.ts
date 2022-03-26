@@ -1,17 +1,10 @@
 import express from 'express'
-import { Session } from 'express-session'
 import { User } from 'src/types/model'
 import { getOrAddUser } from 'src/server/utils/mongo'
 import {
     getGoogleAccountFromCode,
     GoogleLoginUrl,
 } from 'src/server/utils/google-api'
-
-declare module 'express-session' {
-    interface Session {
-        user?: string
-    }
-}
 
 const authRouter = express.Router()
 
@@ -22,13 +15,13 @@ const authRouter = express.Router()
  */
 authRouter.get('/login', async (req, res) => {
     if (process.env.NODE_ENV !== 'production') {
-        ;(req.session as Session).user = process.env.DEV_USER_ID
+        req.session.user = process.env.DEV_USER_ID || ''
         res.redirect('/app')
         return
     }
 
     try {
-        if ((req.session as Session).user) {
+        if (req.session.user) {
             res.redirect('/app')
         }
         res.redirect(GoogleLoginUrl())
@@ -42,7 +35,7 @@ authRouter.get('/login', async (req, res) => {
  * Logout
  */
 authRouter.get('/logout', (req, res) => {
-    ;(req.session as Session).user = undefined
+    req.session.user = ''
     res.redirect('/')
 })
 
@@ -50,7 +43,7 @@ authRouter.get('/logout', (req, res) => {
  * Google login redirected
  */
 authRouter.get('/', async (req, res) => {
-    if ((req.session as Session).user) {
+    if (req.session.user) {
         res.redirect('/app')
     }
 
@@ -65,7 +58,7 @@ authRouter.get('/', async (req, res) => {
         .then((account: User) => {
             getOrAddUser(account.name, account.email, account.photo)
                 .then((user: User) => {
-                    ;(req.session as Session).user = user._id
+                    req.session.user = user._id
                     res.redirect('/app')
                 })
                 .catch(() => {

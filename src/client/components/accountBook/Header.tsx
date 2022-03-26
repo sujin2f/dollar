@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { useAccountBookMatch } from 'src/client/hooks'
 import { TableType } from 'src/constants/accountBook'
 import { Month } from 'src/constants/datetime'
-import { addZero } from 'src/utils'
+import { addZero } from 'src/utils/datetime'
 
 export const Header = (): JSX.Element => {
     const { year, month, type } = useAccountBookMatch()

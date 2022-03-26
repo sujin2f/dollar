@@ -1,11 +1,16 @@
 import React from 'react'
-import { useGlobalOption } from '../hooks'
-import { Button } from './form/Button'
-
-import { Hamburger } from './Hamburger'
+import { useGlobalOption } from 'src/client/hooks'
+import { Hamburger } from 'src/client/components'
+import { Button } from 'src/common/components/forms/Button'
 
 export const AppHeader = (): JSX.Element => {
-    const { setAddModal } = useGlobalOption()
+    const {
+        categorySelectorOpened,
+        openAddModal,
+        openCategorySelector,
+        closeComponents,
+    } = useGlobalOption()
+
     return (
         <header className="header flex flex--space-between">
             <div>
@@ -14,7 +19,17 @@ export const AppHeader = (): JSX.Element => {
             <div>
                 <Button
                     className="primary add-item"
-                    onClick={setAddModal}
+                    onClick={() =>
+                        categorySelectorOpened
+                            ? closeComponents()
+                            : openCategorySelector()
+                    }
+                    title="Category Selector"
+                    icon="price-tag"
+                />
+                <Button
+                    className="primary add-item"
+                    onClick={openAddModal}
                     title="Add Item"
                     icon="plus"
                 />

@@ -1,68 +1,63 @@
-import React, { useState } from 'react'
-import { useCategory } from 'src/client/hooks'
-import { Column, Row } from 'src/client/components'
-import { Button } from './form/Button'
+import React, { Fragment } from 'react'
+
+import { useCategory, useGlobalOption } from 'src/client/hooks'
+import { splitItems } from 'src/utils/array'
+import { Button } from 'src/common/components/forms/Button'
+import { Column } from 'src/common/components/layout/Column'
+import { Row } from 'src/common/components/layout/Row'
+import { Overlay } from 'src/common/components/containers/Overlay'
+import { CategorySelectorItem } from 'src/client/components'
 
 export const CategorySelector = (): JSX.Element => {
-    const [open, changeOpen] = useState<boolean>(false)
-    const { categories, updateCategory } = useCategory()
+    const { getRootCategories } = useCategory()
+    const { categorySelectorOpened, closeComponents } = useGlobalOption()
+
+    const items = splitItems(getRootCategories(), 4)
+    const cols = items.map((itemRow, index) => (
+        <Column
+            className="category-selector"
+            small={3}
+            key={`category-selector-column-${index}`}
+        >
+            {itemRow.map((category) => (
+                <Fragment key={`category-selector-${category._id}`}>
+                    <CategorySelectorItem category={category} />
+
+                    {category.children &&
+                        !category.disabled &&
+                        category.children.map((child) => (
+                            <CategorySelectorItem
+                                key={`category-selector-${child._id}`}
+                                category={child}
+                                isChild
+                            />
+                        ))}
+                </Fragment>
+            ))}
+        </Column>
+    ))
 
     return (
-        <header className="category-selector__wrapper">
-            {!open && (
-                <button onClick={() => changeOpen(!open)}>
-                    Category-Selector
-                </button>
-            )}
-            {open && (
-                <Row>
-                    <Column className="category-selector">
-                        {categories.map((category) => (
-                            <div
-                                key={`category-selector-${category._id}`}
-                                className="category-selector__item"
-                            >
-                                <input
-                                    className="switch-input"
-                                    id={`category-selector-${category._id}`}
-                                    type="checkbox"
-                                    checked={!category.disabled}
-                                    onChange={() => {
-                                        updateCategory({
-                                            variables: {
-                                                category: {
-                                                    _id: category._id,
-                                                    disabled:
-                                                        !category.disabled,
-                                                },
-                                            },
-                                        })
-                                    }}
-                                />
-                                <label
-                                    className="switch-paddle"
-                                    htmlFor={`category-selector-${category._id}`}
-                                >
-                                    <span className="show-for-sr">
-                                        <span className="hidden">
-                                            Toggle {category.title}
-                                        </span>
-                                    </span>
-                                </label>
-                                {category.title}
-                            </div>
-                        ))}
-                    </Column>
+        <Fragment>
+            {categorySelectorOpened && (
+                <Overlay
+                    className="category-selector__wrapper"
+                    onClick={closeComponents}
+                >
+                    <Row>{cols}</Row>
 
-                    <Column className="category-selector">
-                        <Button
-                            className="secondary"
-                            onClick={() => changeOpen(false)}
-                            title="Close"
-                        />
-                    </Column>
-                </Row>
+                    <Row>
+                        <Column>
+                            <Button
+                                className="secondary"
+                                onClick={() => closeComponents()}
+                                title="Close"
+                                autoFocus
+                            />
+                        </Column>
+                    </Row>
+                </Overlay>
             )}
-        </header>
+        </Fragment>
     )
 }

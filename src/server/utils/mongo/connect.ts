@@ -1,7 +1,4 @@
-/**
- * MongoDB connection helpers
- */
-
+/* istanbul ignore file */
 import mongoose from 'mongoose'
 import { ErrorMessages } from 'src/server/constants/messages'
 

@@ -1,18 +1,23 @@
 import React, { Fragment } from 'react'
 import { useGlobalOption, useItems } from 'src/client/hooks'
-import { Button } from '../form/Button'
+import { itemToRawItem } from 'src/types/model'
+import { Button } from 'src/common/components/forms/Button'
 
 export const DeleteItem = (): JSX.Element => {
-    const { deleteItem: item, closeModal } = useGlobalOption()
+    const { deleteItemOpened: item, closeComponents } = useGlobalOption()
     const { deleteItem } = useItems()
 
     const onClick = () => {
+        if (!item) {
+            return
+        }
         deleteItem({
             variables: {
-                _id: item!._id,
+                rawItem: itemToRawItem(item),
+                type: 'delete',
             },
         })
-        closeModal()
+        closeComponents()
     }
 
     return (

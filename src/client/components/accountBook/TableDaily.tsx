@@ -7,14 +7,14 @@ import {
     useItems,
 } from 'src/client/hooks'
 import { TableHeader } from 'src/types/table'
-import { formatCurrency } from 'src/utils'
+import { formatCurrency } from 'src/utils/number'
 import { Loading } from '../Loading'
 
 export const TableDaily = (): JSX.Element => {
     const { year, month, type } = useAccountBookMatch()
     const { isCategoryHidden } = useCategory()
     const { loading, items, itemsToTableData } = useItems(year, month, type)
-    const { setDeleteModal, setUpdateModal } = useGlobalOption()
+    const { openDeleteModal, openUpdateModal } = useGlobalOption()
 
     if (loading) {
         return <Loading />
@@ -53,14 +53,14 @@ export const TableDaily = (): JSX.Element => {
                                     <Link
                                         to="#"
                                         className="button tiny secondary hollow"
-                                        onClick={() => setUpdateModal(item)}
+                                        onClick={() => openUpdateModal(item)}
                                     >
                                         <i className="fi-wrench" />
                                     </Link>
                                     <Link
                                         to="#"
                                         className="button tiny secondary hollow"
-                                        onClick={() => setDeleteModal(item)}
+                                        onClick={() => openDeleteModal(item)}
                                     >
                                         <i className="fi-x" />
                                     </Link>

@@ -1,68 +1,92 @@
-import { Nullable } from 'src/types/common'
 import { RawItem } from 'src/types/model'
 import { TableHeader } from 'src/types/table'
-import { addZero, currencyToNumber, formatDate } from 'src/utils'
+import { addZero, formatDate } from 'src/utils/datetime'
+import { currencyToNumber } from 'src/utils/string'
 
-export const rawTextToRawItem = (
-    rawText: string,
-    dateFormat: string,
-): RawItem[] => {
-    const tabSeparated = rawText.split('\n').map((row) => row.split('\t'))
-    const columns: TableHeader[] = []
-    const result = []
-
-    // Set columns with the first row
-    if (!tabSeparated[0][0]) {
-        return []
+export const getRawItemMeta = (rawText: string) => {
+    const result = {
+        separate: '\t',
+        columns: {} as Record<string, [number, string]>,
+        dateFormat: '',
     }
 
-    tabSeparated[0].forEach((text) => {
-        if (Object.keys(TableHeader).includes(text)) {
-            columns.push(TableHeader[text as keyof typeof TableHeader])
+    if (!rawText) {
+        return result
+    }
+
+    const firstLine = rawText.split('\n').shift()
+
+    if (!firstLine) {
+        return result
+    }
+
+    // Separator
+    if (firstLine.includes(',') && !firstLine.includes('\t')) {
+        result.separate = ','
+    }
+
+    // Date Format
+    if (rawText.match(/\d{2}\/\d{2}\/\d{4}/)) {
+        result.dateFormat = 'DD/MM/YYYY'
+    }
+
+    firstLine.split(result.separate).forEach((text, index) => {
+        const trimmed = text.trim()
+        if (Object.keys(TableHeader).includes(trimmed)) {
+            const resultKey = TableHeader[trimmed as keyof typeof TableHeader]
+            result.columns[resultKey] = [index, trimmed]
         } else {
-            columns.push(TableHeader.Unknown)
+            result.columns[trimmed] = [index, trimmed]
         }
     })
 
-    // Put data into result
-    for (const row of tabSeparated.splice(1)) {
-        const rowData: Partial<Record<TableHeader, string>> = {}
-        row.forEach((column, key) => (rowData[columns[key]] = column))
-        result.push(rowData)
-    }
-
     return result
+}
+
+export type RawItemMeta = ReturnType<typeof getRawItemMeta>
+
+export const rawTextToRawItem = (
+    rawText: string,
+    meta: RawItemMeta,
+): RawItem[] => {
+    const separated = rawText.split('\n').map((row) => row.split(meta.separate))
+    separated.shift()
+    return separated
+        .filter(
+            (row) =>
+                row[meta.columns.date[0]] &&
+                row[meta.columns.title[0]] &&
+                (row[meta.columns.debit[0]] || row[meta.columns.credit[0]]),
+        )
         .map((row) => {
-            let date: Nullable<string> = null
-            switch (dateFormat) {
+            let date = row[meta.columns.date[0]]
+            const title = row[meta.columns.title[0]]
+            const debit = meta.columns.debit
+                ? currencyToNumber(row[meta.columns.debit[0]])
+                : 0
+            const credit = meta.columns.credit
+                ? currencyToNumber(row[meta.columns.credit[0]])
+                : 0
+            switch (meta.dateFormat) {
                 case 'DD/MM/YYYY':
-                    const dateString = row[TableHeader.Date]?.split('/') || []
-                    if (dateString.length !== 3) {
+                    const d = date.split('/')
+                    if (d.length !== 3) {
+                        date = ''
                         break
                     }
-                    date = `${dateString[2]}-${addZero(
-                        dateString[1],
-                    )}-${addZero(dateString[0])}`
+                    date = `${d[2]}-${addZero(d[1])}-${addZero(d[0])}`
                     break
                 default:
-                    date = formatDate(row[TableHeader.Date] || '')
+                    date = formatDate(date)
             }
             return {
                 checked: true,
                 date,
-                title: row[TableHeader.Title],
-                originTitle: row[TableHeader.Title],
-                category: '',
-                debit: currencyToNumber(row[TableHeader.Debit]),
-                credit: currencyToNumber(row[TableHeader.Credit]),
+                title,
+                originTitle: title,
+                debit,
+                credit,
             } as RawItem
         })
-        .filter((row) => {
-            const dateValid =
-                !row.date || row.date.toString() !== 'Invalid Date'
-            if (!dateValid) {
-                return false
-            }
-            return row.debit || row.credit
-        })
+        .filter((row) => row.date)
 }

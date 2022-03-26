@@ -1,6 +1,6 @@
 import { useRouteMatch } from 'react-router-dom'
 import { TableType } from 'src/constants/accountBook'
-import { hasEnumValue } from 'src/utils'
+import { hasEnumValue } from 'src/utils/enum'
 
 type Match = {
     type?: TableType

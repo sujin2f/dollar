@@ -1,39 +1,33 @@
 import { useHistory } from 'react-router-dom'
 import { useMutation, useQuery } from '@apollo/client'
 
-import { User } from 'src/types/model'
-import { GraphQuery } from 'src/client/const/graph-query'
+import { Fields, GraphQuery, UserParam } from 'src/constants/graph-query'
 import { useGlobalOption } from './useGlobalOption'
-
-type GetUserQueryParam = {
-    getUser: User
-}
+import { User } from 'src/types/model'
 
 export const useUser = () => {
-    const { setCallout } = useGlobalOption()
+    const { openCallout } = useGlobalOption()
     const history = useHistory()
-    const { loading, error, data } = useQuery<GetUserQueryParam>(
-        GraphQuery.GET_USER,
-    )
+    const { loading, error, data } = useQuery<UserParam>(GraphQuery.GET_USER)
 
     if (error) {
-        setCallout(error.message)
+        openCallout(error.message)
         history.push('/')
     }
 
-    const [setDarkMode] = useMutation(GraphQuery.SET_DARK_MODE, {
+    const [setUser] = useMutation(GraphQuery.SET_USER, {
         variables: {
-            darkMode: false,
+            [Fields.USER]: {} as User,
         },
-        refetchQueries: [GraphQuery.GET_USER, 'getUser'],
+        refetchQueries: [GraphQuery.GET_USER],
         onError: (e) => {
-            setCallout(e.message)
+            openCallout(e.message)
         },
     })
 
     return {
         loading,
-        user: data ? data.getUser : data,
-        setDarkMode,
+        user: data ? data[Fields.USER] : data,
+        setUser,
     }
 }

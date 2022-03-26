@@ -12,7 +12,7 @@ import * as serviceWorker from 'src/client/serviceWorker'
 import { Store } from 'src/client/store'
 import { PublicWrapper, PublicHome } from 'src/client/scenes/public'
 import { AppWrapper, AccountBook, AddItems } from 'src/client/scenes/app'
-import { graphqlClient } from 'src/utils'
+import { graphqlClient } from 'src/utils/graphql'
 
 ReactDOM.render(
     <ApolloProvider client={graphqlClient}>

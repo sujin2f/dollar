@@ -2,12 +2,13 @@ import React, { Fragment, useRef, useState } from 'react'
 import { useGlobalOption, useItems } from 'src/client/hooks'
 import { RawItem } from 'src/types/model'
 import { TableHeader } from 'src/types/table'
-import { CategoryDatalist, Input } from 'src/client/components'
-import { Button } from '../form/Button'
+import { CategoryDatalist } from 'src/client/components'
+import { Input } from 'src/common/components/forms/Input'
+import { Button } from 'src/common/components/forms/Button'
 
 export const UpdateItem = (): JSX.Element => {
     const { updateItem } = useItems()
-    const { updateItem: currentItem } = useGlobalOption()
+    const { updateItemOpened: currentItem } = useGlobalOption()
     const [dateError, setDateError] = useState<string>('')
     const [titleError, setTitleError] = useState<string>('')
     const [amountError, setAmountError] = useState<string>('')
@@ -44,7 +45,7 @@ export const UpdateItem = (): JSX.Element => {
         if (!validate()) {
             return
         }
-        const item = {
+        const rawItem = {
             _id: currentItem?._id,
             date: date.current?.value,
             title: title.current?.value,
@@ -55,7 +56,8 @@ export const UpdateItem = (): JSX.Element => {
 
         updateItem({
             variables: {
-                item,
+                rawItem,
+                type: 'update',
             },
         })
     }

@@ -6,6 +6,8 @@ import {
     CLOSE_MODAL,
     SET_CALLOUT,
     SET_ADD_MODAL,
+    SET_CATEGORY_SELECTOR,
+    SET_CATEGORY_EDITOR,
 } from './type'
 
 export const reducer = (state: State = initialState, action: Action): State => {
@@ -13,7 +15,7 @@ export const reducer = (state: State = initialState, action: Action): State => {
         case SET_MENU_OPEN: {
             return {
                 ...state,
-                menuOpen: action.menuOpen,
+                menuOpen: action.bool,
             }
         }
 
@@ -22,7 +24,7 @@ export const reducer = (state: State = initialState, action: Action): State => {
                 ...state,
                 modal: {
                     ...state.modal,
-                    deleteItem: action.item,
+                    deleteItemOpened: action.item,
                 },
             }
         }
@@ -32,7 +34,7 @@ export const reducer = (state: State = initialState, action: Action): State => {
                 ...state,
                 modal: {
                     ...state.modal,
-                    updateItem: action.item,
+                    updateItemOpened: action.item,
                 },
             }
         }
@@ -42,7 +44,7 @@ export const reducer = (state: State = initialState, action: Action): State => {
                 ...state,
                 modal: {
                     ...state.modal,
-                    addItem: action.addItem,
+                    addItemOpened: action.bool,
                 },
             }
         }
@@ -50,11 +52,8 @@ export const reducer = (state: State = initialState, action: Action): State => {
         case CLOSE_MODAL: {
             return {
                 ...state,
-                modal: {
-                    updateItem: undefined,
-                    deleteItem: undefined,
-                    addItem: false,
-                },
+                menuOpen: false,
+                modal: initialState.modal,
             }
         }
 
@@ -68,6 +67,27 @@ export const reducer = (state: State = initialState, action: Action): State => {
             }
         }
 
+        case SET_CATEGORY_SELECTOR: {
+            return {
+                ...state,
+                modal: {
+                    ...state.modal,
+                    categorySelectorOpened: action.bool,
+                },
+            }
+        }
+
+        case SET_CATEGORY_EDITOR: {
+            return {
+                ...state,
+                modal: {
+                    ...state.modal,
+                    categoryEditorOpened: action.category,
+                },
+            }
+        }
+
+        /* istanbul ignore next */
         default: {
             return state
         }

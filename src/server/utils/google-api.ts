@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 /**
  * Google API helpers
  * @see https://medium.com/@jackrobertscott/how-to-use-google-auth-api-with-node-js-888304f7e3a0

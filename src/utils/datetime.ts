@@ -8,9 +8,10 @@ export const formatDate = (dateString: string | Date): string => {
         return 'Invalid Date'
     }
 
-    return `${date.getFullYear()}-${addZero(date.getMonth() + 1)}-${addZero(
-        date.getDate(),
-    )}`
+    date.setUTCHours(0, 0, 0, 0)
+    return `${date.getUTCFullYear()}-${addZero(
+        date.getUTCMonth() + 1,
+    )}-${addZero(date.getUTCDate())}`
 }
 
 /**
@@ -42,34 +43,14 @@ export const yyyyMmDdToDate = (yyyyMmDd: string): Date => {
     const splitted = yyyyMmDd.split('-')
     const date = new Date()
     if (splitted.length !== 3) {
-        date.setHours(0)
-        date.setMinutes(0)
-        date.setSeconds(0)
-        date.setMilliseconds(0)
+        date.setUTCHours(0, 0, 0, 0)
         return date
     }
 
-    date.setFullYear(parseInt(splitted[0], 10))
-    date.setMonth(parseInt(splitted[1], 10) - 1)
-    date.setDate(parseInt(splitted[2], 10))
-
-    date.setHours(0)
-    date.setMinutes(0)
-    date.setSeconds(0)
-    date.setMilliseconds(0)
+    date.setUTCFullYear(parseInt(splitted[0], 10))
+    date.setUTCMonth(parseInt(splitted[1], 10) - 1)
+    date.setUTCDate(parseInt(splitted[2], 10))
+    date.setUTCHours(0, 0, 0, 0)
 
     return date
-}
-
-export const getNextMidnight = (): number => {
-    const now = new Date()
-    const midnight = new Date(
-        now.getFullYear(),
-        now.getMonth(),
-        now.getDate() + 1,
-        0,
-        0,
-        0,
-    )
-    return midnight.getTime()
 }

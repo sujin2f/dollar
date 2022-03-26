@@ -1,13 +1,8 @@
 import { Request } from 'express'
 import mongoose, { Schema } from 'mongoose'
+import { UserParam } from 'src/constants/graph-query'
 import { ErrorMessages } from 'src/server/constants/messages'
 import { User } from 'src/types/model'
-
-declare module 'express-session' {
-    interface Session {
-        user?: string
-    }
-}
 
 const userSchema = new Schema({
     email: {
@@ -68,21 +63,14 @@ export const getOrAddUser = async (
     return result as User
 }
 
-type SetDarkModeParam = {
-    darkMode: boolean
-}
-export const setDarkMode = async (
-    param: SetDarkModeParam,
-    req: Request,
+export const setUser = async (
+    { user: { darkMode } }: UserParam,
+    { session: { user } }: Request,
 ): Promise<boolean> => {
-    const result = await UserModel.updateOne(
-        { _id: req.session.user },
-        { darkMode: param.darkMode },
-    ).catch(() => {
-        throw new Error(ErrorMessages.SOMETHING_WENT_WRONG)
-    })
-    if (result.modifiedCount) {
-        return param.darkMode
-    }
-    throw new Error(ErrorMessages.SOMETHING_WENT_WRONG)
+    await UserModel.updateOne({ _id: user }, { darkMode }).catch(
+        /* istanbul ignore next */ () => {
+            throw new Error(ErrorMessages.SOMETHING_WENT_WRONG)
+        },
+    )
+    return darkMode || false
 }

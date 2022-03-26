@@ -2,39 +2,49 @@ import { useMutation, useQuery } from '@apollo/client'
 
 import { Category } from 'src/types/model'
 import { Nullable } from 'src/types/common'
-import { GraphQuery } from 'src/client/const/graph-query'
+import { CategoriesParam, Fields, GraphQuery } from 'src/constants/graph-query'
 import { useGlobalOption } from './useGlobalOption'
 
-type GetCategoriesQueryParam = {
-    getCategories: Category[]
-}
-
 export const useCategory = () => {
-    const { setCallout } = useGlobalOption()
-    const { data, error } = useQuery<GetCategoriesQueryParam>(
-        GraphQuery.GET_CATEGORIES,
-    )
+    const { openCallout } = useGlobalOption()
+    const { data, error } = useQuery<CategoriesParam>(GraphQuery.GET_CATEGORIES)
+
+    const getSubCategories = (_id: string): Category[] => {
+        const mustData = data ? data[Fields.CATEGORIES] : []
+        if (!mustData.length) {
+            return []
+        }
+
+        return mustData.filter((category) => category.parent === _id)
+    }
+
+    const categories = data
+        ? data[Fields.CATEGORIES].map((cat) => ({
+              ...cat,
+              children: getSubCategories(cat._id),
+          }))
+        : []
 
     if (error) {
-        setCallout(error.message)
+        openCallout(error.message)
     }
 
     const [updateCategory] = useMutation(GraphQuery.UPDATE_CATEGORY, {
         variables: {
             category: {},
         },
-        refetchQueries: [GraphQuery.GET_CATEGORIES, 'getCategories'],
+        refetchQueries: [GraphQuery.GET_CATEGORIES],
         onError: (e) => {
-            setCallout(e.message)
+            openCallout(e.message)
         },
     })
 
     const getCategoryById = (categoryId: string): Nullable<Category> => {
-        if (!data || !data.getCategories) {
+        if (!categories.length) {
             return
         }
 
-        for (const category of data.getCategories) {
+        for (const category of categories) {
             if (category._id === categoryId) {
                 return category
             }
@@ -43,7 +53,33 @@ export const useCategory = () => {
         return
     }
 
-    const isCategoryHidden = (categoryId: string): boolean => {
+    const getCategoryByTitle = (title: string): Nullable<Category> => {
+        if (!categories.length) {
+            return
+        }
+
+        for (const category of categories) {
+            if (category.title === title) {
+                return category
+            }
+        }
+
+        return
+    }
+
+    const getRootCategories = (): Category[] => {
+        if (!categories.length) {
+            return []
+        }
+
+        return categories.filter((category) => !category.parent)
+    }
+
+    const isCategoryHidden = (categoryId?: string): boolean => {
+        if (!categories.length || !categoryId) {
+            return false
+        }
+
         const category = getCategoryById(categoryId)
         if (category && category.disabled) {
             return true
@@ -52,9 +88,12 @@ export const useCategory = () => {
     }
 
     return {
-        categories: data ? data.getCategories : [],
-        getCategoryById,
-        isCategoryHidden,
+        categories,
         updateCategory,
+        isCategoryHidden,
+        getCategoryById,
+        getCategoryByTitle,
+        getRootCategories,
+        getSubCategories,
     }
 }

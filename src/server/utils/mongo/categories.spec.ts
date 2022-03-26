@@ -69,9 +69,7 @@ describe('category.ts', () => {
             await mustGetCategoryByString(userId, 'bank', 'note')
 
             const categories = await getCategories(undefined, request)
-            const hasChildren = categories.filter((cat) => cat.title === 'bank')
             expect(categories.length).toEqual(4)
-            expect(hasChildren[0].children?.length).toBeTruthy()
         })
 
         it('Get Empty', async () => {
@@ -142,9 +140,6 @@ describe('category.ts', () => {
             )
 
             expect(child.parent?.toString()).toEqual(parent._id.toString())
-            expect(
-                parent.children && parent.children[0]._id.toString(),
-            ).toEqual(child._id.toString())
         })
 
         it('Both do not exist', async () => {
@@ -155,9 +150,6 @@ describe('category.ts', () => {
             )
             const parent = await mustGetCategoryByString(userId, 'parent')
             expect(child.parent?.toString()).toEqual(parent._id.toString())
-            expect(
-                parent.children && parent.children[0]._id.toString(),
-            ).toEqual(child._id.toString())
         })
     })
 })

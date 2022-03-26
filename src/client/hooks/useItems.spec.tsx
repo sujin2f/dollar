@@ -178,4 +178,70 @@ describe('useItems.ts', () => {
         expect(screen.getByTestId('total-credit')).toHaveTextContent('0')
         expect(screen.getByTestId('total-debit')).toHaveTextContent('100')
     })
+
+    describe('getItemsByCategoryId()', () => {
+        it('daily', async () => {
+            Component = (): JSX.Element => {
+                const { getItemsByCategoryId } = useItems(1977, 1, 'daily')
+                const items = getItemsByCategoryId('category-0')
+
+                return (
+                    <Fragment>
+                        {items.map((item, index) => (
+                            <div
+                                data-testid={`item-id-${index}`}
+                                key={`item-id-${index}`}
+                            >
+                                {item._id}
+                            </div>
+                        ))}
+                    </Fragment>
+                )
+            }
+            render(<Wrapper />)
+            await act(
+                async () =>
+                    await new Promise((resolve) => setTimeout(resolve, 0)),
+            )
+            expect(screen.getByTestId('item-id-0')).toHaveTextContent('item-0')
+            try {
+                screen.getByTestId('item-id-1')
+                expect(true).toBeFalsy()
+            } catch (e) {
+                expect(true).toBeTruthy()
+            }
+        })
+
+        it('monthly', async () => {
+            Component = (): JSX.Element => {
+                const { getItemsByCategoryId } = useItems(1977, 1, 'monthly')
+                const items = getItemsByCategoryId('category-0')
+
+                return (
+                    <Fragment>
+                        {items.map((item, index) => (
+                            <div
+                                data-testid={`item-id-${index}`}
+                                key={`item-id-${index}`}
+                            >
+                                {item.credit}
+                            </div>
+                        ))}
+                    </Fragment>
+                )
+            }
+            render(<Wrapper />)
+            await act(
+                async () =>
+                    await new Promise((resolve) => setTimeout(resolve, 0)),
+            )
+            expect(screen.getByTestId('item-id-0')).toHaveTextContent('0')
+            try {
+                screen.getByTestId('item-id-1')
+                expect(true).toBeFalsy()
+            } catch (e) {
+                expect(true).toBeTruthy()
+            }
+        })
+    })
 })

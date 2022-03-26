@@ -46,11 +46,12 @@
 .category-graph {
     width: 100%;
     display: flex;
+    margin-bottom: 1px;
 
     .category-graph__item {
         background-color: map-get($foundation-palette, 'primary');
         color: transparent;
-        height: 2rem;
+        height: 1rem;
         border-right: 1px solid $white;
     }
 }

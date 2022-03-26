@@ -21,12 +21,6 @@ const categorySchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'category',
     },
-    children: [
-        {
-            type: Schema.Types.ObjectId,
-            ref: 'category',
-        },
-    ],
     color: String,
     disabled: Boolean,
 })
@@ -47,27 +41,25 @@ export const CategoryModel = mongoose.model<Category>(
 export const mustGetCategoryByString = async (
     user: string,
     title: string,
-    subTitle?: string,
+    childTitle?: string,
 ): Promise<Category> => {
-    if (!subTitle) {
+    if (!childTitle) {
         return await mustGetCategory(user, title)
     }
 
-    const child = await mayGetCategoryByString(user, subTitle).catch(
+    const child = await mayGetCategoryByString(user, childTitle).catch(
         () => undefined,
     )
     const parent = await mayGetCategoryByString(user, title).catch(
         () => undefined,
     )
-    const children = parent?.children?.map((cat) => cat._id.toString()) || []
     const parentId = parent?._id.toString() || 'parentId'
-    const childId = child?._id.toString() || 'childId'
     const childParentId =
         (child?.parent && child.parent.toString()) || 'childParentId'
 
     // Parent exist and child not, create and relation
     if (!child && parent) {
-        const newChild = await mustGetCategory(user, subTitle)
+        const newChild = await mustGetCategory(user, childTitle)
         await addChild(user, parent, newChild)
         newChild.parent = parent._id
         return newChild
@@ -88,28 +80,19 @@ export const mustGetCategoryByString = async (
     }
 
     // 🤬 Both exist and relationship not, throw
-    if (
-        child &&
-        parent &&
-        (childParentId !== parentId || !children.includes(childId))
-    ) {
+    if (child && parent && childParentId !== parentId) {
         throw new Error(
             '🤬 You tried to make category with a sub-category. However, they are already has their own relationship.',
         )
     }
 
     // Child and parent exist and relationship, return
-    if (
-        child &&
-        parent &&
-        childParentId === parentId &&
-        children.includes(childId)
-    ) {
+    if (child && parent && childParentId === parentId) {
         return child
     }
 
     // Both do not exist
-    const childCategory = await mustGetCategory(user, subTitle)
+    const childCategory = await mustGetCategory(user, childTitle)
     return await mustGetCategory(user, title, childCategory)
 }
 
@@ -124,27 +107,23 @@ const mustGetCategory = async (
             user,
             title,
         },
-        {
-            $setOnInsert: { color },
-        },
+        { $setOnInsert: { color } },
         {
             returnOriginal: false,
             upsert: true,
         },
+    ).catch(
+        /* istanbul ignore next */ () => {
+            throw new Error(ErrorMessages.FIND_CATEGORIES_FAILED)
+        },
     )
-        .populate({ path: 'children', model: CategoryModel })
-        .catch(
-            /* istanbul ignore next */ () => {
-                throw new Error(ErrorMessages.FIND_CATEGORIES_FAILED)
-            },
-        )
 
     if (!child) {
         return result
     }
 
     const newChild = await mustGetCategory(user, child.title)
-    if (!result.children || !result.children.includes(result)) {
+    if (!newChild.parent || newChild.parent !== result._id) {
         await addChild(user, result, newChild)
         newChild.parent = result._id
     }
@@ -155,7 +134,6 @@ export const updateCategory = async (
     { category: { _id, title, disabled, color, parent } }: CategoryParam,
     { session: { user } }: Request,
 ): Promise<boolean> => {
-    // TODO Link
     const updateSet = parent
         ? {
               title,
@@ -189,9 +167,9 @@ export const getCategories = async (
     _: void,
     { session: { user } }: Request,
 ): Promise<Category[]> => {
-    return await CategoryModel.find({ user })
-        .populate({ path: 'children', model: CategoryModel })
-        .catch(/* istanbul ignore next */ () => [])
+    return await CategoryModel.find({ user }).catch(
+        /* istanbul ignore next */ () => [],
+    )
 }
 
 const mayGetCategoryByString = async (
@@ -218,29 +196,12 @@ const addChild = async (
     parent: Category,
     child: Category,
 ): Promise<boolean> => {
-    // TODO Unlink
-    await CategoryModel.updateOne(
-        {
-            _id: parent._id,
-            user,
-        },
-        {
-            $push: { children: child },
-        },
-    ).catch(
-        /* istanbul ignore next */ () => {
-            throw new Error(ErrorMessages.UPDATE_CATEGORY_FAILED)
-        },
-    )
-
     await CategoryModel.updateOne(
         {
             _id: child._id,
             user,
         },
-        {
-            parent,
-        },
+        { parent },
     ).catch(
         /* istanbul ignore next */ () => {
             throw new Error(ErrorMessages.UPDATE_CATEGORY_FAILED)

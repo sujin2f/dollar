@@ -127,6 +127,13 @@ export const useItems = (year?: number, month?: number, type?: string) => {
         return { items: rows, totalCredit, totalDebit }
     }
 
+    const getItemsByCategoryId = (categoryId?: string) => {
+        if (!categoryId) {
+            return items.filter((item) => !item.category)
+        }
+        return items.filter((item) => item.category._id === categoryId)
+    }
+
     return {
         loading,
         items,
@@ -135,5 +142,6 @@ export const useItems = (year?: number, month?: number, type?: string) => {
         addItem,
         updateItem,
         itemsToTableData,
+        getItemsByCategoryId,
     }
 }

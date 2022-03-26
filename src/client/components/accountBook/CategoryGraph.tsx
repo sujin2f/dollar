@@ -1,95 +1,132 @@
 import React, { Fragment, useState } from 'react'
-import { BW } from 'src/constants/color'
 import { useAccountBookMatch, useCategory, useItems } from 'src/client/hooks'
-import { formatCurrency } from 'src/utils/number'
+import { Category } from 'src/types/model'
+import { CategoryGraphItem } from './CategoryGraphItem'
+import { CategoryGraphTable } from './CategoryGraphTable'
 
+export type CategoryMeta = {
+    category: Category
+    total: number
+    parentalTotal: number
+}
+export type CategoryMetaObject = {
+    [categoryId: string]: CategoryMeta
+}
 export const CategoryGraph = (): JSX.Element => {
     const { year, month, type } = useAccountBookMatch()
     const [showTable, changeShowTable] = useState<boolean>(false)
-    const { isCategoryHidden, getCategoryByTitle } = useCategory()
-
+    const { categories } = useCategory()
     const { items } = useItems(year, month, type)
 
     let totalDebit = 0
-    const categoryDebit: Record<string, number> = {}
+    const categoryMetaObject: CategoryMetaObject = categories.reduce(
+        (acc, category) => {
+            return {
+                ...acc,
+                [category._id]: {
+                    category,
+                    total: 0,
+                    parentalTotal: 0,
+                },
+            }
+        },
+        {},
+    )
+    categoryMetaObject[''] = {
+        category: {
+            _id: 'uncategorised',
+            title: 'Uncategorised',
+            disabled: false,
+        },
+        total: 0,
+        parentalTotal: 0,
+    }
 
     items.forEach((item) => {
-        if (!isCategoryHidden(item.category?._id)) {
-            totalDebit += item.debit
+        if (item.category?.disabled) {
+            return
         }
 
-        if (
-            item.debit &&
-            item.category?.title &&
-            !isCategoryHidden(item.category?._id)
-        ) {
-            categoryDebit[item.category.title] =
-                categoryDebit[item.category.title] || 0
-            categoryDebit[item.category.title] += item.debit
+        totalDebit += item.debit
+
+        if (item.debit) {
+            const categoryId = item.category?._id || ''
+            categoryMetaObject[categoryId].total += item.debit
+            categoryMetaObject[categoryId].parentalTotal += item.debit
+            if (item.category?.parent) {
+                categoryMetaObject[item.category.parent].parentalTotal +=
+                    item.debit
+            }
         }
     })
 
-    const categoryDebitSort: { title: string; total: number }[] = Object.keys(
-        categoryDebit,
-    )
-        .map((category) => ({
-            title: category,
-            total: categoryDebit[category],
-        }))
-        .sort((f, s) => s.total - f.total)
+    const categoryMeta: CategoryMeta[] = Object.values(categoryMetaObject)
+        .filter((meta) => meta.parentalTotal)
+        .sort((f, s) => s.parentalTotal - f.parentalTotal)
 
     return (
         <Fragment>
-            <div
-                className="category-graph"
-                onClick={() => changeShowTable(!showTable)}
-            >
-                {categoryDebitSort.map((category) => {
-                    const percent = (category.total * 100) / totalDebit
-                    return (
-                        <div
-                            key={`category-graph-${category.title}`}
-                            className="category-graph__item"
-                            style={{
-                                width: `${percent}%`,
-                                backgroundColor:
-                                    getCategoryByTitle(category.title)?.color ||
-                                    BW.BLACK,
-                            }}
-                        />
-                    )
-                })}
+            <div onClick={() => changeShowTable(!showTable)}>
+                <div className="category-graph category-graph__parent">
+                    {categoryMeta
+                        .filter((meta) => !meta.category.parent)
+                        .map((meta) => {
+                            const percent =
+                                (meta.parentalTotal * 100) / totalDebit
+                            return (
+                                <CategoryGraphItem
+                                    key={`category-graph-${meta.category.title}`}
+                                    meta={meta}
+                                    percent={percent}
+                                />
+                            )
+                        })}
+                </div>
+                <div className="category-graph category-graph__children">
+                    {categoryMeta
+                        .filter((meta) => !meta.category.parent)
+                        .map((meta) => {
+                            const percent = (meta.total * 100) / totalDebit
+                            return (
+                                <Fragment
+                                    key={`category-graph-children-${meta.category.title}`}
+                                >
+                                    {!!percent && (
+                                        <CategoryGraphItem
+                                            meta={meta}
+                                            percent={percent}
+                                        />
+                                    )}
+                                    {meta.category.children &&
+                                        meta.category.children.map((child) => {
+                                            const childMeta =
+                                                categoryMetaObject[child._id]
+                                            if (!childMeta.total) {
+                                                return <Fragment></Fragment>
+                                            }
+                                            const childPercent =
+                                                (childMeta.total * 100) /
+                                                totalDebit
+                                            return (
+                                                <CategoryGraphItem
+                                                    key={`category-graph-children-${childMeta.category.title}`}
+                                                    meta={childMeta}
+                                                    percent={childPercent}
+                                                />
+                                            )
+                                        })}
+                                </Fragment>
+                            )
+                        })}
+                </div>
             </div>
 
             {showTable && (
-                <table className="table table__category-amount">
-                    <tbody className="table table__category-amount__tbody">
-                        {categoryDebitSort.map((category) => {
-                            const percent = (category.total * 100) / totalDebit
-                            return (
-                                <tr
-                                    key={`category-amount-${category.title}`}
-                                    className="category-amount__item"
-                                >
-                                    <td>
-                                        <div
-                                            className="category-amount__chip"
-                                            style={{
-                                                backgroundColor:
-                                                    getCategoryByTitle(
-                                                        category.title,
-                                                    )?.color || BW.BLACK,
-                                            }}
-                                        />
-                                    </td>
-                                    <td>{category.title}</td>
-                                    <td>{formatCurrency(category.total)}</td>
-                                    <td>{percent.toFixed(2)}%</td>
-                                </tr>
-                            )
-                        })}
-                    </tbody>
-                </table>
+                <CategoryGraphTable
+                    categoryMeta={categoryMeta}
+                    categoryMetaObject={categoryMetaObject}
+                    totalDebit={totalDebit}
+                />
             )}
         </Fragment>
     )

@@ -21,15 +21,33 @@ export const CategorySelectorItem = (props: Props): JSX.Element => {
             <Switch
                 id={`category-selector-${category._id}`}
                 checked={!category.disabled}
-                onChange={(checked: boolean) => {
+                onChange={() => {
                     updateCategory({
                         variables: {
                             category: {
                                 _id: category._id,
-                                disabled: !checked,
+                                title: category.title,
+                                color: category.color,
+                                parent: category.parent,
+                                disabled: !category.disabled,
                             },
                         },
                     })
+                    if (category.children) {
+                        category.children.forEach((child) =>
+                            updateCategory({
+                                variables: {
+                                    category: {
+                                        _id: child._id,
+                                        title: child.title,
+                                        color: child.color,
+                                        parent: child.parent,
+                                        disabled: !category.disabled,
+                                    },
+                                },
+                            }),
+                        )
+                    }
                 }}
                 title={`Toggle ${category.title}`}
                 style={{

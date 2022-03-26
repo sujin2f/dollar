@@ -16,6 +16,9 @@ export { TableMonthly as AccountBookTableMonthly } from './accountBook/TableMont
 export { TypeSelector as AccountBookTypeSelector } from './accountBook/TypeSelector'
 export { Header as AccountBookHeader } from './accountBook/Header'
 export { CategoryGraph } from './accountBook/CategoryGraph'
+export { CategoryGraphItem } from './accountBook/CategoryGraphItem'
+export { CategoryGraphTable } from './accountBook/CategoryGraphTable'
+export { CategoryGraphTr } from './accountBook/CategoryGraphTr'
 export { CategoryDatalist } from './form/CategoryDatalist'
 
 export { DeleteItem as DeleteItemModal } from './modal/DeleteItem'

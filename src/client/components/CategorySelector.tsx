@@ -12,8 +12,6 @@ export const CategorySelector = (): JSX.Element => {
     const { getRootCategories } = useCategory()
     const { categorySelectorOpened, closeComponents } = useGlobalOption()
 
-    console.log(categorySelectorOpened)
-
     const items = splitItems(getRootCategories(), 4)
     const cols = items.map((itemRow, index) => (
         <Column
@@ -26,6 +24,7 @@ export const CategorySelector = (): JSX.Element => {
                     <CategorySelectorItem category={category} />
 
                     {category.children &&
+                        !category.disabled &&
                         category.children.map((child) => (
                             <CategorySelectorItem
                                 key={`category-selector-${child._id}`}

@@ -8,7 +8,22 @@ import { useGlobalOption } from './useGlobalOption'
 export const useCategory = () => {
     const { openCallout } = useGlobalOption()
     const { data, error } = useQuery<CategoriesParam>(GraphQuery.GET_CATEGORIES)
-    const categories = data ? data[Fields.CATEGORIES] : []
+
+    const getSubCategories = (_id: string): Category[] => {
+        const mustData = data ? data[Fields.CATEGORIES] : []
+        if (!mustData.length) {
+            return []
+        }
+
+        return mustData.filter((category) => category.parent === _id)
+    }
+
+    const categories = data
+        ? data[Fields.CATEGORIES].map((cat) => ({
+              ...cat,
+              children: getSubCategories(cat._id),
+          }))
+        : []
 
     if (error) {
         openCallout(error.message)
@@ -58,14 +73,6 @@ export const useCategory = () => {
         }
 
         return categories.filter((category) => !category.parent)
-    }
-
-    const getSubCategories = (_id: string): Category[] => {
-        if (!categories.length) {
-            return []
-        }
-
-        return categories.filter((category) => category.parent === _id)
     }
 
     const isCategoryHidden = (categoryId?: string): boolean => {

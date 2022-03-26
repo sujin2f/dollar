@@ -73,12 +73,6 @@ export const GraphQuery = {
                 disabled
                 color
                 parent
-                children {
-                    _id
-                    title
-                    disabled
-                    color
-                }
             }
         }
     `,
@@ -99,6 +93,8 @@ export const GraphQuery = {
                     _id
                     title
                     color
+                    parent
+                    disabled
                 }
             }
         }
@@ -196,7 +192,6 @@ export const schema = buildSchema(`
     }
     type ${Types.CATEGORY} {
         ${categoryNodes}
-        children: [${Types.CATEGORY}]
     }
     input Input${Types.CATEGORY} {
         ${categoryNodes}
